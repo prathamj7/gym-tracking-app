@@ -63,9 +63,9 @@ export default function Landing() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-center space-y-8"
+            className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center"
           >
-            <div className="space-y-4">
+            <div className="space-y-4 text-center lg:text-left">
               <h1 className="text-4xl sm:text-6xl font-bold tracking-tight">
                 Track Your
                 <span className="text-primary block">Fitness Journey</span>
@@ -80,7 +80,7 @@ export default function Landing() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.8 }}
-              className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+              className="flex flex-col sm:flex-row gap-4 justify-center items-center lg:justify-start"
             >
               <Button
                 size="lg"
@@ -98,6 +98,19 @@ export default function Landing() {
               >
                 Learn More
               </Button>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2, duration: 0.8 }}
+              className="hidden lg:block"
+            >
+              <img
+                src="/logo_bg.png"
+                alt="Fitness Illustration"
+                className="w-full max-w-lg mx-auto rounded-xl border"
+              />
             </motion.div>
           </motion.div>
         </div>

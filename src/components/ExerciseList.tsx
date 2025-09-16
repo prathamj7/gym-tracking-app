@@ -187,7 +187,7 @@ export function ExerciseList() {
                         <Badge variant="secondary">{exercise.category}</Badge>
                         <div className="flex items-center text-sm text-muted-foreground">
                           <Calendar className="h-3 w-3 mr-1" />
-                          {formatDate(exercise._creationTime)}
+                          {formatDate(exercise.performedAt)}
                         </div>
                       </div>
                     </div>

@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Dumbbell, LogOut, Plus, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import { ExerciseCompare } from "@/components/ExerciseCompare";
 
 export default function Dashboard() {
   const { isLoading, isAuthenticated, user, signOut } = useAuth();
@@ -91,6 +92,9 @@ export default function Dashboard() {
 
           {/* Stats Cards */}
           <StatsCards />
+
+          {/* Compare Exercises */}
+          <ExerciseCompare />
 
           {/* Exercise List */}
           <div>

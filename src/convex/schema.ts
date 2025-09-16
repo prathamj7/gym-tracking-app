@@ -41,10 +41,14 @@ const schema = defineSchema(
       weight: v.optional(v.number()),
       duration: v.optional(v.number()),
       notes: v.optional(v.string()),
+      // When the exercise was actually performed (allows logging to any date)
+      performedAt: v.number(),
     })
       .index("by_user", ["userId"])
       // Add composite index to support category filtering efficiently
-      .index("by_user_and_category", ["userId", "category"]),
+      .index("by_user_and_category", ["userId", "category"])
+      // For date range and name-based queries and comparisons
+      .index("by_user_and_name_and_performedAt", ["userId", "name", "performedAt"]),
   },
   {
     schemaValidation: false,

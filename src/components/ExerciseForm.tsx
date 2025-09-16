@@ -36,6 +36,8 @@ export function ExerciseForm({ onClose }: ExerciseFormProps) {
 
     try {
       const formData = new FormData(e.currentTarget);
+      const dateStr = formData.get("date") as string | null;
+      const performedAt = dateStr ? new Date(dateStr).getTime() : Date.now();
       
       await createExercise({
         name: formData.get("name") as string,
@@ -45,6 +47,7 @@ export function ExerciseForm({ onClose }: ExerciseFormProps) {
         weight: formData.get("weight") ? parseFloat(formData.get("weight") as string) : undefined,
         duration: formData.get("duration") ? parseInt(formData.get("duration") as string) : undefined,
         notes: formData.get("notes") as string || undefined,
+        performedAt,
       });
 
       toast("Exercise logged successfully!");
@@ -93,6 +96,16 @@ export function ExerciseForm({ onClose }: ExerciseFormProps) {
                   name="name"
                   placeholder="e.g., Bench Press"
                   required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="date">Date</Label>
+                <Input
+                  id="date"
+                  name="date"
+                  type="date"
+                  defaultValue={new Date().toISOString().slice(0, 10)}
                 />
               </div>
 

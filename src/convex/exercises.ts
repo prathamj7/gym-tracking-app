@@ -11,6 +11,8 @@ export const create = mutation({
     weight: v.optional(v.number()),
     duration: v.optional(v.number()),
     notes: v.optional(v.string()),
+    // Optional date from the client; if not provided, default to now
+    performedAt: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
@@ -21,6 +23,7 @@ export const create = mutation({
     return await ctx.db.insert("exercises", {
       ...args,
       userId: user._id,
+      performedAt: args.performedAt ?? Date.now(),
     });
   },
 });
@@ -123,10 +126,10 @@ export const listFiltered = query({
         .collect();
     }
 
-    // Date filtering (range on _creationTime)
+    // Date filtering (range on performedAt)
     const filtered = rows.filter((e) => {
-      const afterStart = args.startDate ? e._creationTime >= args.startDate : true;
-      const beforeEnd = args.endDate ? e._creationTime <= args.endDate : true;
+      const afterStart = args.startDate ? e.performedAt >= args.startDate : true;
+      const beforeEnd = args.endDate ? e.performedAt <= args.endDate : true;
       return afterStart && beforeEnd;
     });
 
@@ -144,11 +147,84 @@ export const listFiltered = query({
           return b.reps - a.reps;
         case "date":
         default:
-          return b._creationTime - a._creationTime;
+          return b.performedAt - a.performedAt;
       }
     });
 
     return sorted;
+  },
+});
+
+// List unique exercise names for the current user (for compare UI)
+export const listNames = query({
+  args: {},
+  handler: async (ctx) => {
+    const user = await getCurrentUser(ctx);
+    if (!user) {
+      return [];
+    }
+    const rows = await ctx.db
+      .query("exercises")
+      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .collect();
+    const names = Array.from(new Set(rows.map((r) => r.name))).sort((a, b) =>
+      a.localeCompare(b),
+    );
+    return names;
+  },
+});
+
+// Compare a single exercise by name for two specific dates (per day)
+export const compareByNameAndDates = query({
+  args: {
+    name: v.string(),
+    date1: v.number(), // any timestamp on day 1
+    date2: v.number(), // any timestamp on day 2
+  },
+  handler: async (ctx, args) => {
+    const user = await getCurrentUser(ctx);
+    if (!user) {
+      return { first: null, second: null };
+    }
+
+    const startOfDay = (ts: number) => {
+      const d = new Date(ts);
+      d.setHours(0, 0, 0, 0);
+      return d.getTime();
+    };
+    const endOfDay = (ts: number) => {
+      const d = new Date(ts);
+      d.setHours(23, 59, 59, 999);
+      return d.getTime();
+    };
+
+    const ranges = [
+      { start: startOfDay(args.date1), end: endOfDay(args.date1) },
+      { start: startOfDay(args.date2), end: endOfDay(args.date2) },
+    ] as const;
+
+    // Helper to load first match within the day using index
+    const loadForRange = async (start: number, end: number) => {
+      const results = await ctx.db
+        .query("exercises")
+        .withIndex("by_user_and_name_and_performedAt", (q) =>
+          q
+            .eq("userId", user._id)
+            .eq("name", args.name)
+            .gte("performedAt", start)
+            .lte("performedAt", end),
+        )
+        .order("desc")
+        .collect();
+      return results[0] ?? null;
+    };
+
+    const [first, second] = await Promise.all([
+      loadForRange(ranges[0].start, ranges[0].end),
+      loadForRange(ranges[1].start, ranges[1].end),
+    ]);
+
+    return { first, second };
   },
 });
 
