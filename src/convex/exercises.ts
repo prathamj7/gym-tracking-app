@@ -177,13 +177,18 @@ export const listNames = query({
 // Compare a single exercise by name for two specific dates (per day)
 export const compareByNameAndDates = query({
   args: {
-    name: v.string(),
-    date1: v.number(), // any timestamp on day 1
-    date2: v.number(), // any timestamp on day 2
+    name: v.optional(v.string()),
+    date1: v.optional(v.number()),
+    date2: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
     if (!user) {
+      return { first: null, second: null };
+    }
+
+    // If any argument is missing, return empty comparison instead of throwing
+    if (!args.name || args.date1 === undefined || args.date2 === undefined) {
       return { first: null, second: null };
     }
 
@@ -210,7 +215,7 @@ export const compareByNameAndDates = query({
         .withIndex("by_user_and_name_and_performedAt", (q) =>
           q
             .eq("userId", user._id)
-            .eq("name", args.name)
+            .eq("name", args.name!)
             .gte("performedAt", start)
             .lte("performedAt", end),
         )
