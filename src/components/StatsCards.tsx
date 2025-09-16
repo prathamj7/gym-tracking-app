@@ -9,8 +9,8 @@ export function StatsCards() {
 
   if (!stats) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {[...Array(4)].map((_, i) => (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        {[...Array(3)].map((_, i) => (
           <Card key={i} className="animate-pulse">
             <CardContent className="p-6">
               <div className="h-4 bg-muted rounded w-1/2 mb-2"></div>
@@ -41,16 +41,10 @@ export function StatsCards() {
       icon: Activity,
       color: "text-purple-600",
     },
-    {
-      title: "Total Weight",
-      value: `${stats.totalWeight.toLocaleString()} lbs`,
-      icon: TrendingUp,
-      color: "text-orange-600",
-    },
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
       {statsData.map((stat, index) => (
         <motion.div
           key={stat.title}

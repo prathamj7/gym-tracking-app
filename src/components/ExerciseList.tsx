@@ -7,7 +7,6 @@ import { Calendar, Clock, Dumbbell, Hash, Trash2, Weight } from "lucide-react";
 import { useMutation, useQuery } from "convex/react";
 import { toast } from "sonner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useMemo, useState } from "react";
 
@@ -29,17 +28,13 @@ export function ExerciseList() {
   const [sortBy, setSortBy] = useState<"date" | "weight" | "sets" | "reps">("date");
 
   const queryArgs = useMemo(() => {
-    const start = startDate ? new Date(startDate).getTime() : null;
-    const end = endDate
-      ? new Date(endDate).getTime() + (24 * 60 * 60 * 1000 - 1)
-      : null;
     return {
       category: category === "ALL" ? null : category,
-      startDate: start,
-      endDate: end,
+      startDate: null,
+      endDate: null,
       sortBy,
     };
-  }, [category, startDate, endDate, sortBy]);
+  }, [category, sortBy]);
 
   const exercises = useQuery(api.exercises.listFiltered, queryArgs);
   const removeExercise = useMutation(api.exercises.remove);
@@ -65,8 +60,6 @@ export function ExerciseList() {
 
   const resetFilters = () => {
     setCategory("ALL");
-    setStartDate("");
-    setEndDate("");
     setSortBy("date");
   };
 
@@ -101,7 +94,7 @@ export function ExerciseList() {
     <div className="space-y-4">
       <Card>
         <CardContent className="p-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1">
               <Label>Category</Label>
               <Select value={category} onValueChange={setCategory}>
@@ -117,22 +110,6 @@ export function ExerciseList() {
                   ))}
                 </SelectContent>
               </Select>
-            </div>
-            <div className="space-y-1">
-              <Label>Start date</Label>
-              <Input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-              />
-            </div>
-            <div className="space-y-1">
-              <Label>End date</Label>
-              <Input
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-              />
             </div>
             <div className="space-y-1">
               <Label>Sort by</Label>
