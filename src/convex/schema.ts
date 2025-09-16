@@ -41,7 +41,10 @@ const schema = defineSchema(
       weight: v.optional(v.number()),
       duration: v.optional(v.number()),
       notes: v.optional(v.string()),
-    }).index("by_user", ["userId"]),
+    })
+      .index("by_user", ["userId"])
+      // Add composite index to support category filtering efficiently
+      .index("by_user_and_category", ["userId", "category"]),
   },
   {
     schemaValidation: false,

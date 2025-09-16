@@ -89,6 +89,69 @@ export const remove = mutation({
   },
 });
 
+export const listFiltered = query({
+  args: {
+    category: v.union(v.string(), v.null()),
+    startDate: v.union(v.number(), v.null()),
+    endDate: v.union(v.number(), v.null()),
+    sortBy: v.union(
+      v.literal("date"),
+      v.literal("weight"),
+      v.literal("sets"),
+      v.literal("reps"),
+    ),
+  },
+  handler: async (ctx, args) => {
+    const user = await getCurrentUser(ctx);
+    if (!user) {
+      return [];
+    }
+
+    // Base query: if category provided, use composite index; otherwise by_user
+    let rows;
+    if (args.category) {
+      rows = await ctx.db
+        .query("exercises")
+        .withIndex("by_user_and_category", (q) =>
+          q.eq("userId", user._id).eq("category", args.category!),
+        )
+        .collect();
+    } else {
+      rows = await ctx.db
+        .query("exercises")
+        .withIndex("by_user", (q) => q.eq("userId", user._id))
+        .collect();
+    }
+
+    // Date filtering (range on _creationTime)
+    const filtered = rows.filter((e) => {
+      const afterStart = args.startDate ? e._creationTime >= args.startDate : true;
+      const beforeEnd = args.endDate ? e._creationTime <= args.endDate : true;
+      return afterStart && beforeEnd;
+    });
+
+    // Sorting
+    const sorted = [...filtered].sort((a, b) => {
+      switch (args.sortBy) {
+        case "weight": {
+          const aw = (a.weight || 0) * a.sets;
+          const bw = (b.weight || 0) * b.sets;
+          return bw - aw;
+        }
+        case "sets":
+          return b.sets - a.sets;
+        case "reps":
+          return b.reps - a.reps;
+        case "date":
+        default:
+          return b._creationTime - a._creationTime;
+      }
+    });
+
+    return sorted;
+  },
+});
+
 export const getStats = query({
   args: {},
   handler: async (ctx) => {
