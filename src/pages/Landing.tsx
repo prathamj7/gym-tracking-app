@@ -4,10 +4,26 @@ import { useAuth } from "@/hooks/use-auth";
 import { motion } from "framer-motion";
 import { Activity, BarChart3, Dumbbell, Target, TrendingUp, Users } from "lucide-react";
 import { useNavigate } from "react-router";
+import { useEffect, useState } from "react";
 
 export default function Landing() {
   const { isLoading, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const [quoteIndex, setQuoteIndex] = useState(0);
+
+  const quotes = [
+    "Small steps, big results.",
+    "Consistency beats intensity.",
+    "Progress, not perfection.",
+    "Strong today, stronger tomorrow.",
+  ];
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setQuoteIndex((i) => (i + 1) % quotes.length);
+    }, 4000);
+    return () => clearInterval(id);
+  }, []);
 
   const features = [
     {
@@ -74,6 +90,19 @@ export default function Landing() {
                 Simple, powerful exercise tracking to help you reach your fitness goals.
                 Log workouts, monitor progress, and stay motivated.
               </p>
+              {/* Rotating motivational quote */}
+              <div className="h-6">
+                <motion.p
+                  key={quoteIndex}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.4 }}
+                  className="text-sm text-primary/80"
+                >
+                  "{quotes[quoteIndex]}"
+                </motion.p>
+              </div>
             </div>
 
             <motion.div
@@ -82,22 +111,29 @@ export default function Landing() {
               transition={{ delay: 0.3, duration: 0.8 }}
               className="flex flex-col sm:flex-row gap-4 justify-center items-center lg:justify-start"
             >
-              <Button
-                size="lg"
-                onClick={() => navigate(isAuthenticated ? "/dashboard" : "/auth")}
-                className="text-lg px-8 py-6"
-              >
-                <Activity className="mr-2 h-5 w-5" />
-                {isAuthenticated ? "Go to Dashboard" : "Start Tracking"}
-              </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                onClick={() => navigate("/auth")}
-                className="text-lg px-8 py-6"
-              >
-                Learn More
-              </Button>
+              <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
+                <Button
+                  size="lg"
+                  onClick={() => navigate(isAuthenticated ? "/dashboard" : "/auth")}
+                  className="text-lg px-8 py-6"
+                >
+                  <span className="inline-flex items-center">
+                    <Activity className="mr-2 h-5 w-5" />
+                    {isAuthenticated ? "Go to Dashboard" : "Start Tracking"}
+                  </span>
+                </Button>
+              </motion.div>
+
+              <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={() => navigate("/auth")}
+                  className="text-lg px-8 py-6"
+                >
+                  Learn More
+                </Button>
+              </motion.div>
             </motion.div>
 
             <motion.div
@@ -113,6 +149,22 @@ export default function Landing() {
               />
             </motion.div>
           </motion.div>
+
+          {/* Gentle animated progress indicator */}
+          <div className="mt-10 max-w-xl mx-auto lg:mx-0">
+            <div className="mb-2 text-sm text-muted-foreground">Momentum</div>
+            <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+              <motion.div
+                className="h-full rounded-full bg-primary"
+                initial={{ width: "20%" }}
+                animate={{ width: ["20%", "80%", "40%", "70%"] }}
+                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+              />
+            </div>
+            <div className="mt-2 text-xs text-muted-foreground">
+              Keep moving—your future self will thank you.
+            </div>
+          </div>
         </div>
 
         {/* Background Elements */}
@@ -148,12 +200,17 @@ export default function Landing() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1, duration: 0.8 }}
                 viewport={{ once: true }}
+                whileHover={{ y: -4 }}
               >
-                <Card className="h-full hover:shadow-lg transition-shadow duration-300">
+                <Card className="h-full transition-transform">
                   <CardContent className="p-8 text-center space-y-4">
-                    <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto">
+                    <motion.div
+                      className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto"
+                      whileHover={{ rotate: 6, scale: 1.05 }}
+                      transition={{ type: "spring", stiffness: 200, damping: 12 }}
+                    >
                       <feature.icon className="h-6 w-6 text-primary" />
-                    </div>
+                    </motion.div>
                     <h3 className="text-xl font-semibold">{feature.title}</h3>
                     <p className="text-muted-foreground">{feature.description}</p>
                   </CardContent>
@@ -231,14 +288,16 @@ export default function Landing() {
             transition={{ delay: 0.2, duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <Button
-              size="lg"
-              variant="secondary"
-              onClick={() => navigate("/auth")}
-              className="text-lg px-8 py-6"
-            >
-              Get Started Free
-            </Button>
+            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
+              <Button
+                size="lg"
+                variant="secondary"
+                onClick={() => navigate("/auth")}
+                className="text-lg px-8 py-6"
+              >
+                Get Started Free
+              </Button>
+            </motion.div>
           </motion.div>
         </div>
       </section>
