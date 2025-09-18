@@ -50,7 +50,7 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 text-sm">
+              <div className="flex items-center gap-2 text-sm text-foreground">
                 <User className="h-4 w-4" />
                 <span>{user.name || user.email || "User"}</span>
               </div>
@@ -76,7 +76,7 @@ export default function Dashboard() {
               <h1 className="text-3xl font-bold tracking-tight">
                 Welcome back, {user.name || "Fitness Enthusiast"}!
               </h1>
-              <p className="text-muted-foreground mt-1">
+              <p className="mt-1 text-foreground">
                 Track your progress and stay motivated
               </p>
             </div>
