@@ -27,19 +27,19 @@ export function StatsCards() {
       title: "Total Workouts",
       value: stats.totalWorkouts,
       icon: Dumbbell,
-      color: "text-blue-600",
+      color: "text-primary",
     },
     {
       title: "This Week",
       value: stats.recentWorkouts,
       icon: Calendar,
-      color: "text-green-600",
+      color: "text-primary",
     },
     {
       title: "Categories",
       value: stats.categoriesCount,
       icon: Activity,
-      color: "text-purple-600",
+      color: "text-primary",
     },
   ];
 
