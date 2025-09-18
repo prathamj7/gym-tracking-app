@@ -140,7 +140,7 @@ export function ExerciseList() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center py-12"
         >
-          <Dumbbell className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+          <Dumbbell className="h-12 w-12 text-primary mx-auto mb-4" />
           <h3 className="text-lg font-semibold mb-2">No matching workouts</h3>
           <p className="text-muted-foreground">
             Try adjusting filters or log a new exercise.

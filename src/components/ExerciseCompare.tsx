@@ -37,7 +37,7 @@ export function ExerciseCompare() {
   return (
     <Card className="mb-8">
       <CardHeader>
-        <CardTitle className="text-lg">Compare Exercise by Date</CardTitle>
+        <CardTitle className="text-lg text-primary">Compare Exercise by Date</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
