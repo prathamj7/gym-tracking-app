@@ -263,3 +263,59 @@ export const getStats = query({
     };
   },
 });
+
+// List all exercises done on a specific calendar date (local time window) for current user
+export const listByDate = query({
+  args: { date: v.number() }, // ms timestamp for any time on the selected date
+  handler: async (ctx, args) => {
+    const user = await getCurrentUser(ctx);
+    if (!user) {
+      return [];
+    }
+
+    const startOfDay = (ts: number) => {
+      const d = new Date(ts);
+      d.setHours(0, 0, 0, 0);
+      return d.getTime();
+    };
+    const endOfDay = (ts: number) => {
+      const d = new Date(ts);
+      d.setHours(23, 59, 59, 999);
+      return d.getTime();
+    };
+
+    const start = startOfDay(args.date);
+    const end = endOfDay(args.date);
+
+    const rows = await ctx.db
+      .query("exercises")
+      .withIndex("by_user_and_performedAt", (q) =>
+        q.eq("userId", user._id).gte("performedAt", start).lte("performedAt", end),
+      )
+      .order("asc")
+      .collect();
+
+    return rows;
+  },
+});
+
+// List all entries for a given exercise name for current user
+export const listByExerciseName = query({
+  args: { name: v.string() },
+  handler: async (ctx, args) => {
+    const user = await getCurrentUser(ctx);
+    if (!user) {
+      return [];
+    }
+
+    const rows = await ctx.db
+      .query("exercises")
+      .withIndex("by_user_and_name_and_performedAt", (q) =>
+        q.eq("userId", user._id).eq("name", args.name),
+      )
+      .order("asc")
+      .collect();
+
+    return rows;
+  },
+});

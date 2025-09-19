@@ -48,7 +48,9 @@ const schema = defineSchema(
       // Add composite index to support category filtering efficiently
       .index("by_user_and_category", ["userId", "category"])
       // For date range and name-based queries and comparisons
-      .index("by_user_and_name_and_performedAt", ["userId", "name", "performedAt"]),
+      .index("by_user_and_name_and_performedAt", ["userId", "name", "performedAt"])
+      // Added: for fast date range exports across all exercises
+      .index("by_user_and_performedAt", ["userId", "performedAt"]),
   },
   {
     schemaValidation: false,
