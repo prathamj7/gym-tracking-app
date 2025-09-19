@@ -121,7 +121,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
   };
 
   return (
-    <div className="min-h-screen flex flex-col dark bg-background text-foreground">
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
 
       
       {/* Auth Content */}

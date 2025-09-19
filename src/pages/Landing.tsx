@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
 import { motion } from "framer-motion";
-import { Activity, BarChart3, Dumbbell, Target, TrendingUp, Users } from "lucide-react";
+import { Activity, BarChart3, Dumbbell, Target, TrendingUp, Users, Sun, Moon } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useEffect, useState } from "react";
 
@@ -10,6 +10,9 @@ export default function Landing() {
   const { isLoading, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [quoteIndex, setQuoteIndex] = useState(0);
+  const [isDark, setIsDark] = useState<boolean>(() =>
+    typeof document !== "undefined" ? document.documentElement.classList.contains("dark") : true
+  );
 
   const quotes = [
     "Small steps, big results.",
@@ -24,6 +27,20 @@ export default function Landing() {
     }, 4000);
     return () => clearInterval(id);
   }, []);
+
+  // Sync local state with current document theme on mount
+  useEffect(() => {
+    const hasDark = document.documentElement.classList.contains("dark");
+    setIsDark(hasDark);
+  }, []);
+
+  const toggleTheme = () => {
+    const next = !isDark;
+    setIsDark(next);
+    const theme = next ? "dark" : "light";
+    localStorage.setItem("theme", theme);
+    document.documentElement.classList.toggle("dark", next);
+  };
 
   const features = [
     {
@@ -49,7 +66,7 @@ export default function Landing() {
   ];
 
   return (
-    <div className="min-h-screen dark bg-gradient-to-b from-zinc-950 via-black to-zinc-900 text-zinc-100 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-b from-zinc-950 via-black to-zinc-900 text-zinc-100 relative overflow-hidden">
       {/* Background Fitness Imagery + Glow */}
       <div className="pointer-events-none absolute inset-0 -z-10">
         <img
@@ -73,7 +90,17 @@ export default function Landing() {
               <Dumbbell className="h-6 w-6 text-primary" />
               <span className="text-xl font-bold tracking-tight">FitTracker</span>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="icon"
+                aria-label="Toggle theme"
+                onClick={toggleTheme}
+                className="border-white/20 text-white"
+                title={isDark ? "Switch to light mode" : "Switch to dark mode"}
+              >
+                {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              </Button>
               {!isLoading && (
                 <Button
                   onClick={() => navigate(isAuthenticated ? "/dashboard" : "/auth")}
@@ -330,7 +357,7 @@ export default function Landing() {
               <span className="font-semibold">FitTracker</span>
             </div>
             <p className="text-sm text-white/60">
-              © 2024 FitTracker. Built with ❤️ for fitness enthusiasts.
+              © 2025 TrackFit. Built with ❤️ for fitness freaks.
             </p>
           </div>
         </div>
