@@ -40,8 +40,9 @@ const schema = defineSchema(
       userId: v.id("users"),
       name: v.string(),
       category: v.string(),
-      sets: v.number(),
-      reps: v.number(),
+      // Make sets and reps optional
+      sets: v.optional(v.number()),
+      reps: v.optional(v.number()),
       weight: v.optional(v.number()),
       duration: v.optional(v.number()),
       notes: v.optional(v.string()),

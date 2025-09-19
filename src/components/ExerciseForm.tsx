@@ -13,6 +13,21 @@ import { toast } from "sonner";
 
 interface ExerciseFormProps {
   onClose: () => void;
+  // Added: initial values support
+  initialName?: string;
+  initialCategory?: string;
+  // Added: editing support
+  existing?: {
+    _id: string;
+    name: string;
+    category: string;
+    sets?: number;
+    reps?: number;
+    weight?: number;
+    duration?: number;
+    notes?: string;
+    performedAt: number;
+  };
 }
 
 const EXERCISE_CATEGORIES = [
@@ -26,9 +41,19 @@ const EXERCISE_CATEGORIES = [
   "Other"
 ];
 
-export function ExerciseForm({ onClose }: ExerciseFormProps) {
+export function ExerciseForm({ onClose, initialName, initialCategory, existing }: ExerciseFormProps) {
   const createExercise = useMutation(api.exercises.create);
+  const updateExercise = useMutation(api.exercises.update);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Add: safe formatter for date input default value
+  const toDateInputValue = (ts?: number) => {
+    if (typeof ts === "number" && Number.isFinite(ts)) {
+      const d = new Date(ts);
+      if (!isNaN(d.getTime())) return d.toISOString().slice(0, 10);
+    }
+    return new Date().toISOString().slice(0, 10);
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -38,9 +63,9 @@ export function ExerciseForm({ onClose }: ExerciseFormProps) {
       const formData = new FormData(e.currentTarget);
       const dateStr = formData.get("date") as string | null;
 
-      // Use selected date with current local time to avoid 5:30 AM/UTC midnight issue
+      // Use selected date with current local time
       const now = new Date();
-      let performedAtDate = dateStr ? new Date(dateStr) : new Date();
+      let performedAtDate = dateStr ? new Date(dateStr) : new Date(existing ? existing.performedAt : Date.now());
       if (dateStr) {
         performedAtDate.setHours(
           now.getHours(),
@@ -51,21 +76,55 @@ export function ExerciseForm({ onClose }: ExerciseFormProps) {
       }
       const performedAt = performedAtDate.getTime();
 
-      await createExercise({
-        name: formData.get("name") as string,
-        category: formData.get("category") as string,
-        sets: parseInt(formData.get("sets") as string),
-        reps: parseInt(formData.get("reps") as string),
-        weight: formData.get("weight") ? parseFloat(formData.get("weight") as string) : undefined,
-        duration: formData.get("duration") ? parseInt(formData.get("duration") as string) : undefined,
-        notes: (formData.get("notes") as string) || undefined,
-        performedAt,
-      });
+      // Parse optional numeric fields safely
+      const setsStr = (formData.get("sets") as string) || "";
+      const repsStr = (formData.get("reps") as string) || "";
+      const weightStr = (formData.get("weight") as string) || "";
+      const durationStr = (formData.get("duration") as string) || "";
 
-      toast("Exercise logged successfully!");
+      const sets = setsStr.trim() === "" ? undefined : Number(setsStr);
+      const reps = repsStr.trim() === "" ? undefined : Number(repsStr);
+      const weight = weightStr.trim() === "" ? undefined : Number(weightStr);
+      const duration = durationStr.trim() === "" ? undefined : Number(durationStr);
+
+      if (existing) {
+        // Update flow
+        await updateExercise({
+          id: existing._id as any,
+          name: formData.get("name") as string,
+          category: formData.get("category") as string,
+          sets,
+          reps,
+          weight,
+          duration,
+          notes: ((formData.get("notes") as string) || undefined) as any,
+          performedAt,
+        } as any);
+        toast("Exercise updated successfully!");
+      } else {
+        // Create flow
+        const result = await createExercise({
+          name: formData.get("name") as string,
+          category: formData.get("category") as string,
+          sets,
+          reps,
+          weight,
+          duration,
+          notes: (formData.get("notes") as string) || undefined,
+          performedAt,
+        } as any);
+
+        if (result?.isNewPR) {
+          const dim = result.dimension === "weight" ? "weight" : "duration";
+          const emoji = dim === "weight" ? "🏆" : "⏱️";
+          toast(`${emoji} New PR achieved!`);
+        } else {
+          toast("Exercise logged successfully!");
+        }
+      }
       onClose();
     } catch (error) {
-      toast("Failed to log exercise. Please try again.");
+      toast(existing ? "Failed to update exercise. Please try again." : "Failed to log exercise. Please try again.");
       console.error(error);
     } finally {
       setIsLoading(false);
@@ -89,7 +148,7 @@ export function ExerciseForm({ onClose }: ExerciseFormProps) {
       >
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-            <CardTitle className="text-xl font-bold">Log Exercise</CardTitle>
+            <CardTitle className="text-xl font-bold">{existing ? "Edit Exercise" : "Log Exercise"}</CardTitle>
             <Button
               variant="ghost"
               size="icon"
@@ -108,6 +167,13 @@ export function ExerciseForm({ onClose }: ExerciseFormProps) {
                   name="name"
                   placeholder="e.g., Bench Press"
                   required
+                  defaultValue={
+                    typeof existing?.name === "string"
+                      ? existing.name
+                      : typeof initialName === "string"
+                        ? initialName
+                        : undefined
+                  }
                 />
               </div>
 
@@ -117,13 +183,17 @@ export function ExerciseForm({ onClose }: ExerciseFormProps) {
                   id="date"
                   name="date"
                   type="date"
-                  defaultValue={new Date().toISOString().slice(0, 10)}
+                  defaultValue={
+                    existing
+                      ? toDateInputValue(existing.performedAt)
+                      : new Date().toISOString().slice(0, 10)
+                  }
                 />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="category">Category</Label>
-                <Select name="category" required>
+                <Select name="category" required defaultValue={existing?.category || initialCategory}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>
@@ -146,7 +216,7 @@ export function ExerciseForm({ onClose }: ExerciseFormProps) {
                     type="number"
                     min="1"
                     placeholder="3"
-                    required
+                    defaultValue={typeof existing?.sets === "number" ? existing.sets : undefined}
                   />
                 </div>
                 <div className="space-y-2">
@@ -157,7 +227,7 @@ export function ExerciseForm({ onClose }: ExerciseFormProps) {
                     type="number"
                     min="1"
                     placeholder="10"
-                    required
+                    defaultValue={typeof existing?.reps === "number" ? existing.reps : undefined}
                   />
                 </div>
               </div>
@@ -172,6 +242,7 @@ export function ExerciseForm({ onClose }: ExerciseFormProps) {
                     step="0.5"
                     min="0"
                     placeholder="60"
+                    defaultValue={typeof existing?.weight === "number" ? existing.weight : undefined}
                   />
                 </div>
                 <div className="space-y-2">
@@ -182,6 +253,7 @@ export function ExerciseForm({ onClose }: ExerciseFormProps) {
                     type="number"
                     min="1"
                     placeholder="30"
+                    defaultValue={typeof existing?.duration === "number" ? existing.duration : undefined}
                   />
                 </div>
               </div>
@@ -193,6 +265,7 @@ export function ExerciseForm({ onClose }: ExerciseFormProps) {
                   name="notes"
                   placeholder="Add any notes about your workout..."
                   rows={3}
+                  defaultValue={existing?.notes || undefined}
                 />
               </div>
 
@@ -202,7 +275,7 @@ export function ExerciseForm({ onClose }: ExerciseFormProps) {
                 disabled={isLoading}
               >
                 <Plus className="mr-2 h-4 w-4" />
-                {isLoading ? "Logging..." : "Log Exercise"}
+                {isLoading ? (existing ? "Saving..." : "Logging...") : (existing ? "Save Changes" : "Log Exercise")}
               </Button>
             </form>
           </CardContent>

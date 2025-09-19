@@ -32,7 +32,8 @@ export function ExerciseCompare() {
     </div>
   );
 
-  const volume = (e: any | null) => (e ? (e.weight || 0) * e.sets : 0);
+  // Fix: handle undefined sets to avoid NaN
+  const volume = (e: any | null) => (e ? (e.weight || 0) * (e.sets || 0) : 0);
 
   return (
     <Card className="mb-8">
@@ -77,8 +78,8 @@ export function ExerciseCompare() {
                 <div className="text-sm text-muted-foreground">Date A</div>
                 {result.first ? (
                   <div className="grid grid-cols-2 gap-3">
-                    {statBlock("Sets", result.first.sets)}
-                    {statBlock("Reps", result.first.reps)}
+                    {statBlock("Sets", result.first.sets ?? 0)}
+                    {statBlock("Reps", result.first.reps ?? 0)}
                     {statBlock("Weight (kg)", result.first.weight ?? 0)}
                     {statBlock("Volume", volume(result.first))}
                   </div>
@@ -101,7 +102,7 @@ export function ExerciseCompare() {
                     (result.second?.reps ?? 0) - (result.first?.reps ?? 0)
                   )}
                   {statBlock(
-                    "Weight",
+                    "Weight (kg)",
                     (result.second?.weight ?? 0) - (result.first?.weight ?? 0)
                   )}
                   {statBlock(
@@ -117,8 +118,8 @@ export function ExerciseCompare() {
                 <div className="text-sm text-muted-foreground">Date B</div>
                 {result.second ? (
                   <div className="grid grid-cols-2 gap-3">
-                    {statBlock("Sets", result.second.sets)}
-                    {statBlock("Reps", result.second.reps)}
+                    {statBlock("Sets", result.second.sets ?? 0)}
+                    {statBlock("Reps", result.second.reps ?? 0)}
                     {statBlock("Weight (kg)", result.second.weight ?? 0)}
                     {statBlock("Volume", volume(result.second))}
                   </div>

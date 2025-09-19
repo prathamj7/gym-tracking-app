@@ -3,12 +3,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { api } from "@/convex/_generated/api";
 import { motion } from "framer-motion";
-import { Calendar, Clock, Dumbbell, Hash, Trash2, Weight } from "lucide-react";
+import { Calendar, Clock, Dumbbell, Hash, Trash2, Weight, Pencil } from "lucide-react";
 import { useMutation, useQuery } from "convex/react";
 import { toast } from "sonner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { useMemo, useState } from "react";
+import { ExerciseForm } from "@/components/ExerciseForm";
 
 const EXERCISE_CATEGORIES: Array<string> = [
   "Chest",
@@ -26,6 +27,7 @@ export function ExerciseList() {
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
   const [sortBy, setSortBy] = useState<"date" | "weight" | "sets" | "reps">("date");
+  const [editing, setEditing] = useState<any | null>(null);
 
   const queryArgs = useMemo(() => {
     return {
@@ -171,6 +173,27 @@ export function ExerciseList() {
                     <Button
                       variant="ghost"
                       size="icon"
+                      onClick={() =>
+                        setEditing({
+                          _id: exercise._id,
+                          name: exercise.name,
+                          category: exercise.category,
+                          sets: exercise.sets,
+                          reps: exercise.reps,
+                          weight: exercise.weight,
+                          duration: exercise.duration,
+                          notes: exercise.notes,
+                          performedAt: exercise.performedAt,
+                        })
+                      }
+                      className="h-8 w-8 text-muted-foreground hover:text-primary"
+                      title="Edit"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
                       onClick={() => handleDelete(exercise._id)}
                       className="h-8 w-8 text-muted-foreground hover:text-destructive"
                     >
@@ -180,23 +203,27 @@ export function ExerciseList() {
                 </CardHeader>
                 <CardContent className="pt-0">
                   <div className="flex flex-wrap gap-4 text-sm">
-                    <div className="flex items-center gap-1">
-                      <Hash className="h-4 w-4 text-muted-foreground" />
-                      <span className="font-medium">{exercise.sets}</span>
-                      <span className="text-muted-foreground">sets</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <span className="font-medium">{exercise.reps}</span>
-                      <span className="text-muted-foreground">reps</span>
-                    </div>
-                    {exercise.weight && (
+                    {typeof exercise.sets === "number" && (
+                      <div className="flex items-center gap-1">
+                        <Hash className="h-4 w-4 text-muted-foreground" />
+                        <span className="font-medium">{exercise.sets}</span>
+                        <span className="text-muted-foreground">sets</span>
+                      </div>
+                    )}
+                    {typeof exercise.reps === "number" && (
+                      <div className="flex items-center gap-1">
+                        <span className="font-medium">{exercise.reps}</span>
+                        <span className="text-muted-foreground">reps</span>
+                      </div>
+                    )}
+                    {typeof exercise.weight === "number" && (
                       <div className="flex items-center gap-1">
                         <Weight className="h-4 w-4 text-muted-foreground" />
                         <span className="font-medium">{exercise.weight}</span>
                         <span className="text-muted-foreground">kg</span>
                       </div>
                     )}
-                    {exercise.duration && (
+                    {typeof exercise.duration === "number" && (
                       <div className="flex items-center gap-1">
                         <Clock className="h-4 w-4 text-muted-foreground" />
                         <span className="font-medium">{exercise.duration}</span>
@@ -214,6 +241,13 @@ export function ExerciseList() {
             </motion.div>
           ))}
         </div>
+      )}
+      {/* Edit Modal */}
+      {editing && (
+        <ExerciseForm
+          onClose={() => setEditing(null)}
+          existing={editing}
+        />
       )}
     </div>
   );

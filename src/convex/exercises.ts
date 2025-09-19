@@ -6,8 +6,9 @@ export const create = mutation({
   args: {
     name: v.string(),
     category: v.string(),
-    sets: v.number(),
-    reps: v.number(),
+    // Make sets and reps optional to allow skipping them
+    sets: v.optional(v.number()),
+    reps: v.optional(v.number()),
     weight: v.optional(v.number()),
     duration: v.optional(v.number()),
     notes: v.optional(v.string()),
@@ -92,11 +93,14 @@ export const update = mutation({
     id: v.id("exercises"),
     name: v.optional(v.string()),
     category: v.optional(v.string()),
+    // sets/reps already optional here; keep them
     sets: v.optional(v.number()),
     reps: v.optional(v.number()),
     weight: v.optional(v.number()),
     duration: v.optional(v.number()),
     notes: v.optional(v.string()),
+    // Allow updating the performedAt date
+    performedAt: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
@@ -176,18 +180,18 @@ export const listFiltered = query({
       return afterStart && beforeEnd;
     });
 
-    // Sorting
+    // Sorting - handle missing sets/reps safely
     const sorted = [...filtered].sort((a, b) => {
       switch (args.sortBy) {
         case "weight": {
-          const aw = (a.weight || 0) * a.sets;
-          const bw = (b.weight || 0) * b.sets;
+          const aw = (a.weight || 0) * (a.sets || 0);
+          const bw = (b.weight || 0) * (b.sets || 0);
           return bw - aw;
         }
         case "sets":
-          return b.sets - a.sets;
+          return (b.sets || 0) - (a.sets || 0);
         case "reps":
-          return b.reps - a.reps;
+          return (b.reps || 0) - (a.reps || 0);
         case "date":
         default:
           return b.performedAt - a.performedAt;
@@ -291,7 +295,8 @@ export const getStats = query({
 
     const totalWorkouts = exercises.length;
     const categories = [...new Set(exercises.map(e => e.category))];
-    const totalWeight = exercises.reduce((sum, e) => sum + (e.weight || 0) * e.sets, 0);
+    // Handle optional sets
+    const totalWeight = exercises.reduce((sum, e) => sum + (e.weight || 0) * (e.sets || 0), 0);
     
     // Get recent workouts (last 7 days)
     const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
