@@ -13,11 +13,14 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
+import { Label } from "@/components/ui/label";
 
 import { useAuth } from "@/hooks/use-auth";
 import { ArrowRight, Loader2, Mail, UserX } from "lucide-react";
 import { Suspense, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 interface AuthProps {
   redirectAfterAuth?: string;
@@ -30,6 +33,9 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
   const [otp, setOtp] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const setName = useMutation(api.users.setName);
 
   useEffect(() => {
     if (!authLoading && isAuthenticated) {
@@ -43,6 +49,12 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
     setError(null);
     try {
       const formData = new FormData(event.currentTarget);
+      // Capture names for later use after OTP verification
+      const f = (formData.get("firstName") as string) || "";
+      const l = (formData.get("lastName") as string) || "";
+      setFirstName(f);
+      setLastName(l);
+
       await signIn("email-otp", formData);
       setStep({ email: formData.get("email") as string });
       setIsLoading(false);
@@ -64,6 +76,18 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
     try {
       const formData = new FormData(event.currentTarget);
       await signIn("email-otp", formData);
+
+      // After OTP verification, save the user's name
+      if (firstName.trim() || lastName.trim()) {
+        try {
+          await setName({
+            firstName: firstName.trim() || "",
+            lastName: lastName.trim() || "",
+          });
+        } catch (e) {
+          console.warn("Failed to set user name:", e);
+        }
+      }
 
       console.log("signed in");
 
@@ -124,7 +148,34 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
               </CardHeader>
               <form onSubmit={handleEmailSubmit}>
                 <CardContent>
-                  
+                  {/* First and Last Name fields */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                    <div className="relative">
+                      <Label htmlFor="firstName">First name</Label>
+                      <Input
+                        id="firstName"
+                        name="firstName"
+                        placeholder="John"
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        required
+                        disabled={isLoading}
+                      />
+                    </div>
+                    <div className="relative">
+                      <Label htmlFor="lastName">Last name</Label>
+                      <Input
+                        id="lastName"
+                        name="lastName"
+                        placeholder="Doe"
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        required
+                        disabled={isLoading}
+                      />
+                    </div>
+                  </div>
+
                   <div className="relative flex items-center gap-2">
                     <div className="relative flex-1">
                       <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />

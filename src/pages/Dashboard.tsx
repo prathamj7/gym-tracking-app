@@ -52,7 +52,7 @@ export default function Dashboard() {
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2 text-sm text-foreground">
                 <User className="h-4 w-4" />
-                <span>{user.name || user.email || "User"}</span>
+                <span>{user.name || "User"}</span>
               </div>
               <Button variant="ghost" size="sm" onClick={handleSignOut}>
                 <LogOut className="h-4 w-4 mr-2" />
