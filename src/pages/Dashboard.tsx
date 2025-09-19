@@ -135,7 +135,7 @@ export default function Dashboard() {
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/")}>
                 <Dumbbell className="h-6 w-6 text-primary" />
-                <span className="text-xl font-bold">FitTracker</span>
+                <span className="text-xl font-bold">TrackFit</span>
               </div>
             </div>
             <div className="flex items-center gap-4">
