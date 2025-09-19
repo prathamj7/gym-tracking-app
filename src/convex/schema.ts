@@ -30,6 +30,10 @@ const schema = defineSchema(
       isAnonymous: v.optional(v.boolean()), // is the user anonymous. do not remove
 
       role: v.optional(roleValidator), // role of the user. do not remove
+
+      // Added: profile fields
+      age: v.optional(v.number()),
+      weight: v.optional(v.number()),
     }).index("email", ["email"]), // index for the email. do not remove or modify
 
     exercises: defineTable({

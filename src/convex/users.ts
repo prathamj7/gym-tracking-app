@@ -51,3 +51,24 @@ export const setName = mutation({
     await ctx.db.patch(userId, { name: fullName });
   },
 });
+
+export const setProfile = mutation({
+  args: {
+    firstName: v.string(),
+    lastName: v.string(),
+    age: v.optional(v.number()),
+    weight: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx as any);
+    if (userId === null) {
+      throw new Error("Not authenticated");
+    }
+    const fullName = `${args.firstName} ${args.lastName}`.trim();
+    await ctx.db.patch(userId, {
+      name: fullName,
+      ...(typeof args.age === "number" ? { age: args.age } : {}),
+      ...(typeof args.weight === "number" ? { weight: args.weight } : {}),
+    });
+  },
+});
