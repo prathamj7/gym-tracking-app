@@ -44,7 +44,7 @@ export function StatsCards() {
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       {statsData.map((stat, index) => (
         <motion.div
           key={stat.title}
@@ -65,6 +65,32 @@ export function StatsCards() {
           </Card>
         </motion.div>
       ))}
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: statsData.length * 0.1 }}
+      >
+        <Card className="hover:shadow-md transition-shadow">
+          <CardHeader>
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Streaks
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <div className="text-base">
+              <span className="mr-2">🔥</span>
+              <span className="font-medium">Current Streak:</span>{" "}
+              <span className="font-bold">{stats.currentStreak}</span> days
+            </div>
+            <div className="text-base">
+              <span className="mr-2">🏅</span>
+              <span className="font-medium">Longest Streak:</span>{" "}
+              <span className="font-bold">{stats.longestStreak}</span> days
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
     </div>
   );
 }

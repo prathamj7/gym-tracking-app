@@ -254,12 +254,56 @@ export const getStats = query({
     const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
     const recentWorkouts = exercises.filter(e => e._creationTime > weekAgo).length;
 
+    // Add: Streak calculations
+    const msPerDay = 24 * 60 * 60 * 1000;
+    const toLocalDayIndex = (ts: number) => {
+      const d = new Date(ts);
+      const localStart = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+      return Math.floor(localStart / msPerDay);
+    };
+
+    const dayIndicesSet = new Set<number>(
+      exercises.map(e => toLocalDayIndex(e.performedAt)),
+    );
+
+    // Current streak: consecutive days ending today
+    const today = new Date();
+    const todayIndex = Math.floor(new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime() / msPerDay);
+    let currentStreak = 0;
+    if (dayIndicesSet.has(todayIndex)) {
+      let idx = todayIndex;
+      while (dayIndicesSet.has(idx)) {
+        currentStreak++;
+        idx -= 1;
+      }
+    } else {
+      currentStreak = 0;
+    }
+
+    // Longest streak: max run anywhere
+    const sortedIndices = Array.from(dayIndicesSet).sort((a, b) => a - b);
+    let longestStreak = 0;
+    let run = 0;
+    let prev: number | null = null;
+    for (const idx of sortedIndices) {
+      if (prev === null || idx !== prev + 1) {
+        run = 1;
+      } else {
+        run += 1;
+      }
+      longestStreak = Math.max(longestStreak, run);
+      prev = idx;
+    }
+
     return {
       totalWorkouts,
       categoriesCount: categories.length,
       totalWeight,
       recentWorkouts,
       categories,
+      // Added: streaks
+      currentStreak,
+      longestStreak,
     };
   },
 });
