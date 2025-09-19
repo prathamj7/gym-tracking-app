@@ -20,11 +20,54 @@ export const create = mutation({
       throw new Error("Not authenticated");
     }
 
-    return await ctx.db.insert("exercises", {
+    const insertedId = await ctx.db.insert("exercises", {
       ...args,
       userId: user._id,
       performedAt: args.performedAt ?? Date.now(),
     });
+
+    // Determine if this entry is a new PR for this exercise
+    let isNewPR = false as boolean;
+    let dimension: "weight" | "duration" | null = null;
+
+    // Load the inserted document
+    const inserted = await ctx.db.get(insertedId);
+    if (inserted) {
+      // Fetch previous entries for the same exercise name (excluding this one)
+      const sameName = await ctx.db
+        .query("exercises")
+        .withIndex("by_user_and_name_and_performedAt", (q) =>
+          q.eq("userId", user._id).eq("name", inserted.name),
+        )
+        .collect();
+
+      // Best previous weight (exclude current by _id)
+      const prevWeightMax = sameName
+        .filter((e) => e._id !== insertedId && typeof e.weight === "number")
+        .reduce((max, e) => (e.weight! > max ? e.weight! : max), -Infinity);
+
+      // Best previous duration (exclude current)
+      const prevDurationMax = sameName
+        .filter((e) => e._id !== insertedId && typeof e.duration === "number")
+        .reduce((max, e) => (e.duration! > max ? e.duration! : max), -Infinity);
+
+      // If current has weight, treat as strength PR on weight
+      if (typeof inserted.weight === "number") {
+        dimension = "weight";
+        if (inserted.weight > (prevWeightMax === -Infinity ? -Infinity : prevWeightMax)) {
+          isNewPR = true;
+        }
+      } else if (typeof inserted.duration === "number") {
+        // Else if it's duration-based
+        dimension = "duration";
+        if (inserted.duration > (prevDurationMax === -Infinity ? -Infinity : prevDurationMax)) {
+          isNewPR = true;
+        }
+      }
+    }
+
+    // Return info so the client can toast a PR notification
+    return { id: insertedId, isNewPR, dimension };
   },
 });
 
@@ -373,5 +416,88 @@ export const listByExerciseName = query({
       .collect();
 
     return rows;
+  },
+});
+
+// Added: getPRs query to compute personal records per exercise
+export const getPRs = query({
+  args: {},
+  handler: async (ctx) => {
+    const user = await getCurrentUser(ctx);
+    if (!user) {
+      return [];
+    }
+
+    // Load all exercises for user
+    const rows = await ctx.db
+      .query("exercises")
+      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .collect();
+
+    // Group by name and compute PRs
+    const byName = new Map<string, typeof rows>();
+
+    for (const r of rows) {
+      const arr = byName.get(r.name) ?? [];
+      arr.push(r);
+      byName.set(r.name, arr);
+    }
+
+    const results = Array.from(byName.entries()).map(([name, entries]) => {
+      // Best weight entry
+      let bestWeightVal = -Infinity;
+      let bestWeightEntry: any = null;
+
+      // Best duration entry
+      let bestDurationVal = -Infinity;
+      let bestDurationEntry: any = null;
+
+      for (const e of entries) {
+        if (typeof e.weight === "number" && e.weight > bestWeightVal) {
+          bestWeightVal = e.weight;
+          bestWeightEntry = e;
+        }
+        if (typeof e.duration === "number" && e.duration > bestDurationVal) {
+          bestDurationVal = e.duration;
+          bestDurationEntry = e;
+        }
+      }
+
+      // Prefer weight-based PR if available, otherwise duration-based
+      if (bestWeightEntry) {
+        return {
+          name,
+          type: "weight" as const,
+          value: bestWeightEntry.weight as number,
+          reps: bestWeightEntry.reps as number,
+          unit: "kg" as const,
+          performedAt: bestWeightEntry.performedAt as number,
+        };
+      } else if (bestDurationEntry) {
+        return {
+          name,
+          type: "duration" as const,
+          value: bestDurationEntry.duration as number,
+          reps: null as number | null,
+          unit: "min" as const,
+          performedAt: bestDurationEntry.performedAt as number,
+        };
+      } else {
+        // No measurable PR
+        return {
+          name,
+          type: "none" as const,
+          value: 0,
+          reps: null as number | null,
+          unit: "" as const,
+          performedAt: 0,
+        };
+      }
+    });
+
+    // Filter out 'none' types
+    return results
+      .filter((r) => r.type !== "none")
+      .sort((a, b) => a.name.localeCompare(b.name));
   },
 });

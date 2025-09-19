@@ -15,6 +15,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
+import { PRList } from "@/components/PRList";
+import { ExerciseLibrary } from "@/components/ExerciseLibrary";
+import { useMemo } from "react";
 
 export default function Dashboard() {
   const { isLoading, isAuthenticated, user, signOut } = useAuth();
@@ -22,8 +25,10 @@ export default function Dashboard() {
   const [showExerciseForm, setShowExerciseForm] = useState(false);
   const [showCompare, setShowCompare] = useState(false);
   const [showDownload, setShowDownload] = useState(false);
+  const [showLibrary, setShowLibrary] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedExercise, setSelectedExercise] = useState<string>("");
+  const [prefill, setPrefill] = useState<{ name?: string; category?: string } | null>(null);
 
   // Load exercise names for dropdown
   const names = useQuery(api.exercises.listNames);
@@ -129,6 +134,9 @@ export default function Dashboard() {
               <Button variant="outline" size="sm" onClick={() => setShowDownload(true)} className="hidden sm:inline-flex">
                 Download Progress <span className="ml-2">📥</span>
               </Button>
+              <Button variant="outline" size="sm" onClick={() => setShowLibrary(true)} className="hidden sm:inline-flex">
+                Exercise Library
+              </Button>
               <div className="flex items-center gap-2 text-sm text-foreground">
                 <User className="h-4 w-4" />
                 <span>{user.name || "User"}</span>
@@ -181,6 +189,12 @@ export default function Dashboard() {
           {/* Stats Cards */}
           <StatsCards />
 
+          {/* Personal Records */}
+          <div>
+            <h2 className="text-2xl font-bold tracking-tight mb-6">Personal Records</h2>
+            <PRList />
+          </div>
+
           {/* Exercise List */}
           <div>
             <h2 className="text-2xl font-bold tracking-tight mb-6">Recent Workouts</h2>
@@ -192,7 +206,14 @@ export default function Dashboard() {
       {/* Exercise Form Modal */}
       <AnimatePresence>
         {showExerciseForm && (
-          <ExerciseForm onClose={() => setShowExerciseForm(false)} />
+          <ExerciseForm
+            onClose={() => {
+              setShowExerciseForm(false);
+              setPrefill(null);
+            }}
+            initialName={prefill?.name}
+            initialCategory={prefill?.category}
+          />
         )}
       </AnimatePresence>
 
@@ -308,6 +329,36 @@ export default function Dashboard() {
                   </div>
                 </div>
               </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Exercise Library Modal */}
+      <AnimatePresence>
+        {showLibrary && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+            onClick={() => setShowLibrary(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-5xl"
+            >
+              <ExerciseLibrary
+                onClose={() => setShowLibrary(false)}
+                onSelectExercise={({ name, category }) => {
+                  setShowLibrary(false);
+                  setPrefill({ name, category });
+                  setShowExerciseForm(true);
+                }}
+              />
             </motion.div>
           </motion.div>
         )}

@@ -51,6 +51,25 @@ const schema = defineSchema(
       .index("by_user_and_name_and_performedAt", ["userId", "name", "performedAt"])
       // Added: for fast date range exports across all exercises
       .index("by_user_and_performedAt", ["userId", "performedAt"]),
+
+    // Added: Exercise Library table
+    exerciseLibrary: defineTable({
+      name: v.string(),
+      nameLower: v.string(), // for prefix search
+      category: v.string(), // e.g., Strength, Cardio, Mobility
+      primaryMuscle: v.string(), // e.g., Chest, Back, Legs
+      difficulty: v.string(), // e.g., Beginner, Intermediate, Advanced
+      equipment: v.string(), // e.g., Barbell, Dumbbell, Bodyweight
+      description: v.string(),
+      tips: v.optional(v.string()),
+      commonMistakes: v.optional(v.string()),
+      mediaUrl: v.optional(v.string()), // optional image/gif/video
+      popularity: v.optional(v.number()),
+    })
+      .index("by_nameLower", ["nameLower"])
+      .index("by_category", ["category"])
+      .index("by_difficulty", ["difficulty"])
+      .index("by_equipment", ["equipment"]),
   },
   {
     schemaValidation: false,
