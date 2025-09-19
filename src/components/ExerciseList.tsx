@@ -193,7 +193,7 @@ export function ExerciseList() {
                       <div className="flex items-center gap-1">
                         <Weight className="h-4 w-4 text-muted-foreground" />
                         <span className="font-medium">{exercise.weight}</span>
-                        <span className="text-muted-foreground">lbs</span>
+                        <span className="text-muted-foreground">kg</span>
                       </div>
                     )}
                     {exercise.duration && (

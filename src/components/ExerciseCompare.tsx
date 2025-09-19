@@ -79,7 +79,7 @@ export function ExerciseCompare() {
                   <div className="grid grid-cols-2 gap-3">
                     {statBlock("Sets", result.first.sets)}
                     {statBlock("Reps", result.first.reps)}
-                    {statBlock("Weight (lbs)", result.first.weight ?? 0)}
+                    {statBlock("Weight (kg)", result.first.weight ?? 0)}
                     {statBlock("Volume", volume(result.first))}
                   </div>
                 ) : (
@@ -119,7 +119,7 @@ export function ExerciseCompare() {
                   <div className="grid grid-cols-2 gap-3">
                     {statBlock("Sets", result.second.sets)}
                     {statBlock("Reps", result.second.reps)}
-                    {statBlock("Weight (lbs)", result.second.weight ?? 0)}
+                    {statBlock("Weight (kg)", result.second.weight ?? 0)}
                     {statBlock("Volume", volume(result.second))}
                   </div>
                 ) : (

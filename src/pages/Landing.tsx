@@ -181,7 +181,7 @@ export default function Landing() {
             >
               <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-3 backdrop-blur">
                 <img
-                  src="/logo_bg.png"
+                  src="/ashu_gym_logo_bg.png"
                   alt="Fitness Illustration"
                   className="mx-auto w-full max-w-lg rounded-xl object-cover"
                 />

@@ -37,8 +37,20 @@ export function ExerciseForm({ onClose }: ExerciseFormProps) {
     try {
       const formData = new FormData(e.currentTarget);
       const dateStr = formData.get("date") as string | null;
-      const performedAt = dateStr ? new Date(dateStr).getTime() : Date.now();
-      
+
+      // Use selected date with current local time to avoid 5:30 AM/UTC midnight issue
+      const now = new Date();
+      let performedAtDate = dateStr ? new Date(dateStr) : new Date();
+      if (dateStr) {
+        performedAtDate.setHours(
+          now.getHours(),
+          now.getMinutes(),
+          now.getSeconds(),
+          now.getMilliseconds()
+        );
+      }
+      const performedAt = performedAtDate.getTime();
+
       await createExercise({
         name: formData.get("name") as string,
         category: formData.get("category") as string,
@@ -46,7 +58,7 @@ export function ExerciseForm({ onClose }: ExerciseFormProps) {
         reps: parseInt(formData.get("reps") as string),
         weight: formData.get("weight") ? parseFloat(formData.get("weight") as string) : undefined,
         duration: formData.get("duration") ? parseInt(formData.get("duration") as string) : undefined,
-        notes: formData.get("notes") as string || undefined,
+        notes: (formData.get("notes") as string) || undefined,
         performedAt,
       });
 
@@ -152,14 +164,14 @@ export function ExerciseForm({ onClose }: ExerciseFormProps) {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="weight">Weight (lbs)</Label>
+                  <Label htmlFor="weight">Weight (kg)</Label>
                   <Input
                     id="weight"
                     name="weight"
                     type="number"
                     step="0.5"
                     min="0"
-                    placeholder="135"
+                    placeholder="60"
                   />
                 </div>
                 <div className="space-y-2">
