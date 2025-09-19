@@ -341,7 +341,7 @@ export default function Landing() {
                 onClick={() => navigate("/auth")}
                 className="px-8 py-6 text-lg"
               >
-                Get Started Free
+                Get Started For Free
               </Button>
             </motion.div>
           </motion.div>
@@ -354,7 +354,7 @@ export default function Landing() {
           <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
             <div className="flex items-center gap-2">
               <Dumbbell className="h-5 w-5 text-primary" />
-              <span className="font-semibold">FitTracker</span>
+              <span className="font-semibold">TrackFit</span>
             </div>
             <p className="text-sm text-white/60">
               © 2025 TrackFit. Built with ❤️ for fitness freaks.
