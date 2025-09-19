@@ -88,7 +88,7 @@ export default function Landing() {
               onClick={() => navigate("/")}
             >
               <Dumbbell className="h-6 w-6 text-primary" />
-              <span className="text-xl font-bold tracking-tight">FitTracker</span>
+              <span className="text-xl font-bold tracking-tight">TrackFit</span>
             </div>
             <div className="flex items-center gap-2">
               <Button
