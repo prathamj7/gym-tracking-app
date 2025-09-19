@@ -266,10 +266,16 @@ export const getStats = query({
 
 // List all exercises done on a specific calendar date (local time window) for current user
 export const listByDate = query({
-  args: { date: v.number() }, // ms timestamp for any time on the selected date
+  // Make 'date' optional to avoid validation errors if called without args
+  args: { date: v.optional(v.number()) }, // ms timestamp for any time on the selected date
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
     if (!user) {
+      return [];
+    }
+
+    // If date not provided, return empty list (no-op)
+    if (args.date === undefined || args.date === null) {
       return [];
     }
 

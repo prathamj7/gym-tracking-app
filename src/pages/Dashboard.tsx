@@ -6,7 +6,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { motion, AnimatePresence } from "framer-motion";
 import { Dumbbell, LogOut, Plus, User } from "lucide-react";
 import { BarChart3 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { ExerciseCompare } from "@/components/ExerciseCompare";
 import { useQuery } from "convex/react";
@@ -29,12 +29,11 @@ export default function Dashboard() {
   const names = useQuery(api.exercises.listNames);
 
   // Prepare export queries (only when inputs are present)
-  const dateArg = useMemo(() => {
-    if (!selectedDate) return undefined;
-    return { date: new Date(selectedDate).getTime() };
-  }, [selectedDate]);
+  const rowsByDate = useQuery(
+    api.exercises.listByDate,
+    selectedDate ? ({ date: new Date(selectedDate).getTime() } as any) : undefined,
+  );
 
-  const rowsByDate = useQuery(api.exercises.listByDate, dateArg as any);
   const rowsByExercise = useQuery(
     api.exercises.listByExerciseName,
     selectedExercise ? ({ name: selectedExercise } as any) : undefined,
