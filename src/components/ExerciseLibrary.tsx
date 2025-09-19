@@ -137,13 +137,13 @@ export function ExerciseLibrary({ onClose, onSelectExercise }: ExerciseLibraryPr
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {(items ?? []).map((ex) => (
             <motion.div key={ex._id} whileHover={{ y: -3 }}>
               <Card className="h-full">
-                <CardHeader className="pb-3">
+                <CardHeader className="pb-2">
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-base">{ex.name}</CardTitle>
+                    <CardTitle className="text-sm">{ex.name}</CardTitle>
                     <span className="text-xs rounded-md bg-primary/15 text-primary px-2 py-1">
                       {ex.category}
                     </span>
@@ -152,15 +152,15 @@ export function ExerciseLibrary({ onClose, onSelectExercise }: ExerciseLibraryPr
                     {ex.primaryMuscle} • {ex.difficulty} • {ex.equipment}
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-3">
+                <CardContent className="space-y-2">
                   {ex.mediaUrl ? (
                     <img
                       src={ex.mediaUrl}
                       alt={ex.name}
-                      className="w-full h-36 object-cover rounded-md"
+                      className="w-full h-28 object-cover rounded-md"
                     />
                   ) : null}
-                  <p className="text-sm text-muted-foreground line-clamp-3">{ex.description}</p>
+                  <p className="text-xs text-muted-foreground line-clamp-3">{ex.description}</p>
                   <div className="flex gap-2">
                     <Button
                       size="sm"
