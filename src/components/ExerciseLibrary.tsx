@@ -55,8 +55,8 @@ export function ExerciseLibrary({ onClose, onSelectExercise }: ExerciseLibraryPr
   const items: ExerciseLibraryItem[] = (list ?? []) as any;
 
   return (
-    <div className="bg-card border rounded-lg overflow-hidden">
-      <div className="flex items-center justify-between px-5 py-4 border-b">
+    <div className="bg-card border rounded-lg overflow-hidden max-h-[85vh] w-full flex flex-col">
+      <div className="flex items-center justify-between px-5 py-4 border-b sticky top-0 bg-card z-10">
         <div className="flex items-center gap-2">
           <Dumbbell className="h-5 w-5 text-primary" />
           <h3 className="text-lg font-semibold">Exercise Library</h3>
@@ -66,7 +66,7 @@ export function ExerciseLibrary({ onClose, onSelectExercise }: ExerciseLibraryPr
         </Button>
       </div>
 
-      <div className="p-5 space-y-5">
+      <div className="p-5 space-y-5 flex-1 overflow-y-auto min-h-0">
         {/* Search & Filters */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
           <div className="space-y-1 md:col-span-2">
