@@ -307,17 +307,23 @@ export const listByDate = query({
 
 // List all entries for a given exercise name for current user
 export const listByExerciseName = query({
-  args: { name: v.string() },
+  // Make 'name' optional to avoid validation errors if called without args
+  args: { name: v.optional(v.string()) },
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
     if (!user) {
       return [];
     }
 
+    // If no name provided, return empty list (no-op)
+    if (!args.name) {
+      return [];
+    }
+
     const rows = await ctx.db
       .query("exercises")
       .withIndex("by_user_and_name_and_performedAt", (q) =>
-        q.eq("userId", user._id).eq("name", args.name),
+        q.eq("userId", user._id).eq("name", args.name!),
       )
       .order("asc")
       .collect();

@@ -4,7 +4,8 @@ import { ExerciseList } from "@/components/ExerciseList";
 import { StatsCards } from "@/components/StatsCards";
 import { useAuth } from "@/hooks/use-auth";
 import { motion, AnimatePresence } from "framer-motion";
-import { Dumbbell, LogOut, Plus, User, BarChart3 } from "lucide-react";
+import { Dumbbell, LogOut, Plus, User } from "lucide-react";
+import { BarChart3 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { ExerciseCompare } from "@/components/ExerciseCompare";
@@ -27,13 +28,15 @@ export default function Dashboard() {
   // Load exercise names for dropdown
   const names = useQuery(api.exercises.listNames);
 
-  // Queries only if user selected something
-  const dateTimestamp = selectedDate ? new Date(selectedDate).getTime() : undefined;
-  const rowsByDate = useQuery(api.exercises.listByDate, dateTimestamp ? { date: dateTimestamp } : undefined);
+  // Prepare export queries (only when inputs are present)
+  const rowsByDate = useQuery(
+    api.exercises.listByDate,
+    selectedDate ? ({ date: new Date(selectedDate).getTime() } as any) : undefined,
+  );
 
   const rowsByExercise = useQuery(
     api.exercises.listByExerciseName,
-    selectedExercise ? { name: selectedExercise } : undefined
+    selectedExercise ? ({ name: selectedExercise } as any) : undefined,
   );
 
   // CSV generator
@@ -74,7 +77,8 @@ export default function Dashboard() {
       toast("Please select a date first.");
       return;
     }
-    downloadCsv(rowsByDate || [], `fittracker_by_date_${selectedDate}.csv`);
+    const dateStr = selectedDate;
+    downloadCsv(rowsByDate || [], `fittracker_by_date_${dateStr}.csv`);
   };
 
   const handleDownloadByExercise = () => {
@@ -82,7 +86,7 @@ export default function Dashboard() {
       toast("Please select an exercise first.");
       return;
     }
-    const safeName = selectedExercise.replace(/\s+/g, "_");
+    const safeName = selectedExercise.replace(/\\s+/g, "_");
     downloadCsv(rowsByExercise || [], `fittracker_by_exercise_${safeName}.csv`);
   };
 
@@ -122,12 +126,7 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowDownload(true)}
-                className="hidden sm:inline-flex"
-              >
+              <Button variant="outline" size="sm" onClick={() => setShowDownload(true)} className="hidden sm:inline-flex">
                 Download Progress <span className="ml-2">📥</span>
               </Button>
               <div className="flex items-center gap-2 text-sm text-foreground">
@@ -145,16 +144,26 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="space-y-8"
+        >
           {/* Welcome Section */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <h1 className="text-3xl font-bold tracking-tight">
                 Welcome back, {user.name || "Fitness Enthusiast"}!
               </h1>
-              <p className="mt-1 text-foreground">Track your progress and stay motivated</p>
+              <p className="mt-1 text-foreground">
+                Track your progress and stay motivated
+              </p>
             </div>
-            <Button onClick={() => setShowExerciseForm(true)} size="lg" className="w-full sm:w-auto">
+            <Button
+              onClick={() => setShowExerciseForm(true)}
+              size="lg"
+              className="w-full sm:w-auto"
+            >
               <Plus className="mr-2 h-4 w-4" />
               Log Exercise
             </Button>
@@ -181,7 +190,11 @@ export default function Dashboard() {
       </main>
 
       {/* Exercise Form Modal */}
-      <AnimatePresence>{showExerciseForm && <ExerciseForm onClose={() => setShowExerciseForm(false)} />}</AnimatePresence>
+      <AnimatePresence>
+        {showExerciseForm && (
+          <ExerciseForm onClose={() => setShowExerciseForm(false)} />
+        )}
+      </AnimatePresence>
 
       {/* Compare Modal */}
       <AnimatePresence>
@@ -206,7 +219,7 @@ export default function Dashboard() {
         )}
       </AnimatePresence>
 
-      {/* Download Modal */}
+      {/* Added: Download Modal */}
       <AnimatePresence>
         {showDownload && (
           <motion.div
@@ -233,9 +246,13 @@ export default function Dashboard() {
                 <div className="p-5 space-y-6">
                   {/* Option 1: Download by Date */}
                   <div className="space-y-2">
-                    <div className="font-medium">Download by Date</div>
-                    <div className="text-sm text-muted-foreground">
-                      Select a date to download all exercises logged on that day.
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="font-medium">Download by Date</div>
+                        <div className="text-sm text-muted-foreground">
+                          Select a date to download all exercises logged on that day.
+                        </div>
+                      </div>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div className="space-y-1">
@@ -258,9 +275,13 @@ export default function Dashboard() {
 
                   {/* Option 2: Download by Exercise */}
                   <div className="space-y-2">
-                    <div className="font-medium">Download by Exercise</div>
-                    <div className="text-sm text-muted-foreground">
-                      Choose an exercise to download all your logged entries for it.
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="font-medium">Download by Exercise</div>
+                        <div className="text-sm text-muted-foreground">
+                          Choose an exercise to download all your logged entries for it.
+                        </div>
+                      </div>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div className="space-y-1">
