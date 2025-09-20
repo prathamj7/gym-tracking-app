@@ -149,19 +149,16 @@ export default function Landing() {
                 <Activity className="h-4 w-4 text-primary" />
                 Track smarter. Grow stronger.
               </span>
-
               <h1 className="text-4xl font-extrabold tracking-tight sm:text-6xl">
                 Own Your
                 <span className="block bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
                   Fitness Journey
                 </span>
               </h1>
-
               <p className="mx-auto max-w-2xl text-lg text-white/70">
                 Track, analyze, and improve your workouts—all in one clean,
                 real-time dashboard. No clutter, just results.
               </p>
-
               <motion.p
                 key={quoteIndex}
                 initial={{ opacity: 0, y: 6 }}
@@ -171,7 +168,6 @@ export default function Landing() {
               >
                 "{quotes[quoteIndex]}"
               </motion.p>
-
               <div className="flex flex-col items-center gap-4 sm:flex-row lg:justify-start">
                 <Button
                   size="lg"
@@ -182,7 +178,6 @@ export default function Landing() {
                 >
                   {isAuthenticated ? "Go to Dashboard" : "Start Free Today"}
                 </Button>
-
                 {!isAuthenticated && (
                   <Button
                     variant="outline"
@@ -195,7 +190,6 @@ export default function Landing() {
                 )}
               </div>
             </div>
-
             {/* Visual */}
             <motion.div
               initial={{ opacity: 0, scale: 0.96 }}
@@ -232,7 +226,6 @@ export default function Landing() {
               Tools to help you track smarter, stay consistent, and achieve more.
             </p>
           </motion.div>
-
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
             {features.map((feature, index) => (
               <motion.div
@@ -284,7 +277,6 @@ export default function Landing() {
                 A growing community that logs, learns, and levels up together.
               </p>
             </div>
-
             <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
               {[
                 { number: "10K+", label: "Active Users", icon: Users },
@@ -306,6 +298,53 @@ export default function Landing() {
               ))}
             </div>
           </motion.div>
+        </div>
+      </section>
+
+      {/* Pricing Section - Free and Paid Versions */}
+      <section id="pricing" className="py-20 bg-black text-white">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-4xl font-bold mb-6">Simple Pricing</h2>
+          <p className="text-gray-400 mb-12">
+            Start free, upgrade anytime for full access
+          </p>
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Free Plan */}
+            <div className="p-8 border border-gray-700 rounded-2xl shadow-lg bg-gray-900">
+              <h3 className="text-2xl font-semibold mb-4">Free</h3>
+              <p className="text-3xl font-bold mb-6">
+                ₹0 <span className="text-lg">/year</span>
+              </p>
+              <ul className="text-left space-y-3 mb-6 text-gray-300">
+                <li>✔ Log Workouts</li>
+                <li>✔ Basic Progress Tracking</li>
+                <li>✔ Access to Exercise Library</li>
+              </ul>
+              <button onClick={() => navigate("/dashboard")} className="w-full bg-gray-700 hover:bg-gray-800 py-3 rounded-xl font-semibold">
+                Get Started
+              </button>
+            </div>
+            {/* Premium Plan */}
+            <div className="p-8 border-2 border-red-500 rounded-2xl shadow-xl bg-gray-900 relative">
+              <span className="absolute top-0 right-0 bg-red-500 text-white text-sm px-3 py-1 rounded-bl-lg">
+                Best Value
+              </span>
+              <h3 className="text-2xl font-semibold mb-4">Premium</h3>
+              <p className="text-3xl font-bold mb-6">
+                ₹2000 <span className="text-lg">/year</span>
+              </p>
+              <ul className="text-left space-y-3 mb-6 text-gray-300">
+                <li>✔ Everything in Free</li>
+                <li>✔ Unlimited Progress Charts</li>
+                <li>✔ Streaks & Personal Records</li>
+                <li>✔ Advanced Analytics & Insights</li>
+                <li>✔ AI-Powered Workout Suggestions</li>
+              </ul>
+              <button onClick={() => navigate("/premium")} className="w-full bg-red-600 hover:bg-red-700 py-3 rounded-xl font-semibold">
+                Upgrade to Premium
+              </button>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -381,7 +420,7 @@ export default function Landing() {
             <span className="font-semibold">TrackFit</span>
           </div>
           <p className="text-sm text-white/60">
-            © 2025 TrackFit. Built with ❤️ for fitness enthusiasts.
+            © {new Date().getFullYear()} TrackFit. Built with ❤️ for fitness enthusiasts.
           </p>
         </div>
       </footer>
