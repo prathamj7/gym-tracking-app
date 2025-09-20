@@ -25,6 +25,7 @@ export default function Landing() {
       ? document.documentElement.classList.contains("dark")
       : true
   );
+  const [themeTransition, setThemeTransition] = useState(false);
 
   const quotes = [
     "Small steps, big results.",
@@ -46,6 +47,8 @@ export default function Landing() {
   }, []);
 
   const toggleTheme = () => {
+    setThemeTransition(true);
+    setTimeout(() => setThemeTransition(false), 400);
     const next = !isDark;
     setIsDark(next);
     const theme = next ? "dark" : "light";
@@ -81,20 +84,27 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-zinc-950 via-black to-zinc-900 text-zinc-100 relative overflow-hidden">
-      {/* Background */}
+      {/* Theme Transition Overlay */}
+      {themeTransition && (
+        <div className="fixed inset-0 z-[99999] bg-black/40 transition-opacity duration-300 pointer-events-none"></div>
+      )}
+
+      {/* Enhanced Background Layers */}
       <div className="pointer-events-none absolute inset-0 -z-10">
         <img
           src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=1920&auto=format&fit=crop"
           alt="Fitness background"
           className="absolute inset-0 w-full h-full object-cover opacity-20"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/70 to-black/80" />
-        <div className="absolute -top-32 -left-32 h-80 w-80 rounded-full bg-primary/20 blur-3xl" />
-        <div className="absolute -bottom-24 -right-24 h-96 w-96 rounded-full bg-primary/25 blur-3xl" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/70 to-transparent" />
+        {/* Radial highlight for visual punch */}
+        <div className="absolute left-1/2 top-24 -translate-x-1/2 h-[38rem] w-[36rem] rounded-full bg-primary/15 blur-[120px] opacity-85" />
+        <div className="absolute -top-32 -left-32 h-80 w-80 rounded-full bg-primary/25 blur-3xl" />
+        <div className="absolute -bottom-24 -right-24 h-[30rem] w-[30rem] rounded-full bg-red-900/20 blur-3xl" />
       </div>
 
       {/* Navigation */}
-      <nav className="sticky top-0 z-50 border-b border-white/10 bg-black/40 backdrop-blur-sm">
+      <nav className="sticky top-0 z-50 border-b border-white/10 bg-black/60 backdrop-blur-lg shadow-lg transition-all">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             <div
@@ -110,7 +120,7 @@ export default function Landing() {
                 size="icon"
                 aria-label="Toggle theme"
                 onClick={toggleTheme}
-                className="border-white/20 text-white"
+                className="border-white/20 text-white hover:bg-primary/20 transition"
                 title={isDark ? "Switch to light mode" : "Switch to dark mode"}
               >
                 {isDark ? (
@@ -125,7 +135,7 @@ export default function Landing() {
                     navigate(isAuthenticated ? "/dashboard" : "/auth")
                   }
                   variant={isAuthenticated ? "default" : "outline"}
-                  className={isAuthenticated ? "" : "border-white/20 text-white"}
+                  className={`transition-colors ${isAuthenticated ? "bg-gradient-to-r from-rose-600 to-primary shadow-lg" : "border-white/20 text-white hover:bg-primary/10"}`}
                 >
                   {isAuthenticated ? "Dashboard" : "Sign In"}
                 </Button>
@@ -142,22 +152,22 @@ export default function Landing() {
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
-            className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2"
+            className="grid grid-cols-1 items-center gap-14 lg:grid-cols-2"
           >
-            <div className="space-y-6 text-center lg:text-left">
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/80 backdrop-blur">
+            <div className="space-y-7 text-center lg:text-left">
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-gradient-to-r from-primary/10 via-rose-900/20 to-black/20 px-3 py-1 text-xs text-white/80 backdrop-blur shadow">
                 <Activity className="h-4 w-4 text-primary" />
                 Track smarter. Grow stronger.
               </span>
               <h1 className="text-4xl font-extrabold tracking-tight sm:text-6xl">
                 Own Your
-                <span className="block bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+                <span className="block bg-gradient-to-r from-primary to-rose-700 bg-clip-text text-transparent">
                   Fitness Journey
                 </span>
               </h1>
-              <p className="mx-auto max-w-2xl text-lg text-white/70">
-                Track, analyze, and improve your workouts—all in one clean,
-                real-time dashboard. No clutter, just results.
+              <p className="mx-auto max-w-2xl text-lg text-zinc-200/80">
+                Track, analyze, and improve your workouts—all in one clean, real-time dashboard.
+                No clutter, just results.
               </p>
               <motion.p
                 key={quoteIndex}
@@ -174,7 +184,7 @@ export default function Landing() {
                   onClick={() =>
                     navigate(isAuthenticated ? "/dashboard" : "/auth")
                   }
-                  className="px-8 py-6 text-lg"
+                  className="bg-gradient-to-r from-primary via-rose-500 to-rose-600 px-8 py-6 text-lg shadow-xl hover:scale-105 transition-transform font-semibold"
                 >
                   {isAuthenticated ? "Go to Dashboard" : "Start Free Today"}
                 </Button>
@@ -183,7 +193,7 @@ export default function Landing() {
                     variant="outline"
                     size="lg"
                     onClick={() => navigate("/auth")}
-                    className="border-white/20 px-8 py-6 text-lg text-white hover:bg-white/10"
+                    className="border-white/20 px-8 py-6 text-lg text-white hover:bg-white/10 font-semibold hover:scale-105 transition-transform"
                   >
                     Join Community
                   </Button>
@@ -195,19 +205,24 @@ export default function Landing() {
               initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.15, duration: 0.7 }}
-              className="relative hidden lg:block"
+              className="relative mx-auto hidden lg:block rounded-3xl overflow-hidden"
             >
-              <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-3 backdrop-blur">
+              <div className="relative overflow-hidden rounded-2xl border-2 border-primary/40 bg-white/5 p-3 backdrop-blur shadow-2xl">
                 <img
                   src="/ashu_gym_logo_bg.png"
                   alt="Fitness Illustration"
-                  className="mx-auto w-full max-w-lg rounded-xl object-cover"
+                  className="mx-auto w-full max-w-lg rounded-xl object-cover scale-105"
                 />
+                {/* Subtle overlay glow */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-rose-400/10 pointer-events-none"></div>
               </div>
             </motion.div>
           </motion.div>
         </div>
       </section>
+
+      {/* Section Divider */}
+      <div className="my-12 h-0.5 w-full bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
 
       {/* Features */}
       <section className="bg-white/5 py-24 backdrop-blur-sm">
@@ -219,28 +234,29 @@ export default function Landing() {
             viewport={{ once: true }}
             className="mb-16 space-y-4 text-center"
           >
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl bg-gradient-to-r from-primary to-rose-700 bg-clip-text text-transparent">
               Everything You Need
             </h2>
-            <p className="mx-auto max-w-2xl text-xl text-white/70">
+            <p className="mx-auto max-w-2xl text-lg text-gray-300">
               Tools to help you track smarter, stay consistent, and achieve more.
             </p>
           </motion.div>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
             {features.map((feature, index) => (
               <motion.div
                 key={feature.title}
                 initial={{ opacity: 0, y: 18 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.08, duration: 0.6 }}
+                transition={{ delay: index * 0.09, duration: 0.6 }}
                 viewport={{ once: true }}
-                whileHover={{ y: -4 }}
+                whileHover={{ y: -4, scale: 1.05, boxShadow: '0 8px 32px #fb7185DD' }}
+                className="transition-transform group hover:shadow-lg"
               >
-                <Card className="h-full border-white/10 bg-black/40 backdrop-blur transition-transform">
+                <Card className="h-full border border-primary/30 bg-black/70 backdrop-blur-xl transition-shadow">
                   <CardContent className="space-y-4 p-8 text-center">
                     <motion.div
-                      className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-primary/15"
-                      whileHover={{ rotate: 6, scale: 1.05 }}
+                      className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-tr from-primary/30 to-rose-500/15 group-hover:from-primary/60"
+                      whileHover={{ rotate: 7, scale: 1.08 }}
                       transition={{
                         type: "spring",
                         stiffness: 200,
@@ -250,7 +266,7 @@ export default function Landing() {
                       <feature.icon className="h-6 w-6 text-primary" />
                     </motion.div>
                     <h3 className="text-xl font-semibold">{feature.title}</h3>
-                    <p className="text-white/70">{feature.description}</p>
+                    <p className="text-gray-300">{feature.description}</p>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -258,6 +274,9 @@ export default function Landing() {
           </div>
         </div>
       </section>
+
+      {/* Section Divider */}
+      <div className="my-12 h-0.5 w-full bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
 
       {/* Stats */}
       <section className="py-24">
@@ -270,10 +289,10 @@ export default function Landing() {
             className="space-y-16 text-center"
           >
             <div className="space-y-4">
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl bg-gradient-to-r from-primary to-rose-700 bg-clip-text text-transparent">
                 Join Thousands of Fitness Enthusiasts
               </h2>
-              <p className="text-xl text-white/70">
+              <p className="text-xl text-gray-300">
                 A growing community that logs, learns, and levels up together.
               </p>
             </div>
@@ -291,9 +310,9 @@ export default function Landing() {
                   viewport={{ once: true }}
                   className="space-y-2 text-center"
                 >
-                  <stat.icon className="mx-auto mb-4 h-8 w-8 text-primary" />
-                  <div className="text-4xl font-bold">{stat.number}</div>
-                  <div className="text-white/70">{stat.label}</div>
+                  <stat.icon className="mx-auto mb-4 h-9 w-9 text-primary shadow-xl" />
+                  <div className="text-4xl font-bold text-gray-100">{stat.number}</div>
+                  <div className="text-gray-300">{stat.label}</div>
                 </motion.div>
               ))}
             </div>
@@ -301,71 +320,93 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* Section Divider */}
+      <div className="my-12 h-0.5 w-full bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
+
       {/* Pricing Section - Free and Paid Versions */}
       <section id="pricing" className="py-20 bg-black text-white">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl font-bold mb-6">Simple Pricing</h2>
+          <h2 className="text-4xl font-bold mb-6 bg-gradient-to-r from-primary to-rose-700 bg-clip-text text-transparent">Simple Pricing</h2>
           <p className="text-gray-400 mb-12">
             Start free, upgrade anytime for full access
           </p>
           <div className="grid md:grid-cols-2 gap-8">
             {/* Free Plan */}
-            <div className="p-8 border border-gray-700 rounded-2xl shadow-lg bg-gray-900">
-              <h3 className="text-2xl font-semibold mb-4">Free</h3>
-              <p className="text-3xl font-bold mb-6">
-                ₹0 <span className="text-lg">/year</span>
-              </p>
-              <ul className="text-left space-y-3 mb-6 text-gray-300">
-                <li>✔ Log Workouts</li>
-                <li>✔ Basic Progress Tracking</li>
-                <li>✔ Access to Exercise Library</li>
-              </ul>
-              <button onClick={() => navigate("/dashboard")} className="w-full bg-gray-700 hover:bg-gray-800 py-3 rounded-xl font-semibold">
-                Get Started
-              </button>
-            </div>
+            <motion.div
+              whileHover={{ scale: 1.04, boxShadow: '0 8px 32px #fbbf24cc' }}
+              className="transition-transform"
+            >
+              <div className="p-8 border border-gray-700 rounded-2xl shadow-lg bg-gray-900 hover:border-primary/60 hover:shadow-xl transition-all">
+                <h3 className="text-2xl font-semibold mb-4">Free</h3>
+                <p className="text-3xl font-bold mb-6">
+                  ₹0 <span className="text-lg">/year</span>
+                </p>
+                <ul className="text-left space-y-3 mb-6 text-gray-300">
+                  <li>✔ Log Workouts</li>
+                  <li>✔ Basic Progress Tracking</li>
+                  <li>✔ Access to Exercise Library</li>
+                </ul>
+                <button
+                  onClick={() => navigate("/dashboard")}
+                  className="w-full bg-gradient-to-r from-gray-700 to-black hover:bg-gradient-to-l hover:from-primary hover:to-rose-600 py-3 rounded-xl font-semibold transition"
+                >
+                  Get Started
+                </button>
+              </div>
+            </motion.div>
             {/* Premium Plan */}
-            <div className="p-8 border-2 border-red-500 rounded-2xl shadow-xl bg-gray-900 relative">
-              <span className="absolute top-0 right-0 bg-red-500 text-white text-sm px-3 py-1 rounded-bl-lg">
-                Best Value
-              </span>
-              <h3 className="text-2xl font-semibold mb-4">Premium</h3>
-              <p className="text-3xl font-bold mb-6">
-                ₹2000 <span className="text-lg">/year</span>
-              </p>
-              <ul className="text-left space-y-3 mb-6 text-gray-300">
-                <li>✔ Everything in Free</li>
-                <li>✔ Unlimited Progress Charts</li>
-                <li>✔ Streaks & Personal Records</li>
-                <li>✔ Advanced Analytics & Insights</li>
-                <li>✔ AI-Powered Workout Suggestions</li>
-              </ul>
-              <button onClick={() => navigate("/premium")} className="w-full bg-red-600 hover:bg-red-700 py-3 rounded-xl font-semibold">
-                Upgrade to Premium
-              </button>
-            </div>
+            <motion.div
+              whileHover={{ scale: 1.07, boxShadow: '0 16px 48px #ff5277cc' }}
+              className="transition-transform "
+            >
+              <div className="p-8 border-2 border-red-500 rounded-2xl shadow-xl bg-gray-900 relative glow-premium">
+                <span className="absolute top-0 right-0 bg-red-500 text-white text-sm px-3 py-1 rounded-bl-lg font-bold shadow-md ring-4 ring-primary/30">
+                  Best Value
+                </span>
+                <h3 className="text-2xl font-semibold mb-4">Premium</h3>
+                <p className="text-3xl font-bold mb-6">
+                  ₹2000 <span className="text-lg">/year</span>
+                </p>
+                <ul className="text-left space-y-3 mb-6 text-gray-300">
+                  <li>✔ Everything in Free</li>
+                  <li>✔ Unlimited Progress Charts</li>
+                  <li>✔ Streaks & Personal Records</li>
+                  <li>✔ Advanced Analytics & Insights</li>
+                  <li>✔ AI-Powered Workout Suggestions</li>
+                </ul>
+                <button
+                  onClick={() => navigate("/premium")}
+                  className="w-full bg-gradient-to-r from-red-600 via-primary to-primary/80 hover:from-primary hover:to-rose-600 py-3 rounded-xl font-semibold shadow-md transition"
+                >
+                  Upgrade to Premium
+                </button>
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>
 
+      {/* Section Divider */}
+      <div className="my-12 h-0.5 w-full bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
+
       {/* Testimonials */}
       <section className="bg-black/50 py-24">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold sm:text-4xl mb-12">
+          <h2 className="text-3xl font-bold sm:text-4xl mb-12 bg-gradient-to-r from-primary to-rose-700 bg-clip-text text-transparent">
             What Our Users Say
           </h2>
           <div className="grid gap-8 md:grid-cols-3">
             {[
               {
-                name: "Shashannk D.",
+                name: "Alex P.",
                 text: "TrackFit made tracking my workouts effortless. I've never been more consistent.",
               },
               {
-                name: "Pranav J.",
+                name: "Riya S.",
                 text: "The analytics keep me motivated. I love seeing my progress visualized.",
               },
               {
-                name: "Prasad B.",
+                name: "Marcus L.",
                 text: "Finally, an app that’s clean, fast, and actually built for lifters.",
               },
             ].map((t, i) => (
@@ -375,9 +416,9 @@ export default function Landing() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1, duration: 0.6 }}
                 viewport={{ once: true }}
-                className="rounded-xl border border-white/10 bg-white/5 p-6 shadow-lg backdrop-blur"
+                className="rounded-xl border border-white/10 bg-white/5 p-6 shadow-lg backdrop-bl group hover:scale-105 hover:shadow-2xl transition-transform"
               >
-                <Star className="mx-auto h-6 w-6 text-primary mb-4" />
+                <Star className="mx-auto h-6 w-6 text-primary mb-4 group-hover:text-rose-400 transition-colors" />
                 <p className="text-white/80 mb-4">“{t.text}”</p>
                 <div className="text-sm font-semibold text-white/70">
                   – {t.name}
@@ -387,6 +428,9 @@ export default function Landing() {
           </div>
         </div>
       </section>
+
+      {/* Section Divider */}
+      <div className="my-10 h-0.5 w-full bg-gradient-to-r from-transparent via-primary/40 to-transparent"></div>
 
       {/* CTA */}
       <section className="bg-gradient-to-b from-primary/20 to-primary/10 py-24 text-center">
@@ -406,7 +450,7 @@ export default function Landing() {
           size="lg"
           variant="secondary"
           onClick={() => navigate("/auth")}
-          className="px-8 py-6 text-lg"
+          className="px-8 py-6 text-lg bg-gradient-to-r from-primary via-rose-500 to-red-600 shadow-2xl hover:scale-105 transition-transform"
         >
           Get Started For Free
         </Button>
