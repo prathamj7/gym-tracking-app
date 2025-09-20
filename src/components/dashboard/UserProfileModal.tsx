@@ -1,0 +1,139 @@
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { api } from "@/convex/_generated/api";
+import { useAuth } from "@/hooks/use-auth";
+import { motion } from "framer-motion";
+import { useMutation } from "convex/react";
+import { toast } from "sonner";
+
+export function UserProfileModal({ onClose }: { onClose: () => void }) {
+  const { user } = useAuth();
+  const setProfile = useMutation(api.users.setProfile);
+
+  const daysSinceSignup =
+    user
+      ? Math.max(0, Math.floor((Date.now() - (user._creationTime ?? Date.now())) / (24 * 60 * 60 * 1000))) + 1
+      : 0;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ scale: 0.95, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.95, opacity: 0 }}
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-md"
+      >
+        <div className="bg-card border rounded-lg overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-4 border-b">
+            <h3 className="text-lg font-semibold">Your Profile</h3>
+            <Button variant="ghost" size="sm" onClick={onClose}>
+              Close
+            </Button>
+          </div>
+          <div className="p-5">
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                const fd = new FormData(e.currentTarget as HTMLFormElement);
+                const fName = ((fd.get("firstName") as string) || "").trim();
+                const lName = ((fd.get("lastName") as string) || "").trim();
+                const ageStr = ((fd.get("age") as string) || "").trim();
+                const weightStr = ((fd.get("weight") as string) || "").trim();
+                const age = ageStr ? Number(ageStr) : undefined;
+                const weight = weightStr ? Number(weightStr) : undefined;
+
+                try {
+                  await setProfile({
+                    firstName: fName || (user?.name ?? "").split(" ")[0] || "",
+                    lastName:
+                      lName ||
+                      (user?.name ?? "")
+                        .split(" ")
+                        .slice(1)
+                        .join(" ")
+                        .trim() ||
+                      "",
+                    age,
+                    weight,
+                  } as any);
+                  toast("Profile saved");
+                  onClose();
+                } catch (err) {
+                  console.error(err);
+                  toast("Failed to save profile");
+                }
+              }}
+              className="space-y-4"
+            >
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <Label>First name</Label>
+                  <Input
+                    name="firstName"
+                    defaultValue={(user?.name ?? "").split(" ")[0] || ""}
+                    placeholder="First name"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label>Last name</Label>
+                  <Input
+                    name="lastName"
+                    defaultValue={(user?.name ?? "").split(" ").slice(1).join(" ") || ""}
+                    placeholder="Last name"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <Label>Age</Label>
+                  <Input
+                    name="age"
+                    type="number"
+                    min="0"
+                    defaultValue={typeof (user as any)?.age === "number" ? (user as any).age : undefined}
+                    placeholder="e.g., 28"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label>Current weight (kg)</Label>
+                  <Input
+                    name="weight"
+                    type="number"
+                    min="0"
+                    step="0.1"
+                    defaultValue={typeof (user as any)?.weight === "number" ? (user as any).weight : undefined}
+                    placeholder="e.g., 70"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <Label>Email</Label>
+                <Input value={user?.email ?? ""} disabled />
+              </div>
+
+              <div className="text-sm text-muted-foreground">
+                Working out since: <span className="font-medium">{daysSinceSignup}</span> days
+              </div>
+
+              <div className="pt-2">
+                <Button type="submit" className="w-full">
+                  Save
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}

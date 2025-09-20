@@ -32,8 +32,8 @@ export function ExerciseCompare() {
     </div>
   );
 
-  // Fix: handle undefined sets to avoid NaN
-  const volume = (e: any | null) => (e ? (e.weight || 0) * (e.sets || 0) : 0);
+  // Fix: use reps for volume consistently (weight x reps) and handle undefined safely
+  const volume = (e: any | null) => (e ? (e.weight || 0) * (e.reps || 0) : 0);
 
   return (
     <Card className="mb-8">

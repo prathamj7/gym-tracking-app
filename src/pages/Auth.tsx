@@ -133,7 +133,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
               <CardHeader className="text-center">
               <div className="flex justify-center">
                     <img
-                      src="./logo.svg"
+                      src="./ashu_anime_gym.png"
                       alt="Lock Icon"
                       width={64}
                       height={64}
@@ -143,7 +143,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                   </div>
                 <CardTitle className="text-xl">Get Started</CardTitle>
                 <CardDescription>
-                  Enter your email to log in or sign up
+                  Enter your email to log in
                 </CardDescription>
               </CardHeader>
               <form onSubmit={handleEmailSubmit}>
