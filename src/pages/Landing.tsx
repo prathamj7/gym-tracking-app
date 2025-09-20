@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Activity,
   BarChart3,
@@ -26,6 +26,21 @@ export default function Landing() {
       : true
   );
   const [themeTransition, setThemeTransition] = useState(false);
+
+  // Slideshow images for hero visual
+  const slideshowImages = [
+    "/ashu_gym_logo_bg.png",
+    "/ashu_logging.png",
+    "/ashu_happy.png",
+  ];
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % slideshowImages.length);
+    }, 2000); // every 2 seconds
+    return () => clearInterval(intervalId);
+  }, []);
 
   const quotes = [
     "Small steps, big results.",
@@ -97,7 +112,6 @@ export default function Landing() {
           className="absolute inset-0 w-full h-full object-cover opacity-20"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/70 to-transparent" />
-        {/* Radial highlight for visual punch */}
         <div className="absolute left-1/2 top-24 -translate-x-1/2 h-[38rem] w-[36rem] rounded-full bg-primary/15 blur-[120px] opacity-85" />
         <div className="absolute -top-32 -left-32 h-80 w-80 rounded-full bg-primary/25 blur-3xl" />
         <div className="absolute -bottom-24 -right-24 h-[30rem] w-[30rem] rounded-full bg-red-900/20 blur-3xl" />
@@ -135,7 +149,11 @@ export default function Landing() {
                     navigate(isAuthenticated ? "/dashboard" : "/auth")
                   }
                   variant={isAuthenticated ? "default" : "outline"}
-                  className={`transition-colors ${isAuthenticated ? "bg-gradient-to-r from-rose-600 to-primary shadow-lg" : "border-white/20 text-white hover:bg-primary/10"}`}
+                  className={`transition-colors ${
+                    isAuthenticated
+                      ? "bg-gradient-to-r from-rose-600 to-primary shadow-lg"
+                      : "border-white/20 text-white hover:bg-primary/10"
+                  }`}
                 >
                   {isAuthenticated ? "Dashboard" : "Sign In"}
                 </Button>
@@ -200,23 +218,22 @@ export default function Landing() {
                 )}
               </div>
             </div>
-            {/* Visual */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.96 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.15, duration: 0.7 }}
-              className="relative mx-auto hidden lg:block rounded-3xl overflow-hidden"
-            >
-              <div className="relative overflow-hidden rounded-2xl border-2 border-primary/40 bg-white/5 p-3 backdrop-blur shadow-2xl">
-                <img
-                  src="/ashu_gym_logo_bg.png"
+            {/* Visual Slideshow */}
+            <div className="relative mx-auto hidden lg:block rounded-3xl overflow-hidden w-full max-w-lg aspect-[4/5]">
+              <AnimatePresence mode="wait">
+                <motion.img
+                  key={slideshowImages[currentImageIndex]}
+                  src={slideshowImages[currentImageIndex]}
                   alt="Fitness Illustration"
-                  className="mx-auto w-full max-w-lg rounded-xl object-cover scale-105"
+                  className="rounded-xl object-cover w-full h-full scale-105"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.8 }}
+                  style={{ position: "absolute", top: 0, left: 0 }}
                 />
-                {/* Subtle overlay glow */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-rose-400/10 pointer-events-none"></div>
-              </div>
-            </motion.div>
+              </AnimatePresence>
+            </div>
           </motion.div>
         </div>
       </section>
@@ -387,7 +404,7 @@ export default function Landing() {
       </section>
 
       {/* Section Divider */}
-      <div className="my-12 h-0.5 w-full bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
+      <div className="my-10 h-0.5 w-full bg-gradient-to-r from-transparent via-primary/40 to-transparent"></div>
 
       {/* Testimonials */}
       <section className="bg-black/50 py-24">
@@ -428,9 +445,6 @@ export default function Landing() {
           </div>
         </div>
       </section>
-
-      {/* Section Divider */}
-      <div className="my-10 h-0.5 w-full bg-gradient-to-r from-transparent via-primary/40 to-transparent"></div>
 
       {/* CTA */}
       <section className="bg-gradient-to-b from-primary/20 to-primary/10 py-24 text-center">
