@@ -8,7 +8,6 @@ import { Dumbbell, LogOut, Plus, User } from "lucide-react";
 import { BarChart3 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { useQuery } from "convex/react";
 import { PRList } from "@/components/PRList";
 import { CompareModal } from "@/components/dashboard/CompareModal";
 import { DownloadModal } from "@/components/dashboard/DownloadModal";
@@ -40,8 +39,8 @@ export default function Dashboard() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-4 border-primary"></div>
       </div>
     );
   }
@@ -51,15 +50,11 @@ export default function Dashboard() {
   }
 
   const firstName = (user.name ?? "").trim().split(" ")[0] || "Friend";
-  const daysSinceSignup = Math.max(
-    0,
-    Math.floor((Date.now() - (user._creationTime ?? Date.now())) / (24 * 60 * 60 * 1000))
-  ) + 1;
 
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b bg-card">
+      <header className="border-b bg-card shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-3">
@@ -69,13 +64,28 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <Button variant="outline" size="sm" onClick={() => setShowDownload(true)} className="hidden sm:inline-flex">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowDownload(true)}
+                className="hidden sm:inline-flex hover:bg-primary/10 transition"
+              >
                 Download Progress <span className="ml-2">📥</span>
               </Button>
-              <Button variant="outline" size="sm" onClick={() => setShowLibrary(true)} className="hidden sm:inline-flex">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowLibrary(true)}
+                className="hidden sm:inline-flex hover:bg-primary/10 transition"
+              >
                 Exercise Library
               </Button>
-              <Button variant="outline" size="sm" onClick={() => setShowProgress(true)} className="hidden sm:inline-flex">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowProgress(true)}
+                className="hidden sm:inline-flex hover:bg-primary/10 transition"
+              >
                 Progress Chart
               </Button>
               <Button
@@ -83,11 +93,12 @@ export default function Dashboard() {
                 size="sm"
                 onClick={() => setShowUser(true)}
                 title="View Profile"
+                className="hover:bg-primary/10 transition"
               >
                 <User className="h-4 w-4 mr-2" />
                 Profile
               </Button>
-              <Button variant="ghost" size="sm" onClick={handleSignOut}>
+              <Button variant="ghost" size="sm" onClick={handleSignOut} className="hover:bg-primary/10 transition">
                 <LogOut className="h-4 w-4 mr-2" />
                 Sign Out
               </Button>
@@ -97,39 +108,41 @@ export default function Dashboard() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 bg-card rounded-xl shadow-md mt-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="space-y-8"
+          className="space-y-10"
         >
           {/* Welcome Section */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight">
+              <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-primary to-rose-500 bg-clip-text text-transparent">
                 Welcome back, {firstName}!
               </h1>
-              <p className="mt-1 text-foreground">
+              <p className="mt-1 text-foreground/90 font-semibold">
                 Track your progress and stay motivated
               </p>
             </div>
-            <Button
-              onClick={() => setShowExerciseForm(true)}
-              size="lg"
-              className="w-full sm:w-auto"
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Log Exercise
-            </Button>
-            <Button
-              onClick={() => setShowCompare(true)}
-              variant="outline"
-              size="lg"
-              className="w-full sm:w-auto"
-            >
-              <BarChart3 className="mr-2 h-4 w-4" />
-              Compare
-            </Button>
+            <div className="flex gap-4 flex-wrap sm:flex-nowrap">
+              <Button
+                onClick={() => setShowExerciseForm(true)}
+                size="lg"
+                className="w-full sm:w-auto bg-gradient-to-r from-primary via-rose-600 to-rose-700 shadow-lg hover:scale-105 transition-transform font-semibold"
+              >
+                <Plus className="mr-2 h-5 w-5" />
+                Log Exercise
+              </Button>
+              <Button
+                onClick={() => setShowCompare(true)}
+                variant="outline"
+                size="lg"
+                className="w-full sm:w-auto hover:bg-primary/10 transition font-semibold"
+              >
+                <BarChart3 className="mr-2 h-5 w-5" />
+                Compare
+              </Button>
+            </div>
           </div>
 
           {/* Stats Cards */}
@@ -137,19 +150,23 @@ export default function Dashboard() {
 
           {/* Personal Records */}
           <div>
-            <h2 className="text-2xl font-bold tracking-tight mb-6">Personal Records</h2>
+            <h2 className="text-2xl font-bold tracking-tight mb-6 bg-gradient-to-r from-primary to-rose-500 bg-clip-text text-transparent">
+              Personal Records
+            </h2>
             <PRList />
           </div>
 
           {/* Exercise List */}
           <div>
-            <h2 className="text-2xl font-bold tracking-tight mb-6">Recent Workouts</h2>
+            <h2 className="text-2xl font-bold tracking-tight mb-6 bg-gradient-to-r from-primary to-rose-500 bg-clip-text text-transparent">
+              Recent Workouts
+            </h2>
             <ExerciseList />
           </div>
         </motion.div>
       </main>
 
-      {/* Exercise Form Modal */}
+      {/* Modals */}
       <AnimatePresence>
         {showExerciseForm && (
           <ExerciseForm
@@ -161,39 +178,21 @@ export default function Dashboard() {
             initialCategory={prefill?.category}
           />
         )}
+        {showCompare && <CompareModal onClose={() => setShowCompare(false)} />}
+        {showDownload && <DownloadModal onClose={() => setShowDownload(false)} />}
+        {showLibrary && (
+          <LibraryModal
+            onClose={() => setShowLibrary(false)}
+            onSelectExercise={({ name, category }) => {
+              setShowLibrary(false);
+              setPrefill({ name, category });
+              setShowExerciseForm(true);
+            }}
+          />
+        )}
+        {showProgress && <ProgressModal onClose={() => setShowProgress(false)} />}
+        {showUser && <UserProfileModal onClose={() => setShowUser(false)} />}
       </AnimatePresence>
-
-      {/* Compare Modal */}
-      {showCompare && (
-        <CompareModal onClose={() => setShowCompare(false)} />
-      )}
-
-      {/* Download Modal */}
-      {showDownload && (
-        <DownloadModal onClose={() => setShowDownload(false)} />
-      )}
-
-      {/* Exercise Library Modal */}
-      {showLibrary && (
-        <LibraryModal
-          onClose={() => setShowLibrary(false)}
-          onSelectExercise={({ name, category }) => {
-            setShowLibrary(false);
-            setPrefill({ name, category });
-            setShowExerciseForm(true);
-          }}
-        />
-      )}
-
-      {/* Progress Chart Modal */}
-      {showProgress && (
-        <ProgressModal onClose={() => setShowProgress(false)} />
-      )}
-
-      {/* User Profile Modal */}
-      {showUser && (
-        <UserProfileModal onClose={() => setShowUser(false)} />
-      )}
     </div>
   );
 }
