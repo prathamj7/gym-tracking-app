@@ -357,15 +357,15 @@ export default function Landing() {
           <div className="grid gap-8 md:grid-cols-3">
             {[
               {
-                name: "Alex P.",
+                name: "Shashannk D.",
                 text: "TrackFit made tracking my workouts effortless. I've never been more consistent.",
               },
               {
-                name: "Riya S.",
+                name: "Pranav J.",
                 text: "The analytics keep me motivated. I love seeing my progress visualized.",
               },
               {
-                name: "Marcus L.",
+                name: "Prasad B.",
                 text: "Finally, an app that’s clean, fast, and actually built for lifters.",
               },
             ].map((t, i) => (
