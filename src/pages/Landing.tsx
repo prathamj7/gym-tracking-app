@@ -362,6 +362,8 @@ export default function Landing() {
                   <li>✔ Log Workouts</li>
                   <li>✔ Basic Progress Tracking</li>
                   <li>✔ Access to Exercise Library</li>
+                  <li>✔ Maintain Fitness Streaks</li>
+                  <li>✔ Download Your Progress</li>
                 </ul>
                 <button
                   onClick={() => navigate("/dashboard")}
