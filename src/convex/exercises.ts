@@ -184,8 +184,9 @@ export const listFiltered = query({
     const sorted = [...filtered].sort((a, b) => {
       switch (args.sortBy) {
         case "weight": {
-          const aw = (a.weight || 0) * (a.sets || 0);
-          const bw = (b.weight || 0) * (b.sets || 0);
+          // Use weight x reps consistently (handle undefined safely)
+          const aw = (a.weight || 0) * (a.reps || 0);
+          const bw = (b.weight || 0) * (b.reps || 0);
           return bw - aw;
         }
         case "sets":
