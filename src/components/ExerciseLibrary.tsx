@@ -2,7 +2,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex/react";
 import { motion } from "framer-motion";
@@ -28,11 +34,29 @@ interface ExerciseLibraryProps {
   onSelectExercise: (data: { name: string; category: string }) => void;
 }
 
-const CATEGORIES = ["Strength", "Cardio", "Core", "Mobility", "Flexibility", "Other"];
+const CATEGORIES = [
+  "Strength",
+  "Cardio",
+  "Core",
+  "Mobility",
+  "Flexibility",
+  "Other",
+];
 const DIFFICULTIES = ["Beginner", "Intermediate", "Advanced"];
-const EQUIPMENT = ["None", "Bodyweight", "Dumbbell", "Barbell", "Kettlebell", "Machine", "Bands"];
+const EQUIPMENT = [
+  "None",
+  "Bodyweight",
+  "Dumbbell",
+  "Barbell",
+  "Kettlebell",
+  "Machine",
+  "Bands",
+];
 
-export function ExerciseLibrary({ onClose, onSelectExercise }: ExerciseLibraryProps) {
+export function ExerciseLibrary({
+  onClose,
+  onSelectExercise,
+}: ExerciseLibraryProps) {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState<string>("");
   const [difficulty, setDifficulty] = useState<string>("");
@@ -48,73 +72,91 @@ export function ExerciseLibrary({ onClose, onSelectExercise }: ExerciseLibraryPr
         equipment: equipment || undefined,
         limit: 120,
       } as any),
-    [search, category, difficulty, equipment],
+    [search, category, difficulty, equipment]
   );
   const list = useQuery(api.exerciseLibrary.list, args);
 
   const items: ExerciseLibraryItem[] = (list ?? []) as any;
 
   return (
-    <div className="bg-card border rounded-lg overflow-hidden max-h-[85vh] w-full flex flex-col">
+    <div className="bg-card border rounded-lg overflow-hidden max-h-[85vh] w-full flex flex-col shadow-lg">
       <div className="flex items-center justify-between px-5 py-4 border-b sticky top-0 bg-card z-10">
         <div className="flex items-center gap-2">
           <Dumbbell className="h-5 w-5 text-primary" />
-          <h3 className="text-lg font-semibold">Exercise Library</h3>
+          <h3 className="text-lg font-semibold bg-gradient-to-r from-primary to-rose-700 bg-clip-text text-transparent">
+            Exercise Library
+          </h3>
         </div>
-        <Button variant="ghost" size="sm" onClick={onClose}>
+        <Button variant="ghost" size="sm" onClick={onClose} className="hover:bg-primary/10 transition">
           Close
         </Button>
       </div>
 
-      <div className="p-5 space-y-5 flex-1 overflow-y-auto min-h-0">
+      <div className="p-5 space-y-6 flex-1 overflow-y-auto min-h-0">
         {/* Search & Filters */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="space-y-1 md:col-span-2">
-            <Label>Search by name</Label>
+            <Label className="text-foreground font-semibold">Search by name</Label>
             <Input
               placeholder="e.g., Bench Press"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
+              className="border-primary focus:ring-primary"
             />
           </div>
           <div className="space-y-1">
-            <Label>Category</Label>
-            <Select value={category} onValueChange={(v) => setCategory(v === "__all__" ? "" : v)}>
-              <SelectTrigger>
+            <Label className="text-foreground font-semibold">Category</Label>
+            <Select
+              value={category}
+              onValueChange={(v) => setCategory(v === "__all__" ? "" : v)}
+            >
+              <SelectTrigger className="border-primary">
                 <SelectValue placeholder="All" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="__all__">All</SelectItem>
                 {CATEGORIES.map((c) => (
-                  <SelectItem key={c} value={c}>{c}</SelectItem>
+                  <SelectItem key={c} value={c}>
+                    {c}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
           <div className="space-y-1">
-            <Label>Difficulty</Label>
-            <Select value={difficulty} onValueChange={(v) => setDifficulty(v === "__all__" ? "" : v)}>
-              <SelectTrigger>
+            <Label className="text-foreground font-semibold">Difficulty</Label>
+            <Select
+              value={difficulty}
+              onValueChange={(v) => setDifficulty(v === "__all__" ? "" : v)}
+            >
+              <SelectTrigger className="border-primary">
                 <SelectValue placeholder="All" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="__all__">All</SelectItem>
                 {DIFFICULTIES.map((d) => (
-                  <SelectItem key={d} value={d}>{d}</SelectItem>
+                  <SelectItem key={d} value={d}>
+                    {d}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
           <div className="space-y-1 md:col-span-2">
-            <Label>Equipment</Label>
-            <Select value={equipment} onValueChange={(v) => setEquipment(v === "__all__" ? "" : v)}>
-              <SelectTrigger>
+            <Label className="text-foreground font-semibold">Equipment</Label>
+            <Select
+              value={equipment}
+              onValueChange={(v) => setEquipment(v === "__all__" ? "" : v)}
+            >
+              <SelectTrigger className="border-primary">
                 <SelectValue placeholder="All" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="__all__">All</SelectItem>
                 {EQUIPMENT.map((e) => (
-                  <SelectItem key={e} value={e}>{e}</SelectItem>
+                  <SelectItem key={e} value={e}>
+                    {e}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -122,7 +164,7 @@ export function ExerciseLibrary({ onClose, onSelectExercise }: ExerciseLibraryPr
           <div className="md:col-span-2 flex items-end">
             <Button
               variant="outline"
-              className="w-full"
+              className="w-full hover:bg-primary/10 transition font-semibold"
               onClick={() => {
                 setSearch("");
                 setCategory("");
@@ -137,14 +179,20 @@ export function ExerciseLibrary({ onClose, onSelectExercise }: ExerciseLibraryPr
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {(items ?? []).map((ex) => (
-            <motion.div key={ex._id} whileHover={{ y: -3 }}>
-              <Card className="h-full">
+            <motion.div
+              key={ex._id}
+              whileHover={{ y: -3, scale: 1.03, boxShadow: "0 6px 20px rgba(251, 113, 133, 0.3)" }}
+              className="transition-transform"
+            >
+              <Card className="h-full border border-primary/40 bg-black/70 backdrop-blur-xl shadow-sm">
                 <CardHeader className="pb-2">
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-sm">{ex.name}</CardTitle>
-                    <span className="text-xs rounded-md bg-primary/15 text-primary px-2 py-1">
+                    <CardTitle className="text-sm bg-gradient-to-r from-primary to-rose-700 bg-clip-text text-transparent">
+                      {ex.name}
+                    </CardTitle>
+                    <span className="text-xs rounded-md bg-primary/25 text-primary px-2 py-1">
                       {ex.category}
                     </span>
                   </div>
@@ -165,6 +213,7 @@ export function ExerciseLibrary({ onClose, onSelectExercise }: ExerciseLibraryPr
                     <Button
                       size="sm"
                       onClick={() => onSelectExercise({ name: ex.name, category: ex.category })}
+                      className="bg-gradient-to-r from-primary to-rose-600 hover:from-rose-600 hover:to-primary transition"
                     >
                       Log this exercise
                     </Button>
@@ -172,6 +221,7 @@ export function ExerciseLibrary({ onClose, onSelectExercise }: ExerciseLibraryPr
                       size="sm"
                       variant="outline"
                       onClick={() => setSelected(ex)}
+                      className="text-primary border-primary hover:bg-primary/10 transition"
                     >
                       <Info className="h-4 w-4 mr-1" />
                       Details
@@ -243,6 +293,7 @@ export function ExerciseLibrary({ onClose, onSelectExercise }: ExerciseLibraryPr
                       onSelectExercise({ name: selected.name, category: selected.category });
                       setSelected(null);
                     }}
+                    className="bg-gradient-to-r from-primary to-rose-600 hover:from-rose-600 hover:to-primary transition"
                   >
                     Log this exercise
                   </Button>
