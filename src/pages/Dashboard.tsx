@@ -17,6 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { PRList } from "@/components/PRList";
 import { ExerciseLibrary } from "@/components/ExerciseLibrary";
+import { ProgressChart } from "@/components/ProgressChart";
 import { useMemo } from "react";
 
 export default function Dashboard() {
@@ -27,6 +28,7 @@ export default function Dashboard() {
   const [showDownload, setShowDownload] = useState(false);
   const [showLibrary, setShowLibrary] = useState(false);
   const [showUser, setShowUser] = useState(false);
+  const [showProgress, setShowProgress] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedExercise, setSelectedExercise] = useState<string>("");
   const [prefill, setPrefill] = useState<{ name?: string; category?: string } | null>(null);
@@ -135,7 +137,7 @@ export default function Dashboard() {
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/")}>
                 <Dumbbell className="h-6 w-6 text-primary" />
-                <span className="text-xl font-bold">TrackFit</span>
+                <span className="text-xl font-bold">FitTracker</span>
               </div>
             </div>
             <div className="flex items-center gap-4">
@@ -144,6 +146,9 @@ export default function Dashboard() {
               </Button>
               <Button variant="outline" size="sm" onClick={() => setShowLibrary(true)} className="hidden sm:inline-flex">
                 Exercise Library
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => setShowProgress(true)} className="hidden sm:inline-flex">
+                Progress Chart
               </Button>
               <Button
                 variant="outline"
@@ -372,6 +377,29 @@ export default function Dashboard() {
                   setShowExerciseForm(true);
                 }}
               />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Progress Chart Modal */}
+      <AnimatePresence>
+        {showProgress && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+            onClick={() => setShowProgress(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-5xl"
+            >
+              <ProgressChart onClose={() => setShowProgress(false)} />
             </motion.div>
           </motion.div>
         )}
