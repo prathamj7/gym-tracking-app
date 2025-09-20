@@ -2,7 +2,17 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
 import { motion } from "framer-motion";
-import { Activity, BarChart3, Dumbbell, Target, TrendingUp, Users, Sun, Moon } from "lucide-react";
+import {
+  Activity,
+  BarChart3,
+  Dumbbell,
+  Target,
+  TrendingUp,
+  Users,
+  Sun,
+  Moon,
+  Star,
+} from "lucide-react";
 import { useNavigate } from "react-router";
 import { useEffect, useState } from "react";
 
@@ -11,7 +21,9 @@ export default function Landing() {
   const navigate = useNavigate();
   const [quoteIndex, setQuoteIndex] = useState(0);
   const [isDark, setIsDark] = useState<boolean>(() =>
-    typeof document !== "undefined" ? document.documentElement.classList.contains("dark") : true
+    typeof document !== "undefined"
+      ? document.documentElement.classList.contains("dark")
+      : true
   );
 
   const quotes = [
@@ -28,7 +40,6 @@ export default function Landing() {
     return () => clearInterval(id);
   }, []);
 
-  // Sync local state with current document theme on mount
   useEffect(() => {
     const hasDark = document.documentElement.classList.contains("dark");
     setIsDark(hasDark);
@@ -46,28 +57,31 @@ export default function Landing() {
     {
       icon: Dumbbell,
       title: "Exercise Logging",
-      description: "Easily log your workouts with detailed tracking of sets, reps, and weights."
+      description:
+        "Log your workouts quickly with detailed tracking of sets, reps, and weights.",
     },
     {
       icon: BarChart3,
-      title: "Progress Analytics", 
-      description: "Visualize your fitness journey with comprehensive stats and insights."
+      title: "Progress Analytics",
+      description: "Visualize your journey with stats, charts, and insights.",
     },
     {
       icon: Target,
       title: "Goal Setting",
-      description: "Set and track your fitness goals to stay motivated and focused."
+      description:
+        "Set fitness milestones and track them to stay motivated and consistent.",
     },
     {
       icon: TrendingUp,
       title: "Performance Tracking",
-      description: "Monitor your improvements over time with detailed progress reports."
-    }
+      description:
+        "Monitor your improvements with reports tailored to your growth.",
+    },
   ];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-zinc-950 via-black to-zinc-900 text-zinc-100 relative overflow-hidden">
-      {/* Background Fitness Imagery + Glow */}
+      {/* Background */}
       <div className="pointer-events-none absolute inset-0 -z-10">
         <img
           src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=1920&auto=format&fit=crop"
@@ -99,15 +113,21 @@ export default function Landing() {
                 className="border-white/20 text-white"
                 title={isDark ? "Switch to light mode" : "Switch to dark mode"}
               >
-                {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                {isDark ? (
+                  <Sun className="h-4 w-4" />
+                ) : (
+                  <Moon className="h-4 w-4" />
+                )}
               </Button>
               {!isLoading && (
                 <Button
-                  onClick={() => navigate(isAuthenticated ? "/dashboard" : "/auth")}
+                  onClick={() =>
+                    navigate(isAuthenticated ? "/dashboard" : "/auth")
+                  }
                   variant={isAuthenticated ? "default" : "outline"}
                   className={isAuthenticated ? "" : "border-white/20 text-white"}
                 >
-                  {isAuthenticated ? "Dashboard" : "Get Started"}
+                  {isAuthenticated ? "Dashboard" : "Sign In"}
                 </Button>
               )}
             </div>
@@ -115,7 +135,7 @@ export default function Landing() {
         </div>
       </nav>
 
-      {/* Hero Section */}
+      {/* Hero */}
       <section className="relative">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24">
           <motion.div
@@ -138,68 +158,45 @@ export default function Landing() {
               </h1>
 
               <p className="mx-auto max-w-2xl text-lg text-white/70">
-                Log workouts to any date, analyze progress, and compare performance—
-                all in a clean, real‑time dashboard.
+                Track, analyze, and improve your workouts—all in one clean,
+                real-time dashboard. No clutter, just results.
               </p>
 
-              {/* Rotating motivational quote */}
-              <div className="min-h-6">
-                <motion.p
-                  key={quoteIndex}
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -6 }}
-                  transition={{ duration: 0.35 }}
-                  className="text-sm text-primary/80"
-                >
-                  "{quotes[quoteIndex]}"
-                </motion.p>
-              </div>
+              <motion.p
+                key={quoteIndex}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35 }}
+                className="text-sm text-primary/80"
+              >
+                "{quotes[quoteIndex]}"
+              </motion.p>
 
               <div className="flex flex-col items-center gap-4 sm:flex-row lg:justify-start">
-                <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
-                  <Button
-                    size="lg"
-                    onClick={() => navigate(isAuthenticated ? "/dashboard" : "/auth")}
-                    className="px-8 py-6 text-lg"
-                  >
-                    <span className="inline-flex items-center">
-                      <Activity className="mr-2 h-5 w-5" />
-                      {isAuthenticated ? "Go to Dashboard" : "Start Tracking"}
-                    </span>
-                  </Button>
-                </motion.div>
+                <Button
+                  size="lg"
+                  onClick={() =>
+                    navigate(isAuthenticated ? "/dashboard" : "/auth")
+                  }
+                  className="px-8 py-6 text-lg"
+                >
+                  {isAuthenticated ? "Go to Dashboard" : "Start Free Today"}
+                </Button>
 
-                <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
+                {!isAuthenticated && (
                   <Button
                     variant="outline"
                     size="lg"
                     onClick={() => navigate("/auth")}
                     className="border-white/20 px-8 py-6 text-lg text-white hover:bg-white/10"
                   >
-                    Join Now
+                    Join Community
                   </Button>
-                </motion.div>
-              </div>
-
-              {/* Momentum progress */}
-              <div className="mx-auto mt-8 max-w-xl lg:mx-0">
-                <div className="mb-2 text-xs uppercase tracking-wider text-white/60">Momentum</div>
-                <div className="h-2 w-full overflow-hidden rounded-full border border-white/10 bg-white/10">
-                  <motion.div
-                    className="h-full rounded-full bg-primary"
-                    initial={{ width: "20%" }}
-                    animate={{ width: ["20%", "78%", "42%", "70%"] }}
-                    transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                  />
-                </div>
-                <div className="mt-2 text-xs text-white/60">
-                  Keep moving—your future self will thank you.
-                </div>
+                )}
               </div>
             </div>
 
-            {/* Visual Panel */}
+            {/* Visual */}
             <motion.div
               initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -212,14 +209,13 @@ export default function Landing() {
                   alt="Fitness Illustration"
                   className="mx-auto w-full max-w-lg rounded-xl object-cover"
                 />
-                <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-white/10" />
               </div>
             </motion.div>
           </motion.div>
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* Features */}
       <section className="bg-white/5 py-24 backdrop-blur-sm">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -233,7 +229,7 @@ export default function Landing() {
               Everything You Need
             </h2>
             <p className="mx-auto max-w-2xl text-xl text-white/70">
-              Comprehensive tools to track, analyze, and improve your performance.
+              Tools to help you track smarter, stay consistent, and achieve more.
             </p>
           </motion.div>
 
@@ -252,7 +248,11 @@ export default function Landing() {
                     <motion.div
                       className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-primary/15"
                       whileHover={{ rotate: 6, scale: 1.05 }}
-                      transition={{ type: "spring", stiffness: 200, damping: 12 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 200,
+                        damping: 12,
+                      }}
                     >
                       <feature.icon className="h-6 w-6 text-primary" />
                     </motion.div>
@@ -266,7 +266,7 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Stats Section */}
+      {/* Stats */}
       <section className="py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -281,7 +281,7 @@ export default function Landing() {
                 Join Thousands of Fitness Enthusiasts
               </h2>
               <p className="text-xl text-white/70">
-                Start your fitness tracking journey today
+                A growing community that logs, learns, and levels up together.
               </p>
             </div>
 
@@ -309,57 +309,80 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="bg-gradient-to-b from-primary/20 to-primary/10 py-24 text-primary-foreground">
-        <div className="mx-auto max-w-4xl px-4 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 18 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="space-y-4"
-          >
-            <h2 className="text-3xl font-bold sm:text-4xl text-white">
-              Ready to Transform Your Fitness?
-            </h2>
-            <p className="text-xl text-white/80">
-              Start tracking your workouts today and see the difference it makes.
-            </p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 18 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15, duration: 0.6 }}
-            viewport={{ once: true }}
-            className="mt-8"
-          >
-            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
-              <Button
-                size="lg"
-                variant="secondary"
-                onClick={() => navigate("/auth")}
-                className="px-8 py-6 text-lg"
+      {/* Testimonials */}
+      <section className="bg-black/50 py-24">
+        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl font-bold sm:text-4xl mb-12">
+            What Our Users Say
+          </h2>
+          <div className="grid gap-8 md:grid-cols-3">
+            {[
+              {
+                name: "Alex P.",
+                text: "TrackFit made tracking my workouts effortless. I've never been more consistent.",
+              },
+              {
+                name: "Riya S.",
+                text: "The analytics keep me motivated. I love seeing my progress visualized.",
+              },
+              {
+                name: "Marcus L.",
+                text: "Finally, an app that’s clean, fast, and actually built for lifters.",
+              },
+            ].map((t, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1, duration: 0.6 }}
+                viewport={{ once: true }}
+                className="rounded-xl border border-white/10 bg-white/5 p-6 shadow-lg backdrop-blur"
               >
-                Get Started For Free
-              </Button>
-            </motion.div>
-          </motion.div>
+                <Star className="mx-auto h-6 w-6 text-primary mb-4" />
+                <p className="text-white/80 mb-4">“{t.text}”</p>
+                <div className="text-sm font-semibold text-white/70">
+                  – {t.name}
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
+      </section>
+
+      {/* CTA */}
+      <section className="bg-gradient-to-b from-primary/20 to-primary/10 py-24 text-center">
+        <motion.h2
+          initial={{ opacity: 0, y: 18 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+          className="text-3xl font-bold sm:text-4xl text-white mb-6"
+        >
+          Ready to Transform Your Fitness?
+        </motion.h2>
+        <p className="text-xl text-white/80 mb-8">
+          Start free today. No credit card required.
+        </p>
+        <Button
+          size="lg"
+          variant="secondary"
+          onClick={() => navigate("/auth")}
+          className="px-8 py-6 text-lg"
+        >
+          Get Started For Free
+        </Button>
       </section>
 
       {/* Footer */}
       <footer className="border-t border-white/10 bg-black/60">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-            <div className="flex items-center gap-2">
-              <Dumbbell className="h-5 w-5 text-primary" />
-              <span className="font-semibold">TrackFit</span>
-            </div>
-            <p className="text-sm text-white/60">
-              © 2025 TrackFit. Built with ❤️ for fitness freaks.
-            </p>
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 flex flex-col md:flex-row items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Dumbbell className="h-5 w-5 text-primary" />
+            <span className="font-semibold">TrackFit</span>
           </div>
+          <p className="text-sm text-white/60">
+            © 2025 TrackFit. Built with ❤️ for fitness enthusiasts.
+          </p>
         </div>
       </footer>
     </div>
