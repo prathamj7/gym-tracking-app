@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
-import { useTheme } from "@/hooks/use-theme";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Activity,
@@ -19,15 +18,20 @@ import { useEffect, useState } from "react";
 
 export default function Landing() {
   const { isLoading, isAuthenticated } = useAuth();
-  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [quoteIndex, setQuoteIndex] = useState(0);
+  const [isDark, setIsDark] = useState<boolean>(() =>
+    typeof document !== "undefined"
+      ? document.documentElement.classList.contains("dark")
+      : true
+  );
+  const [themeTransition, setThemeTransition] = useState(false);
 
   // Slideshow images for hero visual
   const slideshowImages = [
     "/ashu_gym_logo_bg.png",
-    "/ashu_logging.png",
-    "/ashu_happy.png",
+    "/ashu_gym_logo_bg_2.png",
+    "/ashu_gym_logo_bg_3.png",
   ];
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
@@ -51,6 +55,21 @@ export default function Landing() {
     }, 4000);
     return () => clearInterval(id);
   }, []);
+
+  useEffect(() => {
+    const hasDark = document.documentElement.classList.contains("dark");
+    setIsDark(hasDark);
+  }, []);
+
+  const toggleTheme = () => {
+    setThemeTransition(true);
+    setTimeout(() => setThemeTransition(false), 400);
+    const next = !isDark;
+    setIsDark(next);
+    const theme = next ? "dark" : "light";
+    localStorage.setItem("theme", theme);
+    document.documentElement.classList.toggle("dark", next);
+  };
 
   const features = [
     {
@@ -79,23 +98,27 @@ export default function Landing() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted text-foreground relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-b from-zinc-950 via-black to-zinc-900 text-zinc-100 relative overflow-hidden">
+      {/* Theme Transition Overlay */}
+      {themeTransition && (
+        <div className="fixed inset-0 z-[99999] bg-black/40 transition-opacity duration-300 pointer-events-none"></div>
+      )}
 
       {/* Enhanced Background Layers */}
-      <div className="pointer-events-none absolute inset-0 -z-10 dark:opacity-80">
+      <div className="pointer-events-none absolute inset-0 -z-10">
         <img
           src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=1920&auto=format&fit=crop"
           alt="Fitness background"
           className="absolute inset-0 w-full h-full object-cover opacity-20"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/70 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/70 to-transparent" />
         <div className="absolute left-1/2 top-24 -translate-x-1/2 h-[38rem] w-[36rem] rounded-full bg-primary/15 blur-[120px] opacity-85" />
         <div className="absolute -top-32 -left-32 h-80 w-80 rounded-full bg-primary/25 blur-3xl" />
         <div className="absolute -bottom-24 -right-24 h-[30rem] w-[30rem] rounded-full bg-red-900/20 blur-3xl" />
       </div>
 
       {/* Navigation */}
-      <nav className="sticky top-0 z-50 border-b border-border bg-background/60 backdrop-blur-lg shadow-lg transition-all">
+      <nav className="sticky top-0 z-50 border-b border-white/10 bg-black/60 backdrop-blur-lg shadow-lg transition-all">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             <div
@@ -111,10 +134,10 @@ export default function Landing() {
                 size="icon"
                 aria-label="Toggle theme"
                 onClick={toggleTheme}
-                className="border-border hover:bg-accent transition"
-                title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+                className="border-white/20 text-white hover:bg-primary/20 transition"
+                title={isDark ? "Switch to light mode" : "Switch to dark mode"}
               >
-                {theme === "dark" ? (
+                {isDark ? (
                   <Sun className="h-4 w-4" />
                 ) : (
                   <Moon className="h-4 w-4" />
@@ -128,8 +151,8 @@ export default function Landing() {
                   variant={isAuthenticated ? "default" : "outline"}
                   className={`transition-colors ${
                     isAuthenticated
-                      ? "bg-primary text-primary-foreground shadow-lg"
-                      : "border-border hover:bg-accent"
+                      ? "bg-gradient-to-r from-rose-600 to-primary shadow-lg"
+                      : "border-white/20 text-white hover:bg-primary/10"
                   }`}
                 >
                   {isAuthenticated ? "Dashboard" : "Sign In"}
@@ -151,7 +174,6 @@ export default function Landing() {
           >
             <div className="space-y-7 text-center lg:text-left">
               <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-gradient-to-r from-primary/10 via-rose-900/20 to-black/20 px-3 py-1 text-xs text-white/80 backdrop-blur shadow">
-              <span className="inline-flex items-center gap-2 rounded-full border border-border bg-gradient-to-r from-primary/10 via-primary/5 to-background/20 px-3 py-1 text-xs text-muted-foreground backdrop-blur shadow">
                 <Activity className="h-4 w-4 text-primary" />
                 Track smarter. Grow stronger.
               </span>
@@ -162,7 +184,6 @@ export default function Landing() {
                 </span>
               </h1>
               <p className="mx-auto max-w-2xl text-lg text-zinc-200/80">
-              <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
                 Track, analyze, and improve your workouts—all in one clean, real-time dashboard.
                 No clutter, just results.
               </p>
@@ -182,7 +203,6 @@ export default function Landing() {
                     navigate(isAuthenticated ? "/dashboard" : "/auth")
                   }
                   className="bg-gradient-to-r from-primary via-rose-500 to-rose-600 px-8 py-6 text-lg shadow-xl hover:scale-105 transition-transform font-semibold"
-                  className="bg-primary text-primary-foreground px-8 py-6 text-lg shadow-xl hover:scale-105 transition-transform font-semibold"
                 >
                   {isAuthenticated ? "Go to Dashboard" : "Start Free Today"}
                 </Button>
@@ -191,7 +211,7 @@ export default function Landing() {
                     variant="outline"
                     size="lg"
                     onClick={() => navigate("/auth")}
-                    className="border-border px-8 py-6 text-lg hover:bg-accent font-semibold hover:scale-105 transition-transform"
+                    className="border-white/20 px-8 py-6 text-lg text-white hover:bg-white/10 font-semibold hover:scale-105 transition-transform"
                   >
                     Join Community
                   </Button>
@@ -222,7 +242,7 @@ export default function Landing() {
       <div className="my-12 h-0.5 w-full bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
 
       {/* Features */}
-      <section className="bg-muted/50 py-24 backdrop-blur-sm">
+      <section className="bg-white/5 py-24 backdrop-blur-sm">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 18 }}
@@ -235,7 +255,6 @@ export default function Landing() {
               Everything You Need
             </h2>
             <p className="mx-auto max-w-2xl text-lg text-gray-300">
-            <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
               Tools to help you track smarter, stay consistent, and achieve more.
             </p>
           </motion.div>
@@ -251,7 +270,6 @@ export default function Landing() {
                 className="transition-transform group hover:shadow-lg"
               >
                 <Card className="h-full border border-primary/30 bg-black/70 backdrop-blur-xl transition-shadow">
-                <Card className="h-full border border-primary/30 bg-card/70 backdrop-blur-xl transition-shadow">
                   <CardContent className="space-y-4 p-8 text-center">
                     <motion.div
                       className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-tr from-primary/30 to-rose-500/15 group-hover:from-primary/60"
@@ -265,7 +283,7 @@ export default function Landing() {
                       <feature.icon className="h-6 w-6 text-primary" />
                     </motion.div>
                     <h3 className="text-xl font-semibold">{feature.title}</h3>
-                    <p className="text-muted-foreground">{feature.description}</p>
+                    <p className="text-gray-300">{feature.description}</p>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -291,7 +309,7 @@ export default function Landing() {
               <h2 className="text-3xl font-bold tracking-tight sm:text-4xl bg-gradient-to-r from-primary to-rose-700 bg-clip-text text-transparent">
                 Join Thousands of Fitness Enthusiasts
               </h2>
-              <p className="text-xl text-muted-foreground">
+              <p className="text-xl text-gray-300">
                 A growing community that logs, learns, and levels up together.
               </p>
             </div>
@@ -310,8 +328,8 @@ export default function Landing() {
                   className="space-y-2 text-center"
                 >
                   <stat.icon className="mx-auto mb-4 h-9 w-9 text-primary shadow-xl" />
-                  <div className="text-4xl font-bold text-foreground">{stat.number}</div>
-                  <div className="text-muted-foreground">{stat.label}</div>
+                  <div className="text-4xl font-bold text-gray-100">{stat.number}</div>
+                  <div className="text-gray-300">{stat.label}</div>
                 </motion.div>
               ))}
             </div>
@@ -323,11 +341,10 @@ export default function Landing() {
       <div className="my-12 h-0.5 w-full bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
 
       {/* Pricing Section - Free and Paid Versions */}
-      <section id="pricing" className="py-20 bg-background">
+      <section id="pricing" className="py-20 bg-black text-white">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl font-bold mb-6 bg-gradient-to-r from-primary to-rose-700 bg-clip-text text-transparent">Simple Pricing</h2>
           <p className="text-gray-400 mb-12">
-          <p className="text-muted-foreground mb-12">
             Start free, upgrade anytime for full access
           </p>
           <div className="grid md:grid-cols-2 gap-8">
@@ -337,22 +354,18 @@ export default function Landing() {
               className="transition-transform"
             >
               <div className="p-8 border border-gray-700 rounded-2xl shadow-lg bg-gray-900 hover:border-primary/60 hover:shadow-xl transition-all">
-              <div className="p-8 border border-border rounded-2xl shadow-lg bg-card hover:border-primary/60 hover:shadow-xl transition-all">
                 <h3 className="text-2xl font-semibold mb-4">Free</h3>
                 <p className="text-3xl font-bold mb-6">
                   ₹0 <span className="text-lg">/year</span>
                 </p>
                 <ul className="text-left space-y-3 mb-6 text-gray-300">
-                <ul className="text-left space-y-3 mb-6 text-muted-foreground">
                   <li>✔ Log Workouts</li>
                   <li>✔ Basic Progress Tracking</li>
                   <li>✔ Access to Exercise Library</li>
-                  <li>✔ Maintain Fitness Streaks</li>
-                  <li>✔ Download Your Progress</li>
                 </ul>
                 <button
                   onClick={() => navigate("/dashboard")}
-                  className="w-full bg-secondary hover:bg-primary hover:text-primary-foreground py-3 rounded-xl font-semibold transition"
+                  className="w-full bg-gradient-to-r from-gray-700 to-black hover:bg-gradient-to-l hover:from-primary hover:to-rose-600 py-3 rounded-xl font-semibold transition"
                 >
                   Get Started
                 </button>
@@ -364,9 +377,7 @@ export default function Landing() {
               className="transition-transform "
             >
               <div className="p-8 border-2 border-red-500 rounded-2xl shadow-xl bg-gray-900 relative glow-premium">
-              <div className="p-8 border-2 border-primary rounded-2xl shadow-xl bg-card relative">
                 <span className="absolute top-0 right-0 bg-red-500 text-white text-sm px-3 py-1 rounded-bl-lg font-bold shadow-md ring-4 ring-primary/30">
-                <span className="absolute top-0 right-0 bg-primary text-primary-foreground text-sm px-3 py-1 rounded-bl-lg font-bold shadow-md ring-4 ring-primary/30">
                   Best Value
                 </span>
                 <h3 className="text-2xl font-semibold mb-4">Premium</h3>
@@ -374,7 +385,6 @@ export default function Landing() {
                   ₹2000 <span className="text-lg">/year</span>
                 </p>
                 <ul className="text-left space-y-3 mb-6 text-gray-300">
-                <ul className="text-left space-y-3 mb-6 text-muted-foreground">
                   <li>✔ Everything in Free</li>
                   <li>✔ Unlimited Progress Charts</li>
                   <li>✔ Streaks & Personal Records</li>
@@ -383,7 +393,7 @@ export default function Landing() {
                 </ul>
                 <button
                   onClick={() => navigate("/premium")}
-                  className="w-full bg-primary text-primary-foreground hover:bg-primary/90 py-3 rounded-xl font-semibold shadow-md transition"
+                  className="w-full bg-gradient-to-r from-red-600 via-primary to-primary/80 hover:from-primary hover:to-rose-600 py-3 rounded-xl font-semibold shadow-md transition"
                 >
                   Upgrade to Premium
                 </button>
@@ -397,7 +407,7 @@ export default function Landing() {
       <div className="my-10 h-0.5 w-full bg-gradient-to-r from-transparent via-primary/40 to-transparent"></div>
 
       {/* Testimonials */}
-      <section className="bg-muted/50 py-24">
+      <section className="bg-black/50 py-24">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold sm:text-4xl mb-12 bg-gradient-to-r from-primary to-rose-700 bg-clip-text text-transparent">
             What Our Users Say
@@ -424,13 +434,10 @@ export default function Landing() {
                 transition={{ delay: i * 0.1, duration: 0.6 }}
                 viewport={{ once: true }}
                 className="rounded-xl border border-white/10 bg-white/5 p-6 shadow-lg backdrop-bl group hover:scale-105 hover:shadow-2xl transition-transform"
-                className="rounded-xl border border-border bg-card/50 p-6 shadow-lg backdrop-blur group hover:scale-105 hover:shadow-2xl transition-transform"
               >
                 <Star className="mx-auto h-6 w-6 text-primary mb-4 group-hover:text-rose-400 transition-colors" />
                 <p className="text-white/80 mb-4">“{t.text}”</p>
-                <p className="text-muted-foreground mb-4">"{t.text}"</p>
                 <div className="text-sm font-semibold text-white/70">
-                <div className="text-sm font-semibold text-muted-foreground">
                   – {t.name}
                 </div>
               </motion.div>
@@ -440,40 +447,37 @@ export default function Landing() {
       </section>
 
       {/* CTA */}
-      <section className="bg-gradient-to-b from-primary/20 to-primary/10 py-24 text-center bg-muted">
+      <section className="bg-gradient-to-b from-primary/20 to-primary/10 py-24 text-center">
         <motion.h2
           initial={{ opacity: 0, y: 18 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
           className="text-3xl font-bold sm:text-4xl text-white mb-6"
-          className="text-3xl font-bold sm:text-4xl text-foreground mb-6"
         >
           Ready to Transform Your Fitness?
         </motion.h2>
         <p className="text-xl text-white/80 mb-8">
-        <p className="text-xl text-muted-foreground mb-8">
           Start free today. No credit card required.
         </p>
         <Button
           size="lg"
           variant="secondary"
           onClick={() => navigate("/auth")}
-          className="px-8 py-6 text-lg bg-primary text-primary-foreground shadow-2xl hover:scale-105 transition-transform"
+          className="px-8 py-6 text-lg bg-gradient-to-r from-primary via-rose-500 to-red-600 shadow-2xl hover:scale-105 transition-transform"
         >
           Get Started For Free
         </Button>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border bg-background/60">
+      <footer className="border-t border-white/10 bg-black/60">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 flex flex-col md:flex-row items-center justify-between">
           <div className="flex items-center gap-2">
             <Dumbbell className="h-5 w-5 text-primary" />
             <span className="font-semibold">TrackFit</span>
           </div>
           <p className="text-sm text-white/60">
-          <p className="text-sm text-muted-foreground">
             © {new Date().getFullYear()} TrackFit. Built with ❤️ for fitness enthusiasts.
           </p>
         </div>
