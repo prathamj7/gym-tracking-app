@@ -30,8 +30,8 @@ export default function Landing() {
   // Slideshow images for hero visual
   const slideshowImages = [
     "/ashu_gym_logo_bg.png",
-    "/ashu_gym_logo_bg_2.png",
-    "/ashu_gym_logo_bg_3.png",
+    "/ashu_logging.png",
+    "/ashu_happy.png",
   ];
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
@@ -362,6 +362,8 @@ export default function Landing() {
                   <li>✔ Log Workouts</li>
                   <li>✔ Basic Progress Tracking</li>
                   <li>✔ Access to Exercise Library</li>
+                  <li>✔ Exercise Comparison</li>
+                  <li>✔ Download Progress</li>
                 </ul>
                 <button
                   onClick={() => navigate("/dashboard")}
