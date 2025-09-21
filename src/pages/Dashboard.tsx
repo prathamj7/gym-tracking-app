@@ -19,7 +19,6 @@ import { ThreeDDumbbell } from "@/components/ThreeDDumbbell";
 import { ThreeDPlate } from "@/components/ThreeDPlate";
 import { ThreeDFootprint } from "@/components/ThreeDFootprint";
 
-
 export default function Dashboard() {
   const { isLoading, isAuthenticated, user, signOut } = useAuth();
   const navigate = useNavigate();
@@ -65,8 +64,7 @@ export default function Dashboard() {
             <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate("/")}>
               <Dumbbell className="h-6 w-6 text-primary" />
               <span className="text-xl font-bold">FitTracker</span>
-              {/* 3D Elements next to logo */}
-              <div className="flex ml-6 space-x-4">
+              <div className="flex gap-4 ml-6">
                 <ThreeDDumbbell />
                 <ThreeDPlate />
                 <ThreeDFootprint />
