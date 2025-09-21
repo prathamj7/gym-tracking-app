@@ -43,13 +43,13 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
       navigate(redirect);
     }
   }, [authLoading, isAuthenticated, navigate, redirectAfterAuth]);
-
   const handleEmailSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsLoading(true);
     setError(null);
     try {
       const formData = new FormData(event.currentTarget);
+      // Capture names for later use after OTP verification
       const f = (formData.get("firstName") as string) || "";
       const l = (formData.get("lastName") as string) || "";
       setFirstName(f);
@@ -59,10 +59,11 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
       setStep({ email: formData.get("email") as string });
       setIsLoading(false);
     } catch (error) {
+      console.error("Email sign-in error:", error);
       setError(
         error instanceof Error
           ? error.message
-          : "Failed to send verification code. Please try again."
+          : "Failed to send verification code. Please try again.",
       );
       setIsLoading(false);
     }
@@ -75,19 +76,29 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
     try {
       const formData = new FormData(event.currentTarget);
       await signIn("email-otp", formData);
+
+      // After OTP verification, save the user's name
       if (firstName.trim() || lastName.trim()) {
         try {
           await setName({
-            firstName: firstName.trim(),
-            lastName: lastName.trim(),
+            firstName: firstName.trim() || "",
+            lastName: lastName.trim() || "",
           });
-        } catch {}
+        } catch (e) {
+          console.warn("Failed to set user name:", e);
+        }
       }
+
+      console.log("signed in");
+
       const redirect = redirectAfterAuth || "/";
       navigate(redirect);
-    } catch {
+    } catch (error) {
+      console.error("OTP verification error:", error);
+
       setError("The verification code you entered is incorrect.");
       setIsLoading(false);
+
       setOtp("");
     }
   };
@@ -96,196 +107,233 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
     setIsLoading(true);
     setError(null);
     try {
+      console.log("Attempting anonymous sign in...");
       await signIn("anonymous");
+      console.log("Anonymous sign in successful");
       const redirect = redirectAfterAuth || "/";
       navigate(redirect);
     } catch (error) {
-      setError(
-        error instanceof Error ? error.message : "Failed to login as guest."
-      );
+      console.error("Guest login error:", error);
+      console.error("Error details:", JSON.stringify(error, null, 2));
+      setError(`Failed to sign in as guest: ${error instanceof Error ? error.message : 'Unknown error'}`);
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-black via-zinc-900 to-black text-white p-6">
-      <div className="flex-grow flex items-center justify-center">
-        <Card className="max-w-md w-full bg-black/70 backdrop-blur-lg border border-red-700 rounded-lg shadow-xl">
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
+
+      
+      {/* Auth Content */}
+      <div className="flex-1 flex items-center justify-center">
+        <div className="flex items-center justify-center h-full flex-col">
+        <Card className="min-w-[350px] pb-0 border shadow-md">
           {step === "signIn" ? (
             <>
-              <CardHeader className="pt-10 px-6 pb-4">
-                <img
-                  src="./ashu_anime_gym.png"
-                  alt="Gym Logo"
-                  className="mx-auto mb-6 cursor-pointer rounded-lg"
-                  width={72}
-                  height={72}
-                  onClick={() => navigate("/")}
-                />
-                <CardTitle className="text-4xl font-extrabold text-transparent bg-gradient-to-tr from-red-600 to-pink-600 bg-clip-text">
-                  Get Started
-                </CardTitle>
-                <CardDescription className="text-red-400 mt-2">
+              <CardHeader className="text-center">
+              <div className="flex justify-center">
+                    <img
+                      src="./ashu_anime_gym.png"
+                      alt="Lock Icon"
+                      width={64}
+                      height={64}
+                      className="rounded-lg mb-4 mt-4 cursor-pointer"
+                      onClick={() => navigate("/")}
+                    />
+                  </div>
+                <CardTitle className="text-xl">Get Started</CardTitle>
+                <CardDescription>
                   Enter your email to log in
                 </CardDescription>
               </CardHeader>
+              <form onSubmit={handleEmailSubmit}>
+                <CardContent>
+                  {/* First and Last Name fields */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                    <div className="relative">
+                      <Label htmlFor="firstName">First name</Label>
+                      <Input
+                        id="firstName"
+                        name="firstName"
+                        placeholder="John"
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        required
+                        disabled={isLoading}
+                      />
+                    </div>
+                    <div className="relative">
+                      <Label htmlFor="lastName">Last name</Label>
+                      <Input
+                        id="lastName"
+                        name="lastName"
+                        placeholder="Doe"
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        required
+                        disabled={isLoading}
+                      />
+                    </div>
+                  </div>
 
-              <form onSubmit={handleEmailSubmit} className="px-6 pb-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-6">
-                  <div>
-                    <Label htmlFor="firstName" className="font-semibold text-red-400">
-                      First name
-                    </Label>
-                    <Input
-                      id="firstName"
-                      name="firstName"
-                      placeholder="John"
-                      value={firstName}
-                      onChange={(e) => setFirstName(e.target.value)}
+                  <div className="relative flex items-center gap-2">
+                    <div className="relative flex-1">
+                      <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        name="email"
+                        placeholder="name@example.com"
+                        type="email"
+                        className="pl-9"
+                        disabled={isLoading}
+                        required
+                      />
+                    </div>
+                    <Button
+                      type="submit"
+                      variant="outline"
+                      size="icon"
                       disabled={isLoading}
-                      className="bg-black bg-opacity-80 border border-red-700 text-red-300 placeholder-red-600"
-                      required
-                    />
+                    >
+                      {isLoading ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <ArrowRight className="h-4 w-4" />
+                      )}
+                    </Button>
                   </div>
-                  <div>
-                    <Label htmlFor="lastName" className="font-semibold text-red-400">
-                      Last name
-                    </Label>
-                    <Input
-                      id="lastName"
-                      name="lastName"
-                      placeholder="Doe"
-                      value={lastName}
-                      onChange={(e) => setLastName(e.target.value)}
+                  {error && (
+                    <p className="mt-2 text-sm text-red-500">{error}</p>
+                  )}
+                  
+                  <div className="mt-4">
+                    <div className="relative">
+                      <div className="absolute inset-0 flex items-center">
+                        <span className="w-full border-t" />
+                      </div>
+                      <div className="relative flex justify-center text-xs uppercase">
+                        <span className="bg-background px-2 text-muted-foreground">
+                          Or
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full mt-4"
+                      onClick={handleGuestLogin}
                       disabled={isLoading}
-                      className="bg-black bg-opacity-80 border border-red-700 text-red-300 placeholder-red-600"
-                      required
-                    />
+                    >
+                      <UserX className="mr-2 h-4 w-4" />
+                      Continue as Guest
+                    </Button>
                   </div>
-                </div>
-
-                <div className="relative flex items-center gap-2">
-                  <Mail className="absolute left-3 top-3 text-red-700" />
-                  <Input
-                    name="email"
-                    placeholder="name@example.com"
-                    type="email"
-                    disabled={isLoading}
-                    className="pl-10 bg-black bg-opacity-80 border border-red-700 text-red-300 placeholder-red-600"
-                    required
-                    aria-label="Email address"
-                  />
-                  <Button
-                    type="submit"
-                    disabled={isLoading}
-                    className="border border-red-600 bg-gradient-to-r from-red-700 to-pink-700 hover:from-pink-700 hover:to-red-700 text-white"
-                    aria-label="Send verification code"
-                  >
-                    {isLoading ? (
-                      <Loader2 className="h-5 w-5 animate-spin" />
-                    ) : (
-                      <ArrowRight className="h-5 w-5" />
-                    )}
-                  </Button>
-                </div>
-
-                {error && (
-                  <p className="mt-4 text-red-600 text-center">{error}</p>
-                )}
-
-                <div className="mt-8">
-                  <div className="flex items-center justify-center space-x-3 text-red-500 text-xs uppercase tracking-widest mb-6">
-                    <div className="w-20 border-t border-red-600"></div>
-                    <div>Or</div>
-                    <div className="w-20 border-t border-red-600"></div>
-                  </div>
-                  <Button
-                    type="button"
-                    onClick={handleGuestLogin}
-                    disabled={isLoading}
-                    className="w-full border border-red-600 bg-gradient-to-r from-red-700 to-pink-700 hover:from-pink-700 hover:to-red-700 text-white font-semibold"
-                  >
-                    <UserX className="mr-2" /> Continue as Guest
-                  </Button>
-                </div>
+                </CardContent>
               </form>
             </>
           ) : (
             <>
-              <CardHeader className="pt-10 px-6 pb-4 text-center">
-                <CardTitle className="text-4xl font-extrabold text-transparent bg-gradient-to-tr from-red-600 to-pink-600 bg-clip-text">
-                  Check your email
-                </CardTitle>
-                <CardDescription className="text-red-400 mt-2">
-                  Verification code sent to <strong>{(step as {email:string}).email}</strong>
+              <CardHeader className="text-center mt-4">
+                <CardTitle>Check your email</CardTitle>
+                <CardDescription>
+                  We've sent a code to {step.email}
                 </CardDescription>
               </CardHeader>
-              <form onSubmit={handleOtpSubmit} className="px-6 pb-6">
-                <input type="hidden" name="email" value={(step as {email:string}).email} />
-                <input type="hidden" name="code" value={otp} />
-                <div className="flex justify-center mb-6">
-                  <InputOTP
-                    value={otp}
-                    onChange={setOtp}
-                    maxLength={6}
-                    disabled={isLoading}
-                    className="border border-red-600 text-red-300 placeholder-red-600"
-                    aria-label="One time password input"
-                  >
-                    <InputOTPGroup>
-                      {Array(6)
-                        .fill(null)
-                        .map((_, idx) => (
-                          <InputOTPSlot key={idx} index={idx} />
+              <form onSubmit={handleOtpSubmit}>
+                <CardContent className="pb-4">
+                  <input type="hidden" name="email" value={step.email} />
+                  <input type="hidden" name="code" value={otp} />
+
+                  <div className="flex justify-center">
+                    <InputOTP
+                      value={otp}
+                      onChange={setOtp}
+                      maxLength={6}
+                      disabled={isLoading}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && otp.length === 6 && !isLoading) {
+                          // Find the closest form and submit it
+                          const form = (e.target as HTMLElement).closest("form");
+                          if (form) {
+                            form.requestSubmit();
+                          }
+                        }
+                      }}
+                    >
+                      <InputOTPGroup>
+                        {Array.from({ length: 6 }).map((_, index) => (
+                          <InputOTPSlot key={index} index={index} />
                         ))}
-                    </InputOTPGroup>
-                  </InputOTP>
-                </div>
-                {error && (
-                  <p className="mb-6 text-red-600 text-center">{error}</p>
-                )}
-                <div className="mb-6 text-center text-xs text-red-400">
-                  Didn't receive code? <Button variant="link" onClick={() => setStep("signIn")} className="underline text-red-400">Resend</Button>
-                </div>
-                <CardFooter className="flex flex-col space-y-3">
+                      </InputOTPGroup>
+                    </InputOTP>
+                  </div>
+                  {error && (
+                    <p className="mt-2 text-sm text-red-500 text-center">
+                      {error}
+                    </p>
+                  )}
+                  <p className="text-sm text-muted-foreground text-center mt-4">
+                    Didn't receive a code?{" "}
+                    <Button
+                      variant="link"
+                      className="p-0 h-auto"
+                      onClick={() => setStep("signIn")}
+                    >
+                      Try again
+                    </Button>
+                  </p>
+                </CardContent>
+                <CardFooter className="flex-col gap-2">
                   <Button
                     type="submit"
+                    className="w-full"
                     disabled={isLoading || otp.length !== 6}
-                    className="bg-gradient-to-tr from-red-700 to-pink-700 hover:from-pink-700 hover:to-red-700 text-white"
-                    aria-label="Verify code"
                   >
                     {isLoading ? (
                       <>
-                        <Loader2 className="h-5 w-5 animate-spin mr-2" />
-                        Verifying…
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Verifying...
                       </>
                     ) : (
-                      "Verify"
+                      <>
+                        Verify code
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </>
                     )}
                   </Button>
                   <Button
                     type="button"
+                    variant="ghost"
                     onClick={() => setStep("signIn")}
                     disabled={isLoading}
-                    variant="link"
-                    className="text-red-400"
+                    className="w-full"
                   >
-                    Change Email
+                    Use different email
                   </Button>
                 </CardFooter>
               </form>
             </>
           )}
-          <div className="mt-8 text-center text-xs text-red-600 select-none">
-            Powered by <a href="https://vly.ai" className="underline hover:text-red-400" target="_blank" rel="noreferrer">vly.ai</a>
+
+          <div className="py-4 px-6 text-xs text-center text-muted-foreground bg-muted border-t rounded-b-lg">
+            Secured by{" "}
+            <a
+              href="https://vly.ai"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-primary transition-colors"
+            >
+              vly.ai
+            </a>
           </div>
         </Card>
+        </div>
       </div>
     </div>
   );
 }
 
-export default function AuthPage(props: any) {
+export default function AuthPage(props: AuthProps) {
   return (
     <Suspense>
       <Auth {...props} />
