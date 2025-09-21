@@ -108,32 +108,32 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-purple-900 via-indigo-900 to-black text-white p-6">
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-black via-zinc-900 to-black text-white p-6">
       <div className="flex-grow flex items-center justify-center">
-        <Card className="max-w-md w-full bg-black/70 backdrop-blur-lg border border-white/10 rounded-lg shadow-lg text-center">
+        <Card className="max-w-md w-full bg-black/70 backdrop-blur-lg border border-red-700 rounded-lg shadow-xl">
           {step === "signIn" ? (
             <>
-              <CardHeader className="pt-8 px-6 pb-2">
+              <CardHeader className="pt-10 px-6 pb-4">
                 <img
                   src="./ashu_anime_gym.png"
                   alt="Gym Logo"
-                  className="mx-auto mb-6 rounded-lg cursor-pointer"
+                  className="mx-auto mb-6 cursor-pointer rounded-lg"
                   width={72}
                   height={72}
                   onClick={() => navigate("/")}
                 />
-                <CardTitle className="text-3xl font-extrabold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+                <CardTitle className="text-4xl font-extrabold text-transparent bg-gradient-to-tr from-red-600 to-pink-600 bg-clip-text">
                   Get Started
                 </CardTitle>
-                <CardDescription className="text-indigo-300 mt-1">
+                <CardDescription className="text-red-400 mt-2">
                   Enter your email to log in
                 </CardDescription>
               </CardHeader>
 
               <form onSubmit={handleEmailSubmit} className="px-6 pb-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-6">
                   <div>
-                    <Label htmlFor="firstName" className="font-semibold">
+                    <Label htmlFor="firstName" className="font-semibold text-red-400">
                       First name
                     </Label>
                     <Input
@@ -143,12 +143,12 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                       value={firstName}
                       onChange={(e) => setFirstName(e.target.value)}
                       disabled={isLoading}
+                      className="bg-black bg-opacity-80 border border-red-700 text-red-300 placeholder-red-600"
                       required
-                      className="bg-black bg-opacity-30 border border-white/20 placeholder:text-white/40 text-white"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="lastName" className="font-semibold">
+                    <Label htmlFor="lastName" className="font-semibold text-red-400">
                       Last name
                     </Label>
                     <Input
@@ -158,29 +158,28 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                       value={lastName}
                       onChange={(e) => setLastName(e.target.value)}
                       disabled={isLoading}
+                      className="bg-black bg-opacity-80 border border-red-700 text-red-300 placeholder-red-600"
                       required
-                      className="bg-black bg-opacity-30 border border-white/20 placeholder:text-white/40 text-white"
                     />
                   </div>
                 </div>
 
                 <div className="relative flex items-center gap-2">
-                  <Mail className="absolute left-3 top-3 text-white/50" />
+                  <Mail className="absolute left-3 top-3 text-red-700" />
                   <Input
                     name="email"
                     placeholder="name@example.com"
                     type="email"
                     disabled={isLoading}
+                    className="pl-10 bg-black bg-opacity-80 border border-red-700 text-red-300 placeholder-red-600"
                     required
-                    className="pl-10 bg-black bg-opacity-30 border border-white/20 placeholder:text-white/40 text-white"
                     aria-label="Email address"
                   />
                   <Button
                     type="submit"
-                    variant="outline"
                     disabled={isLoading}
+                    className="border border-red-600 bg-gradient-to-r from-red-700 to-pink-700 hover:from-pink-700 hover:to-red-700 text-white"
                     aria-label="Send verification code"
-                    className="hover:bg-white/10"
                   >
                     {isLoading ? (
                       <Loader2 className="h-5 w-5 animate-spin" />
@@ -191,56 +190,47 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                 </div>
 
                 {error && (
-                  <p className="mt-4 text-red-500 text-center">{error}</p>
+                  <p className="mt-4 text-red-600 text-center">{error}</p>
                 )}
 
                 <div className="mt-8">
-                  <div className="relative flex items-center">
-                    <div className="flex-grow border-t border-white/20"></div>
-                    <span className="mx-4 text-white/50 uppercase text-xs tracking-widest">
-                      Or
-                    </span>
-                    <div className="flex-grow border-t border-white/20"></div>
+                  <div className="flex items-center justify-center space-x-3 text-red-500 text-xs uppercase tracking-widest mb-6">
+                    <div className="w-20 border-t border-red-600"></div>
+                    <div>Or</div>
+                    <div className="w-20 border-t border-red-600"></div>
                   </div>
-
                   <Button
                     type="button"
                     onClick={handleGuestLogin}
                     disabled={isLoading}
-                    className="mt-6 bg-white/10 hover:bg-white/20 text-white w-full font-semibold"
+                    className="w-full border border-red-600 bg-gradient-to-r from-red-700 to-pink-700 hover:from-pink-700 hover:to-red-700 text-white font-semibold"
                   >
-                    <UserX className="inline-block mr-2" />
-                    Continue as Guest
+                    <UserX className="mr-2" /> Continue as Guest
                   </Button>
                 </div>
               </form>
             </>
           ) : (
             <>
-              <CardHeader className="pt-10 px-6 pb-4">
-                <CardTitle className="text-3xl font-extrabold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+              <CardHeader className="pt-10 px-6 pb-4 text-center">
+                <CardTitle className="text-4xl font-extrabold text-transparent bg-gradient-to-tr from-red-600 to-pink-600 bg-clip-text">
                   Check your email
                 </CardTitle>
-                <CardDescription className="text-indigo-300 mt-1">
-                  A login code was sent to <strong>{(step as {email: string}).email}</strong>
+                <CardDescription className="text-red-400 mt-2">
+                  Verification code sent to <strong>{(step as {email:string}).email}</strong>
                 </CardDescription>
               </CardHeader>
-
               <form onSubmit={handleOtpSubmit} className="px-6 pb-6">
-                <input
-                  type="hidden"
-                  name="email"
-                  value={(step as { email: string }).email}
-                />
+                <input type="hidden" name="email" value={(step as {email:string}).email} />
                 <input type="hidden" name="code" value={otp} />
-                <div className="mb-6 flex justify-center">
+                <div className="flex justify-center mb-6">
                   <InputOTP
                     value={otp}
                     onChange={setOtp}
                     maxLength={6}
                     disabled={isLoading}
-                    aria-label="Enter one-time password"
-                    className="border-none bg-transparent placeholder-white"
+                    className="border border-red-600 text-red-300 placeholder-red-600"
+                    aria-label="One time password input"
                   >
                     <InputOTPGroup>
                       {Array(6)
@@ -251,58 +241,43 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                     </InputOTPGroup>
                   </InputOTP>
                 </div>
-
                 {error && (
-                  <p className="mb-4 text-red-500 text-center">{error}</p>
+                  <p className="mb-6 text-red-600 text-center">{error}</p>
                 )}
-
-                <div className="mb-6 text-center text-sm text-white/50">
-                  Didn't receive the code?{" "}
-                  <Button
-                    variant="link"
-                    onClick={() => setStep("signIn")}
-                    disabled={isLoading}
-                    className="p-0 underline text-white"
-                  >
-                    Send again
-                  </Button>
+                <div className="mb-6 text-center text-xs text-red-400">
+                  Didn't receive code? <Button variant="link" onClick={() => setStep("signIn")} className="underline text-red-400">Resend</Button>
                 </div>
-
                 <CardFooter className="flex flex-col space-y-3">
                   <Button
                     type="submit"
-                    className="bg-gradient-to-r from-pink-600 to-purple-600 hover:scale-105 transition-transform"
                     disabled={isLoading || otp.length !== 6}
+                    className="bg-gradient-to-tr from-red-700 to-pink-700 hover:from-pink-700 hover:to-red-700 text-white"
                     aria-label="Verify code"
                   >
                     {isLoading ? (
                       <>
-                        <Loader2 className="mr-2 h-5 w-5 animate-spin inline-block" />
+                        <Loader2 className="h-5 w-5 animate-spin mr-2" />
                         Verifying…
                       </>
                     ) : (
-                      <>
-                        Verify
-                        <ArrowRight className="inline-block ml-2 h-5 w-5" />
-                      </>
+                      "Verify"
                     )}
                   </Button>
-
                   <Button
                     type="button"
                     onClick={() => setStep("signIn")}
                     disabled={isLoading}
-                    className="bg-transparent text-white hover:underline"
+                    variant="link"
+                    className="text-red-400"
                   >
-                    Change email
+                    Change Email
                   </Button>
                 </CardFooter>
               </form>
             </>
           )}
-
-          <div className="mt-10 px-6 py-4 bg-white/10 rounded-b-lg text-center text-xs text-white/50 select-none">
-            Powered by <a href="https://vly.ai" target="_blank" className="underline hover:text-pink-500">vly.ai</a>
+          <div className="mt-8 text-center text-xs text-red-600 select-none">
+            Powered by <a href="https://vly.ai" className="underline hover:text-red-400" target="_blank" rel="noreferrer">vly.ai</a>
           </div>
         </Card>
       </div>
