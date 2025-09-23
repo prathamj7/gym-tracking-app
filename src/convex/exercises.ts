@@ -88,6 +88,23 @@ export const list = query({
   },
 });
 
+// Add getAll function that components are expecting
+export const getAll = query({
+  args: {},
+  handler: async (ctx) => {
+    const user = await getCurrentUser(ctx);
+    if (!user) {
+      return [];
+    }
+
+    return await ctx.db
+      .query("exercises")
+      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .order("desc")
+      .collect();
+  },
+});
+
 export const update = mutation({
   args: {
     id: v.id("exercises"),
