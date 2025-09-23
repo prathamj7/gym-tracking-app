@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
-import { useTheme } from "@/hooks/use-theme";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Activity,
@@ -10,8 +9,6 @@ import {
   Target,
   TrendingUp,
   Users,
-  Sun,
-  Moon,
   Star,
 } from "lucide-react";
 import { useNavigate } from "react-router";
@@ -19,7 +16,6 @@ import { useEffect, useState } from "react";
 
 export default function Landing() {
   const { isLoading, isAuthenticated } = useAuth();
-  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [quoteIndex, setQuoteIndex] = useState(0);
 
@@ -79,7 +75,7 @@ export default function Landing() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white via-gray-50 to-gray-100 dark:from-zinc-950 dark:via-black dark:to-zinc-900 text-gray-900 dark:text-zinc-100 relative overflow-hidden transition-colors duration-500">{" "}
+    <div className="min-h-screen bg-gradient-to-b from-zinc-950 via-black to-zinc-900 text-zinc-100 relative overflow-hidden transition-colors duration-500">{" "}
       {/* Enhanced Background Layers */}
       <div className="pointer-events-none absolute inset-0 -z-10">
         <img
@@ -87,7 +83,7 @@ export default function Landing() {
           alt="Fitness background"
           className="absolute inset-0 w-full h-full object-cover opacity-20"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/80 to-white/60 dark:from-black/80 dark:via-black/70 dark:to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/70 to-transparent" />
         <div className="absolute left-1/2 top-24 -translate-x-1/2 h-[38rem] w-[36rem] rounded-full bg-primary/15 blur-[120px] opacity-85" />
         <div className="absolute -top-32 -left-32 h-80 w-80 rounded-full bg-primary/25 blur-3xl" />
         <div className="absolute -bottom-24 -right-24 h-[30rem] w-[30rem] rounded-full bg-red-900/20 blur-3xl" />
@@ -105,20 +101,6 @@ export default function Landing() {
               <span className="text-xl font-bold tracking-tight">TrackFit</span>
             </div>
             <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="icon"
-                aria-label="Toggle theme"
-                onClick={toggleTheme}
-                className="border-gray-300 text-gray-700 hover:bg-gray-100 dark:border-white/20 dark:text-white dark:hover:bg-primary/20 transition-all duration-300"
-                title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-              >
-                {theme === "dark" ? (
-                  <Sun className="h-4 w-4" />
-                ) : (
-                  <Moon className="h-4 w-4" />
-                )}
-              </Button>
               {!isLoading && (
                 <Button
                   onClick={() =>
@@ -128,7 +110,7 @@ export default function Landing() {
                   className={`transition-colors ${
                     isAuthenticated
                       ? "bg-gradient-to-r from-rose-600 to-primary shadow-lg"
-                      : "border-gray-300 text-gray-700 hover:bg-gray-100 dark:border-white/20 dark:text-white dark:hover:bg-primary/10"
+                      : "border-white/20 text-white hover:bg-primary/10"
                   }`}
                 >
                   {isAuthenticated ? "Dashboard" : "Sign In"}
@@ -149,7 +131,7 @@ export default function Landing() {
             className="grid grid-cols-1 items-center gap-14 lg:grid-cols-2"
           >
             <div className="space-y-7 text-center lg:text-left">
-              <span className="inline-flex items-center gap-2 rounded-full border border-gray-300 bg-gradient-to-r from-primary/10 via-rose-200/20 to-gray-100/20 px-3 py-1 text-xs text-gray-700 dark:border-white/20 dark:from-primary/10 dark:via-rose-900/20 dark:to-black/20 dark:text-white/80 backdrop-blur shadow">
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-gradient-to-r from-primary/10 via-rose-900/20 to-black/20 px-3 py-1 text-xs text-white/80 backdrop-blur shadow">
                 <Activity className="h-4 w-4 text-primary" />
                 Track smarter. Grow stronger.
               </span>
@@ -159,7 +141,7 @@ export default function Landing() {
                   Fitness Journey
                 </span>
               </h1>
-              <p className="mx-auto max-w-2xl text-lg text-gray-600 dark:text-zinc-200/80">
+              <p className="mx-auto max-w-2xl text-lg text-zinc-200/80">
                 Track, analyze, and improve your workouts—all in one clean, real-time dashboard.
                 No clutter, just results.
               </p>
@@ -187,7 +169,7 @@ export default function Landing() {
                     variant="outline"
                     size="lg"
                     onClick={() => navigate("/auth")}
-                    className="border-gray-300 px-8 py-6 text-lg text-gray-700 hover:bg-gray-100 dark:border-white/20 dark:text-white dark:hover:bg-white/10 font-semibold hover:scale-105 transition-transform"
+                    className="border-white/20 px-8 py-6 text-lg text-white hover:bg-white/10 font-semibold hover:scale-105 transition-transform"
                   >
                     Join Community
                   </Button>
@@ -218,7 +200,7 @@ export default function Landing() {
       <div className="my-12 h-0.5 w-full bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
 
       {/* Features */}
-      <section className="bg-gray-50/50 dark:bg-white/5 py-24 backdrop-blur-sm">
+      <section className="bg-white/5 py-24 backdrop-blur-sm">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 18 }}
@@ -230,7 +212,7 @@ export default function Landing() {
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl bg-gradient-to-r from-primary to-rose-700 bg-clip-text text-transparent">
               Everything You Need
             </h2>
-            <p className="mx-auto max-w-2xl text-lg text-gray-600 dark:text-gray-300">
+            <p className="mx-auto max-w-2xl text-lg text-gray-300">
               Tools to help you track smarter, stay consistent, and achieve more.
             </p>
           </motion.div>
@@ -245,7 +227,7 @@ export default function Landing() {
                 whileHover={{ y: -4, scale: 1.05, boxShadow: '0 8px 32px #fb7185DD' }}
                 className="transition-transform group hover:shadow-lg"
               >
-                <Card className="h-full border border-primary/30 bg-white/80 dark:bg-black/70 backdrop-blur-xl transition-shadow">
+                <Card className="h-full border border-primary/30 bg-black/70 backdrop-blur-xl transition-shadow">
                   <CardContent className="space-y-4 p-8 text-center">
                     <motion.div
                       className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-tr from-primary/30 to-rose-500/15 group-hover:from-primary/60"
@@ -258,8 +240,8 @@ export default function Landing() {
                     >
                       <feature.icon className="h-6 w-6 text-primary" />
                     </motion.div>
-                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{feature.title}</h3>
-                    <p className="text-gray-600 dark:text-gray-300">{feature.description}</p>
+                    <h3 className="text-xl font-semibold">{feature.title}</h3>
+                    <p className="text-gray-300">{feature.description}</p>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -385,7 +367,7 @@ export default function Landing() {
       <div className="my-10 h-0.5 w-full bg-gradient-to-r from-transparent via-primary/40 to-transparent"></div>
 
       {/* Testimonials */}
-      <section className="bg-gray-100/50 dark:bg-black/50 py-24">
+      <section className="bg-black/50 py-24">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold sm:text-4xl mb-12 bg-gradient-to-r from-primary to-rose-700 bg-clip-text text-transparent">
             What Our Users Say
@@ -431,11 +413,11 @@ export default function Landing() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="text-3xl font-bold sm:text-4xl text-gray-900 dark:text-white mb-6"
+          className="text-3xl font-bold sm:text-4xl text-white mb-6"
         >
           Ready to Transform Your Fitness?
         </motion.h2>
-        <p className="text-xl text-gray-600 dark:text-white/80 mb-8">
+        <p className="text-xl text-white/80 mb-8">
           Start free today. No credit card required.
         </p>
         <Button
@@ -449,13 +431,13 @@ export default function Landing() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-gray-300 dark:border-white/10 bg-gray-50 dark:bg-black/60">
+      <footer className="border-t border-white/10 bg-black/60">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 flex flex-col md:flex-row items-center justify-between">
           <div className="flex items-center gap-2">
             <Dumbbell className="h-5 w-5 text-primary" />
-            <span className="font-semibold text-gray-900 dark:text-white">TrackFit</span>
+            <span className="font-semibold">TrackFit</span>
           </div>
-          <p className="text-sm text-gray-600 dark:text-white/60">
+          <p className="text-sm text-white/60">
             © {new Date().getFullYear()} TrackFit. Built with ❤️ for fitness enthusiasts.
           </p>
         </div>

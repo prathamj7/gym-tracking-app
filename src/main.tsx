@@ -15,19 +15,8 @@ import "./types/global.d.ts";
 
 const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string);
 
-// Apply saved or system theme before app renders
-// Initialize theme from localStorage or prefers-color-scheme
-const savedTheme = (typeof window !== "undefined" && localStorage.getItem("theme")) || null;
-const prefersDark =
-  typeof window !== "undefined" &&
-  window.matchMedia &&
-  window.matchMedia("(prefers-color-scheme: dark)").matches;
-
-if ((savedTheme ?? (prefersDark ? "dark" : "light")) === "dark") {
-  document.documentElement.classList.add("dark");
-} else {
-  document.documentElement.classList.remove("dark");
-}
+// Apply dark theme
+document.documentElement.classList.add("dark");
 
 function RouteSyncer() {
   const location = useLocation();

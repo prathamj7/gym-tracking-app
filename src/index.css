@@ -42,50 +42,16 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
-/* Modern Theme Colors - Light Mode (White + Red) */
+/* Modern Dark Theme Colors - Black + Red */
 :root {
   --radius: 0.5rem;
-  --background: oklch(1 0 0); /* Pure white */
-  --foreground: oklch(0.15 0.01 106); /* Nearly black text */
-  --card: oklch(0.99 0.005 106); /* Slightly off-white for cards */
-  --card-foreground: oklch(0.15 0.01 106);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.15 0.01 106);
-  --primary: oklch(0.55 0.23 25); /* Red primary color */
-  --primary-foreground: oklch(0.98 0.005 106); /* White text on red */
-  --secondary: oklch(0.96 0.01 106); /* Light gray */
-  --secondary-foreground: oklch(0.2 0.01 106);
-  --muted: oklch(0.96 0.01 106);
-  --muted-foreground: oklch(0.5 0.01 106);
-  --accent: oklch(0.94 0.02 106);
-  --accent-foreground: oklch(0.2 0.01 106);
-  --destructive: oklch(0.6 0.2 25); /* Red for destructive actions */
-  --border: oklch(0.9 0.01 106);
-  --input: oklch(0.9 0.01 106);
-  --ring: oklch(0.55 0.23 25); /* Red focus ring */
-  --chart-1: oklch(0.62 0.26 25);
-  --chart-2: oklch(0.68 0.20 30);
-  --chart-3: oklch(0.55 0.18 20);
-  --chart-4: oklch(0.72 0.16 15);
-  --chart-5: oklch(0.5 0.24 10);
-  --sidebar: oklch(0.98 0.005 106);
-  --sidebar-foreground: oklch(0.15 0.01 106);
-  --sidebar-primary: oklch(0.55 0.23 25); /* Red sidebar */
-  --sidebar-primary-foreground: oklch(0.98 0.005 106);
-  --sidebar-accent: oklch(0.94 0.02 106);
-  --sidebar-accent-foreground: oklch(0.2 0.01 106);
-  --sidebar-border: oklch(0.9 0.01 106);
-  --sidebar-ring: oklch(0.55 0.23 25);
-}
-
-.dark {
   --background: oklch(0.05 0.01 106); /* Nearly black background */
   --foreground: oklch(0.95 0.005 106); /* White text */
   --card: oklch(0.08 0.01 106); /* Dark gray cards */
   --card-foreground: oklch(0.95 0.005 106);
   --popover: oklch(0.08 0.01 106);
   --popover-foreground: oklch(0.95 0.005 106);
-  --primary: oklch(0.65 0.25 25); /* Bright red for dark mode */
+  --primary: oklch(0.65 0.25 25); /* Bright red primary */
   --primary-foreground: oklch(0.05 0.01 106); /* Black text on red */
   --secondary: oklch(0.15 0.01 106); /* Dark gray */
   --secondary-foreground: oklch(0.9 0.005 106);
