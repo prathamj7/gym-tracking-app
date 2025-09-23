@@ -10,6 +10,11 @@ import {
   TrendingUp,
   Users,
   Star,
+  Zap,
+  Trophy,
+  Timer,
+  Heart,
+  Flame,
 } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useEffect, useState } from "react";
@@ -35,10 +40,13 @@ export default function Landing() {
   }, []);
 
   const quotes = [
-    "Small steps, big results.",
-    "Consistency beats intensity.",
-    "Progress, not perfection.",
-    "Strong today, stronger tomorrow.",
+    "Every rep counts, every set matters. 💪",
+    "The only bad workout is the one you didn't do.",
+    "Track your progress, transform your body.",
+    "Strength doesn't come from comfort zones.",
+    "Your body can do it. It's your mind you need to convince.",
+    "Champions train, legends never stop.",
+    "Progress is impossible without tracking your journey.",
   ];
 
   useEffect(() => {
@@ -51,26 +59,34 @@ export default function Landing() {
   const features = [
     {
       icon: Dumbbell,
-      title: "Exercise Logging",
+      title: "Smart Exercise Logging",
       description:
-        "Log your workouts quickly with detailed tracking of sets, reps, and weights.",
+        "Log workouts with AI-powered form suggestions and automatic weight progression tracking.",
+      highlight: "AI-Powered",
+      color: "text-primary"
     },
     {
       icon: BarChart3,
-      title: "Progress Analytics",
-      description: "Visualize your journey with stats, charts, and insights.",
+      title: "Advanced Analytics",
+      description: "Visualize strength gains, volume trends, and predict your next PR breakthrough.",
+      highlight: "Predictive",
+      color: "text-blue-400"
     },
     {
       icon: Target,
-      title: "Goal Setting",
+      title: "Precision Goal Setting",
       description:
-        "Set fitness milestones and track them to stay motivated and consistent.",
+        "Set SMART fitness goals with milestone tracking and adaptive target adjustments.",
+      highlight: "SMART Goals",
+      color: "text-green-400"
     },
     {
       icon: TrendingUp,
-      title: "Performance Tracking",
+      title: "Performance Insights",
       description:
-        "Monitor your improvements with reports tailored to your growth.",
+        "Get personalized recommendations based on your training patterns and recovery data.",
+      highlight: "Personalized",
+      color: "text-yellow-400"
     },
   ];
 
@@ -84,6 +100,85 @@ export default function Landing() {
           className="absolute inset-0 w-full h-full object-cover opacity-20"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/70 to-transparent" />
+        
+        {/* Floating Fitness Icons */}
+        <motion.div
+          animate={{ 
+            y: [0, -20, 0],
+            rotate: [0, 5, 0]
+          }}
+          transition={{ 
+            duration: 4,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          className="absolute top-20 left-20 text-primary/30"
+        >
+          <Dumbbell className="h-16 w-16" />
+        </motion.div>
+        
+        <motion.div
+          animate={{ 
+            y: [0, 15, 0],
+            rotate: [0, -3, 0]
+          }}
+          transition={{ 
+            duration: 5,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 1
+          }}
+          className="absolute top-40 right-32 text-red-400/20"
+        >
+          <Trophy className="h-12 w-12" />
+        </motion.div>
+        
+        <motion.div
+          animate={{ 
+            y: [0, -10, 0],
+            x: [0, 5, 0]
+          }}
+          transition={{ 
+            duration: 6,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 2
+          }}
+          className="absolute bottom-40 left-32 text-primary/25"
+        >
+          <Target className="h-14 w-14" />
+        </motion.div>
+        
+        <motion.div
+          animate={{ 
+            rotate: [0, 360]
+          }}
+          transition={{ 
+            duration: 20,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+          className="absolute top-60 right-20 text-red-500/15"
+        >
+          <Timer className="h-10 w-10" />
+        </motion.div>
+        
+        <motion.div
+          animate={{ 
+            scale: [1, 1.1, 1],
+            opacity: [0.3, 0.5, 0.3]
+          }}
+          transition={{ 
+            duration: 3,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          className="absolute bottom-60 right-40 text-primary/20"
+        >
+          <Heart className="h-8 w-8" />
+        </motion.div>
+
+        {/* Original gradient elements */}
         <div className="absolute left-1/2 top-24 -translate-x-1/2 h-[38rem] w-[36rem] rounded-full bg-primary/15 blur-[120px] opacity-85" />
         <div className="absolute -top-32 -left-32 h-80 w-80 rounded-full bg-primary/25 blur-3xl" />
         <div className="absolute -bottom-24 -right-24 h-[30rem] w-[30rem] rounded-full bg-red-900/20 blur-3xl" />
@@ -145,15 +240,22 @@ export default function Landing() {
                 Track, analyze, and improve your workouts—all in one clean, real-time dashboard.
                 No clutter, just results.
               </p>
-              <motion.p
+              <motion.div
                 key={quoteIndex}
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.35 }}
-                className="text-sm text-primary/80"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.5 }}
+                className="bg-gradient-to-r from-primary/10 to-rose-900/10 border border-primary/20 rounded-lg p-4 backdrop-blur-sm"
               >
-                "{quotes[quoteIndex]}"
-              </motion.p>
+                <div className="flex items-center gap-2 mb-1">
+                  <Flame className="h-4 w-4 text-primary" />
+                  <span className="text-xs text-primary/80 font-medium">MOTIVATION</span>
+                </div>
+                <p className="text-sm text-zinc-200 font-medium italic">
+                  "{quotes[quoteIndex]}"
+                </p>
+              </motion.div>
               <div className="flex flex-col items-center gap-4 sm:flex-row lg:justify-start">
                 <Button
                   size="lg"
@@ -175,6 +277,74 @@ export default function Landing() {
                   </Button>
                 )}
               </div>
+              
+              {/* Animated Workout Stats */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1, duration: 0.8 }}
+                className="grid grid-cols-3 gap-4 mt-8 pt-8 border-t border-white/10"
+              >
+                <div className="text-center">
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 1.2, duration: 0.6, type: "spring" }}
+                    className="flex items-center justify-center mb-2"
+                  >
+                    <Flame className="h-5 w-5 text-red-400 mr-1" />
+                    <motion.span
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 1.5, duration: 0.5 }}
+                      className="text-2xl font-bold text-primary"
+                    >
+                      2.5K+
+                    </motion.span>
+                  </motion.div>
+                  <p className="text-xs text-zinc-400">Workouts Tracked</p>
+                </div>
+                
+                <div className="text-center">
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 1.4, duration: 0.6, type: "spring" }}
+                    className="flex items-center justify-center mb-2"
+                  >
+                    <Trophy className="h-5 w-5 text-yellow-400 mr-1" />
+                    <motion.span
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 1.7, duration: 0.5 }}
+                      className="text-2xl font-bold text-primary"
+                    >
+                      856
+                    </motion.span>
+                  </motion.div>
+                  <p className="text-xs text-zinc-400">PRs Set</p>
+                </div>
+                
+                <div className="text-center">
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 1.6, duration: 0.6, type: "spring" }}
+                    className="flex items-center justify-center mb-2"
+                  >
+                    <Zap className="h-5 w-5 text-blue-400 mr-1" />
+                    <motion.span
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 1.9, duration: 0.5 }}
+                      className="text-2xl font-bold text-primary"
+                    >
+                      127
+                    </motion.span>
+                  </motion.div>
+                  <p className="text-xs text-zinc-400">Active Users</p>
+                </div>
+              </motion.div>
             </div>
             {/* Visual Slideshow */}
             <div className="relative mx-auto hidden lg:block rounded-3xl overflow-hidden w-full max-w-lg aspect-[4/5]">
@@ -193,6 +363,144 @@ export default function Landing() {
               </AnimatePresence>
             </div>
           </motion.div>
+        </div>
+      </section>
+
+      {/* Interactive Workout Preview */}
+      <section className="py-16 bg-gradient-to-b from-black/50 to-transparent">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-3xl font-bold mb-4 bg-gradient-to-r from-primary to-rose-700 bg-clip-text text-transparent">
+              See Your Progress In Action
+            </h2>
+            <p className="text-lg text-zinc-300">Real-time analytics that motivate you to push harder</p>
+          </motion.div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Workout Progress Ring */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2, duration: 0.6 }}
+              viewport={{ once: true }}
+              className="bg-gradient-to-br from-black/60 to-zinc-900/80 border border-primary/20 rounded-2xl p-6 backdrop-blur-sm hover:border-primary/40 transition-all group"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-semibold text-white">Today's Progress</h3>
+                <Target className="h-5 w-5 text-primary" />
+              </div>
+              <div className="relative w-24 h-24 mx-auto mb-4">
+                <svg className="w-24 h-24 transform -rotate-90">
+                  <circle
+                    cx="48"
+                    cy="48"
+                    r="40"
+                    stroke="currentColor"
+                    strokeWidth="8"
+                    fill="none"
+                    className="text-zinc-700"
+                  />
+                  <motion.circle
+                    cx="48"
+                    cy="48"
+                    r="40"
+                    stroke="currentColor"
+                    strokeWidth="8"
+                    fill="none"
+                    strokeLinecap="round"
+                    className="text-primary"
+                    initial={{ strokeDasharray: "0 251.32" }}
+                    whileInView={{ strokeDasharray: "188.49 251.32" }}
+                    transition={{ duration: 2, ease: "easeInOut" }}
+                    viewport={{ once: true }}
+                  />
+                </svg>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-2xl font-bold text-primary">75%</span>
+                </div>
+              </div>
+              <p className="text-sm text-zinc-400 text-center">3 of 4 exercises completed</p>
+            </motion.div>
+
+            {/* Live Stats */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.4, duration: 0.6 }}
+              viewport={{ once: true }}
+              className="bg-gradient-to-br from-black/60 to-zinc-900/80 border border-primary/20 rounded-2xl p-6 backdrop-blur-sm hover:border-primary/40 transition-all group"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-semibold text-white">Live Stats</h3>
+                <Activity className="h-5 w-5 text-primary" />
+              </div>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-zinc-400">Current Set</span>
+                  <span className="text-white font-medium">Set 3/4</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-zinc-400">Weight</span>
+                  <motion.span 
+                    className="text-primary font-bold"
+                    animate={{ scale: [1, 1.1, 1] }}
+                    transition={{ duration: 1, repeat: Infinity, repeatDelay: 2 }}
+                  >
+                    185 lbs
+                  </motion.span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-zinc-400">Rest Timer</span>
+                  <motion.span 
+                    className="text-yellow-400 font-medium"
+                    animate={{ opacity: [1, 0.5, 1] }}
+                    transition={{ duration: 1, repeat: Infinity }}
+                  >
+                    1:23
+                  </motion.span>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Achievement Unlock */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.6, duration: 0.6 }}
+              viewport={{ once: true }}
+              className="bg-gradient-to-br from-black/60 to-zinc-900/80 border border-yellow-500/30 rounded-2xl p-6 backdrop-blur-sm hover:border-yellow-500/50 transition-all group relative overflow-hidden"
+            >
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-yellow-500/10 to-primary/10"
+                animate={{ opacity: [0.5, 0.8, 0.5] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              />
+              <div className="relative z-10">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-semibold text-white">Achievement!</h3>
+                  <Trophy className="h-5 w-5 text-yellow-400" />
+                </div>
+                <div className="text-center">
+                  <motion.div
+                    animate={{ rotate: [0, 10, -10, 0] }}
+                    transition={{ duration: 0.5, repeat: 2 }}
+                    className="mb-3"
+                  >
+                    <span className="text-3xl">🏆</span>
+                  </motion.div>
+                  <h4 className="text-sm font-bold text-yellow-400 mb-1">New PR!</h4>
+                  <p className="text-xs text-zinc-400">Bench Press: 185 lbs</p>
+                  <p className="text-xs text-primary mt-2">+10 lbs from last week</p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
 
@@ -227,21 +535,51 @@ export default function Landing() {
                 whileHover={{ y: -4, scale: 1.05, boxShadow: '0 8px 32px #fb7185DD' }}
                 className="transition-transform group hover:shadow-lg"
               >
-                <Card className="h-full border border-primary/30 bg-black/70 backdrop-blur-xl transition-shadow">
+                <Card className="h-full border border-primary/30 bg-black/70 backdrop-blur-xl transition-all duration-300 hover:border-primary/50 hover:bg-black/80 group">
                   <CardContent className="space-y-4 p-8 text-center">
                     <motion.div
-                      className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-tr from-primary/30 to-rose-500/15 group-hover:from-primary/60"
-                      whileHover={{ rotate: 7, scale: 1.08 }}
+                      className="mx-auto flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-tr from-primary/30 to-rose-500/15 group-hover:from-primary/50 group-hover:to-rose-500/25 transition-all duration-300"
+                      whileHover={{ rotate: 12, scale: 1.1 }}
                       transition={{
                         type: "spring",
-                        stiffness: 200,
-                        damping: 12,
+                        stiffness: 300,
+                        damping: 15,
                       }}
                     >
-                      <feature.icon className="h-6 w-6 text-primary" />
+                      <feature.icon className="h-8 w-8 text-primary group-hover:text-white transition-colors duration-300" />
                     </motion.div>
-                    <h3 className="text-xl font-semibold">{feature.title}</h3>
-                    <p className="text-gray-300">{feature.description}</p>
+                    
+                    <div>
+                      <div className="flex items-center justify-center gap-2 mb-2">
+                        <h3 className="text-xl font-semibold text-white group-hover:text-primary transition-colors duration-300">
+                          {feature.title}
+                        </h3>
+                      </div>
+                      <div className="mb-3">
+                        <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${feature.color} bg-white/5 border border-current/20`}>
+                          {feature.highlight}
+                        </span>
+                      </div>
+                      <p className="text-gray-300 group-hover:text-gray-200 transition-colors duration-300 leading-relaxed">
+                        {feature.description}
+                      </p>
+                    </div>
+
+                    {/* Animated progress indicator */}
+                    <motion.div
+                      className="h-1 w-full bg-zinc-800 rounded-full overflow-hidden"
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: 1 }}
+                      viewport={{ once: true }}
+                    >
+                      <motion.div
+                        className="h-full bg-gradient-to-r from-primary to-rose-500"
+                        initial={{ width: "0%" }}
+                        whileInView={{ width: "100%" }}
+                        transition={{ delay: index * 0.2 + 0.5, duration: 1.5, ease: "easeOut" }}
+                        viewport={{ once: true }}
+                      />
+                    </motion.div>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -413,21 +751,51 @@ export default function Landing() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="text-3xl font-bold sm:text-4xl text-white mb-6"
+          className="text-3xl font-bold sm:text-4xl text-white mb-6 flex items-center justify-center gap-3"
         >
+          <motion.span
+            animate={{ rotate: [0, 10, -10, 0] }}
+            transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+          >
+            💪
+          </motion.span>
           Ready to Transform Your Fitness?
+          <motion.span
+            animate={{ scale: [1, 1.2, 1] }}
+            transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 2 }}
+          >
+            🔥
+          </motion.span>
         </motion.h2>
         <p className="text-xl text-white/80 mb-8">
-          Start free today. No credit card required.
+          Join thousands who've already started their fitness transformation.
+          <br />
+          <span className="text-primary font-semibold">Start free today. No credit card required.</span>
         </p>
-        <Button
-          size="lg"
-          variant="secondary"
-          onClick={() => navigate("/auth")}
-          className="px-8 py-6 text-lg bg-gradient-to-r from-primary via-rose-500 to-red-600 shadow-2xl hover:scale-105 transition-transform"
-        >
-          Get Started For Free
-        </Button>
+        <motion.div className="relative">
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-r from-primary to-red-600 rounded-lg blur-lg opacity-75"
+            animate={{ 
+              scale: [1, 1.05, 1],
+              opacity: [0.75, 0.9, 0.75]
+            }}
+            transition={{ 
+              duration: 2, 
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+          <Button
+            size="lg"
+            variant="secondary"
+            onClick={() => navigate("/auth")}
+            className="relative px-8 py-6 text-lg bg-gradient-to-r from-primary via-rose-500 to-red-600 shadow-2xl hover:scale-105 transition-all duration-300 font-bold"
+          >
+            <Zap className="h-5 w-5 mr-2" />
+            Get Started For Free
+            <Flame className="h-5 w-5 ml-2" />
+          </Button>
+        </motion.div>
       </section>
 
       {/* Footer */}
