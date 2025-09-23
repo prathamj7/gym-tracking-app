@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { api } from "@/convex/_generated/api";
 import { motion } from "framer-motion";
-import { Activity, Calendar, Dumbbell, TrendingUp, Flame, Target, Weight, Clock } from "lucide-react";
+import { Activity, Calendar, Dumbbell, TrendingUp, Flame, Target, Weight, Clock, Hash } from "lucide-react";
 import { useQuery } from "convex/react";
 
 export function StatsCards() {
@@ -37,12 +37,21 @@ export function StatsCards() {
   const currentStreak = stats?.currentStreak || 0;
   const longestStreak = stats?.longestStreak || 0;
 
-  // Calculate total volume and average weight
-  const totalWeight = exercises
-    ?.filter(ex => ex.weight && ex.sets && ex.reps)
-    ?.reduce((sum, ex) => sum + (ex.weight! * ex.sets * ex.reps), 0) || 0;
+  // Calculate average sets per week
+  const totalSets = exercises
+    ?.filter(ex => ex.sets && ex.sets > 0)
+    ?.reduce((sum, ex) => sum + ex.sets, 0) || 0;
 
-  const avgWeight = totalExercises > 0 ? Math.round(totalWeight / totalExercises) : 0;
+  // Calculate number of weeks with data
+  const exerciseDates = exercises
+    ?.filter(ex => ex.performedAt)
+    ?.map(ex => new Date(ex.performedAt)) || [];
+
+  const weeksWithData = exerciseDates.length > 0 
+    ? Math.max(1, Math.ceil((Math.max(...exerciseDates.map(d => d.getTime())) - Math.min(...exerciseDates.map(d => d.getTime()))) / (7 * 24 * 60 * 60 * 1000)) + 1)
+    : 1;
+
+  const avgSetsPerWeek = weeksWithData > 0 ? Math.round(totalSets / weeksWithData) : 0;
 
   // Calculate weekly trend
   const lastWeekExercises = exercises?.filter(ex => 
@@ -82,11 +91,11 @@ export function StatsCards() {
       description: "Different exercise types",
     },
     {
-      title: "Avg Volume",
-      value: avgWeight > 0 ? `${avgWeight}kg` : "0kg",
-      icon: Weight,
+      title: "Avg Sets/Week",
+      value: avgSetsPerWeek.toString(),
+      icon: Hash,
       color: "text-orange-600",
-      description: "Per exercise session",
+      description: `${totalSets} total sets logged`,
     },
   ];
 
