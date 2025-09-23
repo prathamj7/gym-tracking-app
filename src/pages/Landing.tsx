@@ -14,13 +14,7 @@ import {
   Moon,
   Star,
 } from "lucide-react";
-import { useNaviga                className="rounded-xl border border-gray-300 dark:border-white/10 bg-white/80 dark:bg-white/5 p-6 shadow-lg backdrop-bl group hover:scale-105 hover:shadow-2xl transition-transform"
-              >
-                <Star className="mx-auto h-6 w-6 text-primary mb-4 group-hover:text-rose-400 transition-colors" />
-                <p className="text-gray-700 dark:text-white/80 mb-4">"{t.text}"</p>
-                <div className="text-sm font-semibold text-gray-600 dark:text-white/70">
-                  – {t.name}
-                </div>om "react-router";
+import { useNavigate } from "react-router";
 import { useEffect, useState } from "react";
 
 export default function Landing() {
