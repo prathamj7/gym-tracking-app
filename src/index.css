@@ -42,27 +42,27 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
-/* Modern Theme Colors */
+/* Modern Theme Colors - Light Mode (White + Red) */
 :root {
   --radius: 0.5rem;
-  --background: oklch(0.99 0.005 106);
-  --foreground: oklch(0.15 0.01 106);
-  --card: oklch(1 0 0);
+  --background: oklch(1 0 0); /* Pure white */
+  --foreground: oklch(0.15 0.01 106); /* Nearly black text */
+  --card: oklch(0.99 0.005 106); /* Slightly off-white for cards */
   --card-foreground: oklch(0.15 0.01 106);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.15 0.01 106);
-  --primary: oklch(0.55 0.23 25);
-  --primary-foreground: oklch(0.98 0.005 106);
-  --secondary: oklch(0.96 0.01 106);
+  --primary: oklch(0.55 0.23 25); /* Red primary color */
+  --primary-foreground: oklch(0.98 0.005 106); /* White text on red */
+  --secondary: oklch(0.96 0.01 106); /* Light gray */
   --secondary-foreground: oklch(0.2 0.01 106);
   --muted: oklch(0.96 0.01 106);
   --muted-foreground: oklch(0.5 0.01 106);
   --accent: oklch(0.94 0.02 106);
   --accent-foreground: oklch(0.2 0.01 106);
-  --destructive: oklch(0.6 0.2 25);
+  --destructive: oklch(0.6 0.2 25); /* Red for destructive actions */
   --border: oklch(0.9 0.01 106);
   --input: oklch(0.9 0.01 106);
-  --ring: oklch(0.55 0.23 25);
+  --ring: oklch(0.55 0.23 25); /* Red focus ring */
   --chart-1: oklch(0.62 0.26 25);
   --chart-2: oklch(0.68 0.20 30);
   --chart-3: oklch(0.55 0.18 20);
@@ -70,7 +70,7 @@
   --chart-5: oklch(0.5 0.24 10);
   --sidebar: oklch(0.98 0.005 106);
   --sidebar-foreground: oklch(0.15 0.01 106);
-  --sidebar-primary: oklch(0.4 0.15 250);
+  --sidebar-primary: oklch(0.55 0.23 25); /* Red sidebar */
   --sidebar-primary-foreground: oklch(0.98 0.005 106);
   --sidebar-accent: oklch(0.94 0.02 106);
   --sidebar-accent-foreground: oklch(0.2 0.01 106);
@@ -79,37 +79,37 @@
 }
 
 .dark {
-  --background: oklch(0.08 0.01 106);
-  --foreground: oklch(0.95 0.005 106);
-  --card: oklch(0.12 0.01 106);
+  --background: oklch(0.05 0.01 106); /* Nearly black background */
+  --foreground: oklch(0.95 0.005 106); /* White text */
+  --card: oklch(0.08 0.01 106); /* Dark gray cards */
   --card-foreground: oklch(0.95 0.005 106);
-  --popover: oklch(0.12 0.01 106);
+  --popover: oklch(0.08 0.01 106);
   --popover-foreground: oklch(0.95 0.005 106);
-  --primary: oklch(0.7 0.25 25);
-  --primary-foreground: oklch(0.08 0.01 106);
-  --secondary: oklch(0.18 0.01 106);
+  --primary: oklch(0.65 0.25 25); /* Bright red for dark mode */
+  --primary-foreground: oklch(0.05 0.01 106); /* Black text on red */
+  --secondary: oklch(0.15 0.01 106); /* Dark gray */
   --secondary-foreground: oklch(0.9 0.005 106);
-  --muted: oklch(0.18 0.01 106);
+  --muted: oklch(0.15 0.01 106);
   --muted-foreground: oklch(0.6 0.01 106);
-  --accent: oklch(0.22 0.02 106);
+  --accent: oklch(0.18 0.02 106);
   --accent-foreground: oklch(0.9 0.005 106);
-  --destructive: oklch(0.7 0.25 25);
-  --border: oklch(0.25 0.01 106);
-  --input: oklch(0.25 0.01 106);
-  --ring: oklch(0.7 0.25 25);
+  --destructive: oklch(0.7 0.25 25); /* Bright red for destructive actions */
+  --border: oklch(0.2 0.01 106);
+  --input: oklch(0.2 0.01 106);
+  --ring: oklch(0.65 0.25 25); /* Red focus ring */
   --chart-1: oklch(0.75 0.28 25);
   --chart-2: oklch(0.8 0.22 30);
   --chart-3: oklch(0.68 0.2 20);
   --chart-4: oklch(0.82 0.18 15);
   --chart-5: oklch(0.62 0.24 10);
-  --sidebar: oklch(0.12 0.01 106);
+  --sidebar: oklch(0.08 0.01 106);
   --sidebar-foreground: oklch(0.95 0.005 106);
-  --sidebar-primary: oklch(0.6 0.2 250);
-  --sidebar-primary-foreground: oklch(0.08 0.01 106);
-  --sidebar-accent: oklch(0.22 0.02 106);
+  --sidebar-primary: oklch(0.65 0.25 25); /* Red sidebar */
+  --sidebar-primary-foreground: oklch(0.05 0.01 106);
+  --sidebar-accent: oklch(0.18 0.02 106);
   --sidebar-accent-foreground: oklch(0.9 0.005 106);
-  --sidebar-border: oklch(0.25 0.01 106);
-  --sidebar-ring: oklch(0.7 0.25 25);
+  --sidebar-border: oklch(0.2 0.01 106);
+  --sidebar-ring: oklch(0.65 0.25 25);
 }
 
 @layer base {
