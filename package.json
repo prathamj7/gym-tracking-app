@@ -91,6 +91,19 @@
     "tw-animate-css": "^1.3.3",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.30.1",
-    "vite": "^6.3.5"
-  }
+    "vite": "^7.1.7"
+  },
+  "description": "This project uses the following tech stack:\r - Vite\r - Typescript\r - React Router v7 (all imports from `react-router` instead of `react-router-dom`)\r - React 19 (for frontend components)\r - Tailwind v4 (for styling)\r - Shadcn UI (for UI components library)\r - Lucide Icons (for icons)\r - Convex (for backend & database)\r - Convex Auth (for authentication)\r - Framer Motion (for animations)\r - Three js (for 3d models)",
+  "main": "eslint.config.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/prathamj7/gym-tracking-app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/prathamj7/gym-tracking-app/issues"
+  },
+  "homepage": "https://github.com/prathamj7/gym-tracking-app#readme"
 }
