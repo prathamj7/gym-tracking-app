@@ -62,6 +62,16 @@ export function ExerciseForm({ onClose, initialName, initialCategory, existing }
     try {
       const formData = new FormData(e.currentTarget);
       const dateStr = formData.get("date") as string | null;
+      const exerciseName = formData.get("name") as string;
+      const category = formData.get("category") as string;
+
+      // Validate required fields
+      if (!exerciseName?.trim()) {
+        throw new Error("Exercise name is required");
+      }
+      if (!category) {
+        throw new Error("Category is required");
+      }
 
       // Use selected date with current local time
       const now = new Date();
@@ -76,7 +86,7 @@ export function ExerciseForm({ onClose, initialName, initialCategory, existing }
       }
       const performedAt = performedAtDate.getTime();
 
-      // Parse optional numeric fields safely
+      // Parse optional numeric fields safely with validation
       const setsStr = (formData.get("sets") as string) || "";
       const repsStr = (formData.get("reps") as string) || "";
       const weightStr = (formData.get("weight") as string) || "";
@@ -87,12 +97,26 @@ export function ExerciseForm({ onClose, initialName, initialCategory, existing }
       const weight = weightStr.trim() === "" ? undefined : Number(weightStr);
       const duration = durationStr.trim() === "" ? undefined : Number(durationStr);
 
+      // Validate numeric values
+      if (sets !== undefined && (isNaN(sets) || sets < 1 || sets > 50)) {
+        throw new Error("Sets must be between 1 and 50");
+      }
+      if (reps !== undefined && (isNaN(reps) || reps < 1 || reps > 1000)) {
+        throw new Error("Reps must be between 1 and 1000");
+      }
+      if (weight !== undefined && (isNaN(weight) || weight < 0 || weight > 1000)) {
+        throw new Error("Weight must be between 0 and 1000 kg");
+      }
+      if (duration !== undefined && (isNaN(duration) || duration < 0 || duration > 600)) {
+        throw new Error("Duration must be between 0 and 600 minutes");
+      }
+
       if (existing) {
         // Update flow
         await updateExercise({
           id: existing._id as any,
-          name: formData.get("name") as string,
-          category: formData.get("category") as string,
+          name: exerciseName.trim(),
+          category,
           sets,
           reps,
           weight,
@@ -100,12 +124,12 @@ export function ExerciseForm({ onClose, initialName, initialCategory, existing }
           notes: ((formData.get("notes") as string) || undefined) as any,
           performedAt,
         } as any);
-        toast("Exercise updated successfully!");
+        toast.success("Exercise updated successfully!");
       } else {
         // Create flow
         const result = await createExercise({
-          name: formData.get("name") as string,
-          category: formData.get("category") as string,
+          name: exerciseName.trim(),
+          category,
           sets,
           reps,
           weight,
@@ -117,15 +141,16 @@ export function ExerciseForm({ onClose, initialName, initialCategory, existing }
         if (result?.isNewPR) {
           const dim = result.dimension === "weight" ? "weight" : "duration";
           const emoji = dim === "weight" ? "🏆" : "⏱️";
-          toast(`${emoji} New PR achieved!`);
+          toast.success(`${emoji} New PR achieved!`);
         } else {
-          toast("Exercise logged successfully!");
+          toast.success("Exercise logged successfully!");
         }
       }
       onClose();
     } catch (error) {
-      toast(existing ? "Failed to update exercise. Please try again." : "Failed to log exercise. Please try again.");
-      console.error(error);
+      const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
+      toast.error(`Failed to ${existing ? 'update' : 'create'} exercise: ${errorMessage}`);
+      console.error("Exercise operation failed:", error);
     } finally {
       setIsLoading(false);
     }

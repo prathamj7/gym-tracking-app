@@ -18,12 +18,17 @@ import { UserProfileModal } from "@/components/dashboard/UserProfileModal";
 export default function Dashboard() {
   const { isLoading, isAuthenticated, user, signOut } = useAuth();
   const navigate = useNavigate();
-  const [showExerciseForm, setShowExerciseForm] = useState(false);
-  const [showCompare, setShowCompare] = useState(false);
-  const [showDownload, setShowDownload] = useState(false);
-  const [showLibrary, setShowLibrary] = useState(false);
-  const [showUser, setShowUser] = useState(false);
-  const [showProgress, setShowProgress] = useState(false);
+  
+  // Centralized modal state
+  const [modals, setModals] = useState({
+    exerciseForm: false,
+    compare: false,
+    download: false,
+    library: false,
+    user: false,
+    progress: false,
+  });
+  
   const [prefill, setPrefill] = useState<{ name?: string; category?: string } | null>(null);
 
   useEffect(() => {
@@ -32,9 +37,72 @@ export default function Dashboard() {
     }
   }, [isLoading, isAuthenticated, navigate]);
 
+  // Centralized modal management
+  const openModal = (modalName: keyof typeof modals) => {
+    setModals(prev => ({ ...prev, [modalName]: true }));
+  };
+
+  const closeModal = (modalName: keyof typeof modals) => {
+    setModals(prev => ({ ...prev, [modalName]: false }));
+    if (modalName === 'exerciseForm') {
+      setPrefill(null); // Clear prefill when closing exercise form
+    }
+  };
+
+  const closeAllModals = () => {
+    setModals({
+      exerciseForm: false,
+      compare: false,
+      download: false,
+      library: false,
+      user: false,
+      progress: false,
+    });
+    setPrefill(null);
+  };
+
+  // Add keyboard shortcut for closing modals
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        closeAllModals();
+      }
+      // Quick shortcuts
+      if (event.ctrlKey || event.metaKey) {
+        switch (event.key) {
+          case 'e':
+            event.preventDefault();
+            openModal('exerciseForm');
+            break;
+          case 'l':
+            event.preventDefault();
+            openModal('library');
+            break;
+          case 'p':
+            event.preventDefault();
+            openModal('progress');
+            break;
+        }
+      }
+    };
+    
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   const handleSignOut = async () => {
-    await signOut();
-    navigate("/");
+    try {
+      await signOut();
+      navigate("/");
+    } catch (error) {
+      console.error("Sign out failed:", error);
+    }
+  };
+
+  const handleLibrarySelect = ({ name, category }: { name: string; category: string }) => {
+    closeModal('library');
+    setPrefill({ name, category });
+    openModal('exerciseForm');
   };
 
   if (isLoading) {
@@ -67,31 +135,34 @@ export default function Dashboard() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setShowDownload(true)}
+                onClick={() => openModal('download')}
                 className="hidden sm:inline-flex hover:bg-primary/10 transition"
+                title="Download Progress (Ctrl+D)"
               >
                 Download Progress <span className="ml-2">📥</span>
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setShowLibrary(true)}
+                onClick={() => openModal('library')}
                 className="hidden sm:inline-flex hover:bg-primary/10 transition"
+                title="Exercise Library (Ctrl+L)"
               >
                 Exercise Library
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setShowProgress(true)}
+                onClick={() => openModal('progress')}
                 className="hidden sm:inline-flex hover:bg-primary/10 transition"
+                title="Progress Chart (Ctrl+P)"
               >
                 Progress Chart
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setShowUser(true)}
+                onClick={() => openModal('user')}
                 title="View Profile"
                 className="hover:bg-primary/10 transition"
               >
@@ -126,15 +197,16 @@ export default function Dashboard() {
             </div>
             <div className="flex gap-4 flex-wrap sm:flex-nowrap">
               <Button
-                onClick={() => setShowExerciseForm(true)}
+                onClick={() => openModal('exerciseForm')}
                 size="lg"
                 className="w-full sm:w-auto bg-gradient-to-r from-primary via-rose-600 to-rose-700 shadow-lg hover:scale-105 transition-transform font-semibold"
+                title="Log Exercise (Ctrl+E)"
               >
                 <Plus className="mr-2 h-5 w-5" />
                 Log Exercise
               </Button>
               <Button
-                onClick={() => setShowCompare(true)}
+                onClick={() => openModal('compare')}
                 variant="outline"
                 size="lg"
                 className="w-full sm:w-auto hover:bg-primary/10 transition font-semibold"
@@ -168,30 +240,23 @@ export default function Dashboard() {
 
       {/* Modals */}
       <AnimatePresence>
-        {showExerciseForm && (
+        {modals.exerciseForm && (
           <ExerciseForm
-            onClose={() => {
-              setShowExerciseForm(false);
-              setPrefill(null);
-            }}
+            onClose={() => closeModal('exerciseForm')}
             initialName={prefill?.name}
             initialCategory={prefill?.category}
           />
         )}
-        {showCompare && <CompareModal onClose={() => setShowCompare(false)} />}
-        {showDownload && <DownloadModal onClose={() => setShowDownload(false)} />}
-        {showLibrary && (
+        {modals.compare && <CompareModal onClose={() => closeModal('compare')} />}
+        {modals.download && <DownloadModal onClose={() => closeModal('download')} />}
+        {modals.library && (
           <LibraryModal
-            onClose={() => setShowLibrary(false)}
-            onSelectExercise={({ name, category }) => {
-              setShowLibrary(false);
-              setPrefill({ name, category });
-              setShowExerciseForm(true);
-            }}
+            onClose={() => closeModal('library')}
+            onSelectExercise={handleLibrarySelect}
           />
         )}
-        {showProgress && <ProgressModal onClose={() => setShowProgress(false)} />}
-        {showUser && <UserProfileModal onClose={() => setShowUser(false)} />}
+        {modals.progress && <ProgressModal onClose={() => closeModal('progress')} />}
+        {modals.user && <UserProfileModal onClose={() => closeModal('user')} />}
       </AnimatePresence>
     </div>
   );
