@@ -25,6 +25,15 @@ const shortLabel = (ts: number) =>
   new Date(ts).toLocaleDateString("en-US", { month: "short", day: "numeric" });
 
 const computeVolume = (e: any) => {
+  // Handle new setsData format
+  if (e.setsData && e.setsData.length > 0) {
+    return e.setsData.reduce((total: number, set: any) => {
+      const weight = typeof set.weight === "number" ? set.weight : 0;
+      const reps = typeof set.reps === "number" ? set.reps : 0;
+      return total + (weight * reps);
+    }, 0);
+  }
+  // Fallback to legacy format
   const weight = typeof e.weight === "number" ? e.weight : 0;
   const reps = typeof e.reps === "number" ? e.reps : 0;
   return weight * reps;
@@ -57,11 +66,19 @@ export function ProgressChart({ onClose }: { onClose: () => void }) {
       const metric = isDuration ? computeMinutes(r) : computeVolume(r);
       const agg = byDay.get(key) ?? { dateKey: key, label, total: 0, breakdown: [] };
       agg.total += metric;
-      agg.breakdown.push(
-        isDuration
-          ? { duration: r.duration, volume: metric }
-          : { weight: r.weight, reps: r.reps, volume: metric }
-      );
+      if (isDuration) {
+        agg.breakdown.push({ duration: r.duration, volume: metric });
+      } else if (r.setsData && r.setsData.length > 0) {
+        // For setsData format, add each set as a separate breakdown entry
+        r.setsData.forEach((set: any) => {
+          const setVolume = (typeof set.weight === "number" ? set.weight : 0) * 
+                            (typeof set.reps === "number" ? set.reps : 0);
+          agg.breakdown.push({ weight: set.weight, reps: set.reps, volume: setVolume });
+        });
+      } else {
+        // Fallback to legacy format
+        agg.breakdown.push({ weight: r.weight, reps: r.reps, volume: metric });
+      }
       byDay.set(key, agg);
     }
     const arr = Array.from(byDay.values()).sort((a, b) => a.dateKey.localeCompare(b.dateKey));

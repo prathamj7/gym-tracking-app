@@ -6,10 +6,16 @@ export const create = mutation({
   args: {
     name: v.string(),
     category: v.string(),
-    // Make sets and reps optional to allow skipping them
+    // Legacy fields for backward compatibility
     sets: v.optional(v.number()),
     reps: v.optional(v.number()),
     weight: v.optional(v.number()),
+    // New field: array of sets with individual values
+    setsData: v.optional(v.array(v.object({
+      reps: v.number(),
+      weight: v.optional(v.number()),
+      notes: v.optional(v.string()),
+    }))),
     duration: v.optional(v.number()),
     notes: v.optional(v.string()),
     // Optional date from the client; if not provided, default to now
@@ -21,54 +27,115 @@ export const create = mutation({
       throw new Error("Not authenticated");
     }
 
-    const insertedId = await ctx.db.insert("exercises", {
-      ...args,
-      userId: user._id,
-      performedAt: args.performedAt ?? Date.now(),
-    });
+    const performedAt = args.performedAt ?? Date.now();
+    const performedDate = new Date(performedAt);
+    
+    // Create date boundaries for same-day check (start and end of day)
+    const dayStart = new Date(performedDate.getFullYear(), performedDate.getMonth(), performedDate.getDate()).getTime();
+    const dayEnd = dayStart + 24 * 60 * 60 * 1000 - 1;
+
+    // Check if there's already an entry for this exercise on the same day
+    const existingEntry = await ctx.db
+      .query("exercises")
+      .withIndex("by_user_and_name_and_performedAt", (q) =>
+        q.eq("userId", user._id).eq("name", args.name)
+      )
+      .filter((q) => 
+        q.and(
+          q.gte(q.field("performedAt"), dayStart),
+          q.lte(q.field("performedAt"), dayEnd)
+        )
+      )
+      .first();
+
+    let insertedId: any;
+    let isNewEntry = false;
+
+    if (existingEntry && args.setsData) {
+      // Merge with existing entry - append new sets to existing setsData
+      const currentSetsData = existingEntry.setsData || [];
+      const updatedSetsData = [...currentSetsData, ...args.setsData];
+      
+      await ctx.db.patch(existingEntry._id, {
+        setsData: updatedSetsData,
+        notes: args.notes ? 
+          (existingEntry.notes ? `${existingEntry.notes}\n${args.notes}` : args.notes) :
+          existingEntry.notes,
+      });
+      
+      insertedId = existingEntry._id;
+    } else {
+      // Create new entry
+      insertedId = await ctx.db.insert("exercises", {
+        ...args,
+        userId: user._id,
+        performedAt,
+      });
+      isNewEntry = true;
+    }
 
     // Determine if this entry is a new PR for this exercise
     let isNewPR = false as boolean;
     let dimension: "weight" | "duration" | null = null;
 
-    // Load the inserted document
-    const inserted = await ctx.db.get(insertedId);
-    if (inserted) {
-      // Fetch previous entries for the same exercise name (excluding this one)
-      const sameName = await ctx.db
-        .query("exercises")
-        .withIndex("by_user_and_name_and_performedAt", (q) =>
-          q.eq("userId", user._id).eq("name", inserted.name),
-        )
-        .collect();
+    // For PR calculation, we'll determine based on the args provided
+    // Calculate max weight from current entry
+    let currentMaxWeight = -Infinity;
+    if (args.setsData && args.setsData.length > 0) {
+      // New format: check max weight across all sets
+      currentMaxWeight = args.setsData.reduce((max: number, set) => 
+        set.weight && set.weight > max ? set.weight : max, -Infinity);
+    } else if (typeof args.weight === "number") {
+      // Legacy format
+      currentMaxWeight = args.weight;
+    }
 
-      // Best previous weight (exclude current by _id)
-      const prevWeightMax = sameName
-        .filter((e) => e._id !== insertedId && typeof e.weight === "number")
-        .reduce((max, e) => (e.weight! > max ? e.weight! : max), -Infinity);
+    // Fetch previous entries for the same exercise name (excluding any potential update to existing entry)
+    const sameName = await ctx.db
+      .query("exercises")
+      .withIndex("by_user_and_name_and_performedAt", (q) =>
+        q.eq("userId", user._id).eq("name", args.name),
+      )
+      .filter((q) => q.neq(q.field("_id"), insertedId))
+      .collect();
 
-      // Best previous duration (exclude current)
-      const prevDurationMax = sameName
-        .filter((e) => e._id !== insertedId && typeof e.duration === "number")
-        .reduce((max, e) => (e.duration! > max ? e.duration! : max), -Infinity);
-
-      // If current has weight, treat as strength PR on weight
-      if (typeof inserted.weight === "number") {
-        dimension = "weight";
-        if (inserted.weight > (prevWeightMax === -Infinity ? -Infinity : prevWeightMax)) {
-          isNewPR = true;
+    // Calculate best previous weight
+    const prevWeightMax = sameName
+      .reduce((max, e) => {
+        let exerciseMaxWeight = -Infinity;
+        if (e.setsData && e.setsData.length > 0) {
+          exerciseMaxWeight = e.setsData.reduce((setMax: number, set) => 
+            set.weight && set.weight > setMax ? set.weight : setMax, -Infinity);
+        } else if (typeof e.weight === "number") {
+          exerciseMaxWeight = e.weight;
         }
-      } else if (typeof inserted.duration === "number") {
-        // Else if it's duration-based
+        return exerciseMaxWeight > max ? exerciseMaxWeight : max;
+      }, -Infinity);
+
+    // Check for weight PR
+    if (currentMaxWeight !== -Infinity) {
+      dimension = "weight";
+      if (currentMaxWeight > (prevWeightMax === -Infinity ? -Infinity : prevWeightMax)) {
+        isNewPR = true;
+      }
+    }
+    
+    // Check for duration PR (for cardio exercises)
+    if (typeof args.duration === "number") {
+      const prevDurationMax = sameName
+        .filter((e) => typeof e.duration === "number")
+        .reduce((max, e) => (e.duration! > max ? e.duration! : max), -Infinity);
+      
+      if (!dimension) { // Only set if no weight dimension already set
         dimension = "duration";
-        if (inserted.duration > (prevDurationMax === -Infinity ? -Infinity : prevDurationMax)) {
+        if (args.duration > (prevDurationMax === -Infinity ? -Infinity : prevDurationMax)) {
           isNewPR = true;
         }
       }
     }
 
     // Return info so the client can toast a PR notification
-    return { id: insertedId, isNewPR, dimension };
+    return { id: insertedId, isNewPR, dimension, isNewEntry };
   },
 });
 
@@ -110,10 +177,16 @@ export const update = mutation({
     id: v.id("exercises"),
     name: v.optional(v.string()),
     category: v.optional(v.string()),
-    // sets/reps already optional here; keep them
+    // Legacy fields for backward compatibility
     sets: v.optional(v.number()),
     reps: v.optional(v.number()),
     weight: v.optional(v.number()),
+    // New field: array of sets with individual values
+    setsData: v.optional(v.array(v.object({
+      reps: v.number(),
+      weight: v.optional(v.number()),
+      notes: v.optional(v.string()),
+    }))),
     duration: v.optional(v.number()),
     notes: v.optional(v.string()),
     // Allow updating the performedAt date

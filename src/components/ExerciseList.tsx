@@ -302,6 +302,7 @@ export function ExerciseList() {
                           duration: exercise.duration,
                           notes: exercise.notes,
                           performedAt: exercise.performedAt,
+                          setsData: exercise.setsData,
                         })
                       }
                       className="h-8 w-8 text-muted-foreground hover:text-primary"
@@ -320,35 +321,76 @@ export function ExerciseList() {
                   </div>
                 </CardHeader>
                 <CardContent className="pt-0">
-                  <div className="flex flex-wrap gap-4 text-sm">
-                    {typeof exercise.sets === "number" && (
-                      <div className="flex items-center gap-1">
-                        <Hash className="h-4 w-4 text-muted-foreground" />
-                        <span className="font-medium">{exercise.sets}</span>
-                        <span className="text-muted-foreground">sets</span>
+                  {/* Display new setsData format */}
+                  {exercise.setsData && exercise.setsData.length > 0 ? (
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                        <Hash className="h-4 w-4" />
+                        <span>{exercise.setsData.length} sets</span>
                       </div>
-                    )}
-                    {typeof exercise.reps === "number" && (
-                      <div className="flex items-center gap-1">
-                        <span className="font-medium">{exercise.reps}</span>
-                        <span className="text-muted-foreground">reps</span>
+                      <div className="space-y-2">
+                        {exercise.setsData.map((set, index) => (
+                          <div key={index} className="flex items-center gap-3 p-2 bg-muted/50 rounded-lg text-sm">
+                            <span className="font-medium min-w-[3rem]">Set {index + 1}:</span>
+                            <div className="flex items-center gap-1">
+                              <span className="font-medium">{set.reps}</span>
+                              <span className="text-muted-foreground">reps</span>
+                            </div>
+                            {typeof set.weight === "number" && (
+                              <div className="flex items-center gap-1">
+                                <Weight className="h-3 w-3 text-muted-foreground" />
+                                <span className="font-medium">{set.weight}</span>
+                                <span className="text-muted-foreground">kg</span>
+                              </div>
+                            )}
+                            {set.notes && (
+                              <div className="flex-1 text-xs text-muted-foreground italic">
+                                "{set.notes}"
+                              </div>
+                            )}
+                          </div>
+                        ))}
                       </div>
-                    )}
-                    {typeof exercise.weight === "number" && (
-                      <div className="flex items-center gap-1">
-                        <Weight className="h-4 w-4 text-muted-foreground" />
-                        <span className="font-medium">{exercise.weight}</span>
-                        <span className="text-muted-foreground">kg</span>
-                      </div>
-                    )}
-                    {typeof exercise.duration === "number" && (
-                      <div className="flex items-center gap-1">
-                        <Clock className="h-4 w-4 text-muted-foreground" />
-                        <span className="font-medium">{exercise.duration}</span>
-                        <span className="text-muted-foreground">min</span>
-                      </div>
-                    )}
-                  </div>
+                      {typeof exercise.duration === "number" && (
+                        <div className="flex items-center gap-1 text-sm pt-2 border-t">
+                          <Clock className="h-4 w-4 text-muted-foreground" />
+                          <span className="font-medium">{exercise.duration}</span>
+                          <span className="text-muted-foreground">min</span>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    /* Fallback to legacy format for backward compatibility */
+                    <div className="flex flex-wrap gap-4 text-sm">
+                      {typeof exercise.sets === "number" && (
+                        <div className="flex items-center gap-1">
+                          <Hash className="h-4 w-4 text-muted-foreground" />
+                          <span className="font-medium">{exercise.sets}</span>
+                          <span className="text-muted-foreground">sets</span>
+                        </div>
+                      )}
+                      {typeof exercise.reps === "number" && (
+                        <div className="flex items-center gap-1">
+                          <span className="font-medium">{exercise.reps}</span>
+                          <span className="text-muted-foreground">reps</span>
+                        </div>
+                      )}
+                      {typeof exercise.weight === "number" && (
+                        <div className="flex items-center gap-1">
+                          <Weight className="h-4 w-4 text-muted-foreground" />
+                          <span className="font-medium">{exercise.weight}</span>
+                          <span className="text-muted-foreground">kg</span>
+                        </div>
+                      )}
+                      {typeof exercise.duration === "number" && (
+                        <div className="flex items-center gap-1">
+                          <Clock className="h-4 w-4 text-muted-foreground" />
+                          <span className="font-medium">{exercise.duration}</span>
+                          <span className="text-muted-foreground">min</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
                   {exercise.notes && (
                     <div className="mt-3 p-3 bg-muted rounded-lg">
                       <p className="text-sm text-muted-foreground">{exercise.notes}</p>

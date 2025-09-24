@@ -37,10 +37,17 @@ export function StatsCards() {
   const currentStreak = stats?.currentStreak || 0;
   const longestStreak = stats?.longestStreak || 0;
 
-  // Calculate average sets per week
-  const totalSets = exercises
-    ?.filter(ex => ex.sets && ex.sets > 0)
-    ?.reduce((sum, ex) => sum + ex.sets, 0) || 0;
+  // Calculate average sets per week (handle both new setsData and legacy format)
+  const totalSets = exercises?.reduce((sum, ex) => {
+    if (ex.setsData && ex.setsData.length > 0) {
+      // Use new setsData format
+      return sum + ex.setsData.length;
+    } else if (ex.sets && ex.sets > 0) {
+      // Fallback to legacy format
+      return sum + ex.sets;
+    }
+    return sum;
+  }, 0) || 0;
 
   // Calculate number of weeks with data
   const exerciseDates = exercises

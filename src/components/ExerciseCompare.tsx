@@ -32,8 +32,49 @@ export function ExerciseCompare() {
     </div>
   );
 
-  // Fix: use reps for volume consistently (weight x reps) and handle undefined safely
-  const volume = (e: any | null) => (e ? (e.weight || 0) * (e.reps || 0) : 0);
+  // Helper functions to extract stats from both setsData and legacy format
+  const getSetsCount = (e: any | null) => {
+    if (!e) return 0;
+    if (e.setsData && e.setsData.length > 0) return e.setsData.length;
+    return e.sets ?? 0;
+  };
+
+  const getTotalReps = (e: any | null) => {
+    if (!e) return 0;
+    if (e.setsData && e.setsData.length > 0) {
+      return e.setsData.reduce((total: number, set: any) => {
+        return total + (typeof set.reps === "number" ? set.reps : 0);
+      }, 0);
+    }
+    return e.reps ?? 0;
+  };
+
+  const getMaxWeight = (e: any | null) => {
+    if (!e) return 0;
+    if (e.setsData && e.setsData.length > 0) {
+      return Math.max(...e.setsData.map((set: any) => 
+        typeof set.weight === "number" ? set.weight : 0
+      ), 0);
+    }
+    return e.weight ?? 0;
+  };
+
+  // Calculate volume with support for both setsData and legacy format
+  const volume = (e: any | null) => {
+    if (!e) return 0;
+    
+    // Handle new setsData format
+    if (e.setsData && e.setsData.length > 0) {
+      return e.setsData.reduce((total: number, set: any) => {
+        const weight = typeof set.weight === "number" ? set.weight : 0;
+        const reps = typeof set.reps === "number" ? set.reps : 0;
+        return total + (weight * reps);
+      }, 0);
+    }
+    
+    // Fallback to legacy format
+    return (e.weight || 0) * (e.reps || 0);
+  };
 
   return (
     <Card className="mb-8">
@@ -78,9 +119,9 @@ export function ExerciseCompare() {
                 <div className="text-sm text-muted-foreground">Date A</div>
                 {result.first ? (
                   <div className="grid grid-cols-2 gap-3">
-                    {statBlock("Sets", result.first.sets ?? 0)}
-                    {statBlock("Reps", result.first.reps ?? 0)}
-                    {statBlock("Weight (kg)", result.first.weight ?? 0)}
+                    {statBlock("Sets", getSetsCount(result.first))}
+                    {statBlock("Reps", getTotalReps(result.first))}
+                    {statBlock("Max Weight (kg)", getMaxWeight(result.first))}
                     {statBlock("Volume", volume(result.first))}
                   </div>
                 ) : (
@@ -95,15 +136,15 @@ export function ExerciseCompare() {
                 <div className="grid grid-cols-2 gap-3">
                   {statBlock(
                     "Sets",
-                    (result.second?.sets ?? 0) - (result.first?.sets ?? 0)
+                    getSetsCount(result.second) - getSetsCount(result.first)
                   )}
                   {statBlock(
                     "Reps",
-                    (result.second?.reps ?? 0) - (result.first?.reps ?? 0)
+                    getTotalReps(result.second) - getTotalReps(result.first)
                   )}
                   {statBlock(
-                    "Weight (kg)",
-                    (result.second?.weight ?? 0) - (result.first?.weight ?? 0)
+                    "Max Weight (kg)",
+                    getMaxWeight(result.second) - getMaxWeight(result.first)
                   )}
                   {statBlock(
                     "Volume",
@@ -118,9 +159,9 @@ export function ExerciseCompare() {
                 <div className="text-sm text-muted-foreground">Date B</div>
                 {result.second ? (
                   <div className="grid grid-cols-2 gap-3">
-                    {statBlock("Sets", result.second.sets ?? 0)}
-                    {statBlock("Reps", result.second.reps ?? 0)}
-                    {statBlock("Weight (kg)", result.second.weight ?? 0)}
+                    {statBlock("Sets", getSetsCount(result.second))}
+                    {statBlock("Reps", getTotalReps(result.second))}
+                    {statBlock("Max Weight (kg)", getMaxWeight(result.second))}
                     {statBlock("Volume", volume(result.second))}
                   </div>
                 ) : (

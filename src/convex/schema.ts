@@ -40,10 +40,17 @@ const schema = defineSchema(
       userId: v.id("users"),
       name: v.string(),
       category: v.string(),
-      // Make sets and reps optional
+      // Legacy fields for backward compatibility (deprecated)
       sets: v.optional(v.number()),
       reps: v.optional(v.number()),
       weight: v.optional(v.number()),
+      // New field: array of sets with individual values
+      setsData: v.optional(v.array(v.object({
+        reps: v.number(),
+        weight: v.optional(v.number()),
+        notes: v.optional(v.string()),
+      }))),
+      // Keep duration and notes for cardio/time-based exercises
       duration: v.optional(v.number()),
       notes: v.optional(v.string()),
       // When the exercise was actually performed (allows logging to any date)

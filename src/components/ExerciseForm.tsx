@@ -6,10 +6,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/convex/_generated/api";
 import { motion } from "framer-motion";
-import { Plus, X } from "lucide-react";
+import { Plus, X, Trash2 } from "lucide-react";
 import { useMutation } from "convex/react";
 import { useState } from "react";
 import { toast } from "sonner";
+
+interface Set {
+  id: string;
+  reps: number | string;
+  weight: number | string;
+  notes: string;
+}
 
 interface ExerciseFormProps {
   onClose: () => void;
@@ -24,6 +31,11 @@ interface ExerciseFormProps {
     sets?: number;
     reps?: number;
     weight?: number;
+    setsData?: Array<{
+      reps: number;
+      weight?: number;
+      notes?: string;
+    }>;
     duration?: number;
     notes?: string;
     performedAt: number;
@@ -45,6 +57,58 @@ export function ExerciseForm({ onClose, initialName, initialCategory, existing }
   const createExercise = useMutation(api.exercises.create);
   const updateExercise = useMutation(api.exercises.update);
   const [isLoading, setIsLoading] = useState(false);
+
+  // State for managing multiple sets
+  const [sets, setSets] = useState<Set[]>(() => {
+    if (existing?.setsData && existing.setsData.length > 0) {
+      // Load existing sets data
+      return existing.setsData.map((set, index) => ({
+        id: `set-${index}`,
+        reps: set.reps,
+        weight: set.weight || '',
+        notes: set.notes || '',
+      }));
+    } else if (existing?.reps || existing?.weight) {
+      // Convert legacy format to new format
+      return [{
+        id: 'set-0',
+        reps: existing.reps || '',
+        weight: existing.weight || '',
+        notes: '',
+      }];
+    } else {
+      // Start with one empty set
+      return [{
+        id: 'set-0',
+        reps: '',
+        weight: '',
+        notes: '',
+      }];
+    }
+  });
+
+  // Functions to manage sets
+  const addSet = () => {
+    const newSet: Set = {
+      id: `set-${Date.now()}`,
+      reps: '',
+      weight: '',
+      notes: '',
+    };
+    setSets([...sets, newSet]);
+  };
+
+  const removeSet = (id: string) => {
+    if (sets.length > 1) {
+      setSets(sets.filter(set => set.id !== id));
+    }
+  };
+
+  const updateSet = (id: string, field: keyof Set, value: string | number) => {
+    setSets(sets.map(set => 
+      set.id === id ? { ...set, [field]: value } : set
+    ));
+  };
 
   // Add: safe formatter for date input default value
   const toDateInputValue = (ts?: number) => {
@@ -86,64 +150,78 @@ export function ExerciseForm({ onClose, initialName, initialCategory, existing }
       }
       const performedAt = performedAtDate.getTime();
 
-      // Parse optional numeric fields safely with validation
-      const setsStr = (formData.get("sets") as string) || "";
-      const repsStr = (formData.get("reps") as string) || "";
-      const weightStr = (formData.get("weight") as string) || "";
+      // Process sets data
+      const validSets = sets.filter(set => {
+        const reps = typeof set.reps === 'string' ? parseInt(set.reps) : set.reps;
+        return !isNaN(reps) && reps > 0;
+      });
+
+      if (validSets.length === 0) {
+        throw new Error("Please enter at least one valid set with reps");
+      }
+
+      // Convert sets to the format expected by the API
+      const setsData = validSets.map(set => {
+        const reps = typeof set.reps === 'string' ? parseInt(set.reps) : set.reps;
+        const weight = typeof set.weight === 'string' ? 
+          (set.weight.trim() === '' ? undefined : parseFloat(set.weight)) : 
+          set.weight;
+        
+        if (isNaN(reps) || reps <= 0) {
+          throw new Error("All sets must have valid reps (positive integer)");
+        }
+        if (weight !== undefined && (isNaN(weight) || weight < 0)) {
+          throw new Error("Weight must be a non-negative number");
+        }
+
+        return {
+          reps,
+          weight,
+          notes: typeof set.notes === 'string' ? set.notes.trim() || undefined : undefined,
+        };
+      });
+
+      // Get duration for cardio exercises
       const durationStr = (formData.get("duration") as string) || "";
-
-      const sets = setsStr.trim() === "" ? undefined : Number(setsStr);
-      const reps = repsStr.trim() === "" ? undefined : Number(repsStr);
-      const weight = weightStr.trim() === "" ? undefined : Number(weightStr);
       const duration = durationStr.trim() === "" ? undefined : Number(durationStr);
+      if (duration !== undefined && (isNaN(duration) || duration <= 0)) {
+        throw new Error("Duration must be a positive number");
+      }
 
-      // Validate numeric values
-      if (sets !== undefined && (isNaN(sets) || sets < 1 || sets > 50)) {
-        throw new Error("Sets must be between 1 and 50");
-      }
-      if (reps !== undefined && (isNaN(reps) || reps < 1 || reps > 1000)) {
-        throw new Error("Reps must be between 1 and 1000");
-      }
-      if (weight !== undefined && (isNaN(weight) || weight < 0 || weight > 1000)) {
-        throw new Error("Weight must be between 0 and 1000 kg");
-      }
-      if (duration !== undefined && (isNaN(duration) || duration < 0 || duration > 600)) {
-        throw new Error("Duration must be between 0 and 600 minutes");
-      }
+      const notes = (formData.get("notes") as string) || "";
 
       if (existing) {
-        // Update flow
-        await updateExercise({
+        // Editing existing exercise
+        const result = await updateExercise({
           id: existing._id as any,
           name: exerciseName.trim(),
           category,
-          sets,
-          reps,
-          weight,
+          setsData,
           duration,
-          notes: ((formData.get("notes") as string) || undefined) as any,
+          notes: notes.trim() || undefined,
           performedAt,
         } as any);
+        
         toast.success("Exercise updated successfully!");
       } else {
-        // Create flow
+        // Creating new exercise
         const result = await createExercise({
           name: exerciseName.trim(),
           category,
-          sets,
-          reps,
-          weight,
+          setsData,
           duration,
-          notes: (formData.get("notes") as string) || undefined,
+          notes: notes.trim() || undefined,
           performedAt,
         } as any);
 
         if (result?.isNewPR) {
-          const dim = result.dimension === "weight" ? "weight" : "duration";
-          const emoji = dim === "weight" ? "🏆" : "⏱️";
-          toast.success(`${emoji} New PR achieved!`);
+          const prType = result.dimension === "weight" ? "weight" : "time";
+          toast.success(`🎉 New ${prType} PR for ${exerciseName}!`, {
+            duration: 4000,
+          });
         } else {
-          toast.success("Exercise logged successfully!");
+          const action = result?.isNewEntry ? "logged" : "added to existing entry";
+          toast.success(`Exercise ${action} successfully!`);
         }
       }
       onClose();
@@ -232,44 +310,108 @@ export function ExerciseForm({ onClose, initialName, initialCategory, existing }
                 </Select>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="sets">Sets</Label>
-                  <Input
-                    id="sets"
-                    name="sets"
-                    type="number"
-                    min="1"
-                    placeholder="3"
-                    defaultValue={typeof existing?.sets === "number" ? existing.sets : undefined}
-                  />
+              {/* Sets Section */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label className="text-base font-semibold">Sets</Label>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={addSet}
+                    className="h-8 px-3 text-xs"
+                  >
+                    <Plus className="h-3 w-3 mr-1" />
+                    Add Set
+                  </Button>
                 </div>
+
                 <div className="space-y-2">
-                  <Label htmlFor="reps">Reps</Label>
-                  <Input
-                    id="reps"
-                    name="reps"
-                    type="number"
-                    min="1"
-                    placeholder="10"
-                    defaultValue={typeof existing?.reps === "number" ? existing.reps : undefined}
-                  />
+                  {sets.map((set, index) => (
+                    <motion.div
+                      key={set.id}
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="grid grid-cols-12 gap-2 items-center bg-muted/20 p-3 rounded-lg border"
+                    >
+                      <div className="col-span-2 text-sm font-medium text-center">
+                        Set {index + 1}
+                      </div>
+                      
+                      <div className="col-span-3">
+                        <Label htmlFor={`reps-${set.id}`} className="sr-only">Reps</Label>
+                        <Input
+                          id={`reps-${set.id}`}
+                          type="number"
+                          min="1"
+                          placeholder="Reps"
+                          value={set.reps}
+                          onChange={(e) => updateSet(set.id, 'reps', e.target.value)}
+                          className="h-8 text-sm"
+                        />
+                      </div>
+
+                      <div className="col-span-1 text-center text-xs text-muted-foreground">
+                        ×
+                      </div>
+
+                      <div className="col-span-4">
+                        <Label htmlFor={`weight-${set.id}`} className="sr-only">Weight</Label>
+                        <Input
+                          id={`weight-${set.id}`}
+                          type="number"
+                          step="0.5"
+                          min="0"
+                          placeholder="Weight (kg)"
+                          value={set.weight}
+                          onChange={(e) => updateSet(set.id, 'weight', e.target.value)}
+                          className="h-8 text-sm"
+                        />
+                      </div>
+
+                      <div className="col-span-2 flex justify-end">
+                        {sets.length > 1 && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeSet(set.id)}
+                            className="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        )}
+                      </div>
+
+                      {/* Set Notes - Full width below the main row */}
+                      <div className="col-span-12 mt-1">
+                        <Label htmlFor={`notes-${set.id}`} className="sr-only">Set Notes</Label>
+                        <Input
+                          id={`notes-${set.id}`}
+                          placeholder="Set notes (optional)"
+                          value={set.notes}
+                          onChange={(e) => updateSet(set.id, 'notes', e.target.value)}
+                          className="h-7 text-xs"
+                        />
+                      </div>
+                    </motion.div>
+                  ))}
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="weight">Weight (kg)</Label>
-                  <Input
-                    id="weight"
-                    name="weight"
-                    type="number"
-                    step="0.5"
-                    min="0"
-                    placeholder="60"
-                    defaultValue={typeof existing?.weight === "number" ? existing.weight : undefined}
-                  />
-                </div>
+              {/* Duration for cardio exercises */}
+              <div className="space-y-2">
+                <Label htmlFor="duration">Duration (min) - Optional for cardio</Label>
+                <Input
+                  id="duration"
+                  name="duration"
+                  type="number"
+                  min="1"
+                  placeholder="30"
+                  defaultValue={typeof existing?.duration === "number" ? existing.duration : undefined}
+                />
+              </div>
                 <div className="space-y-2">
                   <Label htmlFor="duration">Duration (min)</Label>
                   <Input
@@ -279,11 +421,8 @@ export function ExerciseForm({ onClose, initialName, initialCategory, existing }
                     min="1"
                     placeholder="30"
                     defaultValue={typeof existing?.duration === "number" ? existing.duration : undefined}
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
+                />
+              </div>              <div className="space-y-2">
                 <Label htmlFor="notes">Notes (optional)</Label>
                 <Textarea
                   id="notes"
