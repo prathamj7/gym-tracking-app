@@ -4,6 +4,7 @@ import { InstrumentationProvider } from "@/instrumentation.tsx";
 import ClerkAuth from "@/pages/ClerkAuth.tsx";
 import Dashboard from "@/pages/Dashboard.tsx";
 import { ClerkProvider } from "@clerk/clerk-react";
+import { dark } from "@clerk/themes";
 import { ConvexProviderWithClerk } from "convex/react-clerk";
 import { ConvexReactClient } from "convex/react";
 import { StrictMode, useEffect } from "react";
@@ -51,12 +52,10 @@ function RouteSyncer() {
 }
 
 function ClerkConvexProvider({ children }: { children: React.ReactNode }) {
-  const { getToken } = useAuth();
-  
   return (
     <ConvexProviderWithClerk 
       client={convex} 
-      useAuth={() => getToken({ template: "convex" })}
+      useAuth={useAuth}
     >
       {children}
     </ConvexProviderWithClerk>
@@ -70,7 +69,7 @@ createRoot(document.getElementById("root")!).render(
       <ClerkProvider 
         publishableKey={clerkPubKey}
         appearance={{
-          baseTheme: 'dark',
+          baseTheme: dark,
           variables: {
             colorPrimary: 'hsl(var(--primary))',
             colorBackground: 'hsl(var(--background))',

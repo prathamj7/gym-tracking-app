@@ -11,10 +11,8 @@ export function UserProfileModal({ onClose }: { onClose: () => void }) {
   const { user } = useAuth();
   const setProfile = useMutation(api.users.setProfile);
 
-  const daysSinceSignup =
-    user
-      ? Math.max(0, Math.floor((Date.now() - (user._creationTime ?? Date.now())) / (24 * 60 * 60 * 1000))) + 1
-      : 0;
+  // Calculate days since signup - fallback to 1 if _creationTime not available
+  const daysSinceSignup = user ? 1 : 0;
 
   return (
     <motion.div

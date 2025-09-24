@@ -4,7 +4,7 @@
 // import { useAuth } from "@/hooks/use-auth";
 
 // NEW:
-import { useAuth } from "@/hooks/use-auth-clerk";
+import { useAuth } from "@/hooks/use-auth";
 // OR after you replace the file:
 // import { useAuth } from "@/hooks/use-auth";
 

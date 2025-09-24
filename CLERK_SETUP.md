@@ -5,8 +5,7 @@
 Run these commands to install the required Clerk packages:
 
 ```bash
-pnpm add @clerk/clerk-react @clerk/themes
-pnpm add -D @clerk/types
+npm install @clerk/clerk-react @clerk/themes convex/react-clerk
 ```
 
 ## Step 2: Create Clerk Account & Get Keys
@@ -23,9 +22,12 @@ pnpm add -D @clerk/types
 
 Add these to your `.env` file:
 
-```
+```env
+# Clerk Authentication - Only 2 variables needed!
 VITE_CLERK_PUBLISHABLE_KEY=pk_test_xxxxx
 CLERK_SECRET_KEY=sk_test_xxxxx
+
+# No JWT issuer domain required - Clerk handles this automatically! ✅
 ```
 
 ## Step 4: Configure Convex for Clerk

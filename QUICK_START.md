@@ -16,7 +16,7 @@ Add these to your `.env` file:
 # Clerk Authentication
 VITE_CLERK_PUBLISHABLE_KEY=pk_test_your_key_here
 CLERK_SECRET_KEY=sk_test_your_key_here
-CLERK_JWT_ISSUER_DOMAIN=https://your-app.clerk.accounts.dev
+# Note: JWT issuer domain is auto-configured by Clerk
 ```
 
 ## 🔄 File Replacements

@@ -4,7 +4,7 @@
 Write-Host "🔧 Installing Clerk packages..." -ForegroundColor Cyan
 
 # Install Clerk packages
-pnpm add @clerk/clerk-react @clerk/themes convex/react-clerk
+npm install @clerk/clerk-react @clerk/themes convex/react-clerk
 
 Write-Host "✅ Packages installed successfully!" -ForegroundColor Green
 
