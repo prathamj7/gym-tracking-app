@@ -194,9 +194,9 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
 
       
       {/* Auth Content */}
-      <div className="flex-1 flex items-center justify-center relative z-10">
-        <div className="container mx-auto px-6">
-          <div className="flex flex-col lg:flex-row items-center gap-12 max-w-6xl mx-auto">
+      <div className="flex-1 flex items-center justify-center relative z-10 px-4 sm:px-6">
+        <div className="container mx-auto">
+          <div className="flex flex-col lg:flex-row items-center gap-8 sm:gap-12 max-w-6xl mx-auto w-full">
             
             {/* Left Side - Branding & Benefits */}
             <motion.div 
@@ -302,7 +302,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
               <form onSubmit={handleEmailSubmit}>
                 <CardContent>
                   {/* First and Last Name fields */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
                     <div className="relative">
                       <Label htmlFor="firstName">First name</Label>
                       <Input

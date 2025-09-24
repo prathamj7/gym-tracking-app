@@ -230,13 +230,13 @@ export default function Landing() {
                 <Activity className="h-4 w-4 text-primary" />
                 Track smarter. Grow stronger.
               </span>
-              <h1 className="text-4xl font-extrabold tracking-tight sm:text-6xl">
+              <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
                 Own Your
                 <span className="block bg-gradient-to-r from-primary to-rose-700 bg-clip-text text-transparent">
                   Fitness Journey
                 </span>
               </h1>
-              <p className="mx-auto max-w-2xl text-lg text-zinc-200/80">
+              <p className="mx-auto max-w-2xl text-base sm:text-lg text-zinc-200/80">
                 Track, analyze, and improve your workouts—all in one clean, real-time dashboard.
                 No clutter, just results.
               </p>
@@ -256,13 +256,13 @@ export default function Landing() {
                   "{quotes[quoteIndex]}"
                 </p>
               </motion.div>
-              <div className="flex flex-col items-center gap-4 sm:flex-row lg:justify-start">
+              <div className="flex flex-col items-center gap-3 sm:gap-4 sm:flex-row lg:justify-start">
                 <Button
                   size="lg"
                   onClick={() =>
                     navigate(isAuthenticated ? "/dashboard" : "/auth")
                   }
-                  className="bg-gradient-to-r from-primary via-rose-500 to-rose-600 px-8 py-6 text-lg shadow-xl hover:scale-105 transition-transform font-semibold"
+                  className="w-full sm:w-auto bg-gradient-to-r from-primary via-rose-500 to-rose-600 px-6 sm:px-8 py-4 sm:py-6 text-base sm:text-lg shadow-xl hover:scale-105 transition-transform font-semibold"
                 >
                   {isAuthenticated ? "Go to Dashboard" : "Start Free Today"}
                 </Button>
@@ -271,7 +271,7 @@ export default function Landing() {
                     variant="outline"
                     size="lg"
                     onClick={() => navigate("/auth")}
-                    className="border-white/20 px-8 py-6 text-lg text-white hover:bg-white/10 font-semibold hover:scale-105 transition-transform"
+                    className="w-full sm:w-auto border-white/20 px-6 sm:px-8 py-4 sm:py-6 text-base sm:text-lg text-white hover:bg-white/10 font-semibold hover:scale-105 transition-transform"
                   >
                     Join Community
                   </Button>
@@ -283,7 +283,7 @@ export default function Landing() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1, duration: 0.8 }}
-                className="grid grid-cols-3 gap-4 mt-8 pt-8 border-t border-white/10"
+                className="grid grid-cols-3 gap-2 sm:gap-4 mt-6 sm:mt-8 pt-6 sm:pt-8 border-t border-white/10"
               >
                 <div className="text-center">
                   <motion.div
@@ -382,7 +382,7 @@ export default function Landing() {
             <p className="text-lg text-zinc-300">Real-time analytics that motivate you to push harder</p>
           </motion.div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {/* Workout Progress Ring */}
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
@@ -524,7 +524,7 @@ export default function Landing() {
               Tools to help you track smarter, stay consistent, and achieve more.
             </p>
           </motion.div>
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 sm:gap-8">
             {features.map((feature, index) => (
               <motion.div
                 key={feature.title}

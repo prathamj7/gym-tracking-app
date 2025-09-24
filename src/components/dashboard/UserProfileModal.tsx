@@ -21,7 +21,7 @@ export function UserProfileModal({ onClose }: { onClose: () => void }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+      className="fixed inset-0 bg-black/50 flex items-center justify-center p-2 sm:p-4 z-50 overflow-y-auto"
       onClick={onClose}
     >
       <motion.div
@@ -29,7 +29,7 @@ export function UserProfileModal({ onClose }: { onClose: () => void }) {
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.95, opacity: 0 }}
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-md"
+        className="w-full max-w-sm sm:max-w-md my-4 mx-2 sm:mx-0"
       >
         <div className="bg-card border rounded-lg overflow-hidden">
           <div className="flex items-center justify-between px-5 py-4 border-b">
@@ -73,7 +73,7 @@ export function UserProfileModal({ onClose }: { onClose: () => void }) {
               }}
               className="space-y-4"
             >
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <Label>First name</Label>
                   <Input
@@ -92,7 +92,7 @@ export function UserProfileModal({ onClose }: { onClose: () => void }) {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <Label>Age</Label>
                   <Input

@@ -51,48 +51,85 @@ export function PRList() {
         </CardHeader>
         <CardContent className="p-0">
           {prs.length === 0 ? (
-            <div className="p-6 text-sm text-muted-foreground">
-              No PRs yet. Log workouts to start setting records!
+            <div className="p-6 text-sm text-muted-foreground text-center">
+              No PRs yet. Log workouts to start setting records! 🏆
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="text-muted-foreground">
-                    <th className="text-left px-4 py-3">Exercise</th>
-                    <th className="text-left px-4 py-3">PR</th>
-                    <th className="text-left px-4 py-3">Achieved On</th>
-                    <th className="text-left px-4 py-3">Badge</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {prs.map((row, idx) => {
-                    const isRecent = row.performedAt >= recentCutoff;
-                    const prLabel =
-                      row.type === "weight"
-                        ? `${row.value} ${row.unit}${row.reps ? ` × ${row.reps}` : ""}`
-                        : `${row.value} ${row.unit}`;
-                    return (
-                      <tr key={`${row.name}-${idx}`} className="border-t">
-                        <td className="px-4 py-3 font-medium">{row.name}</td>
-                        <td className="px-4 py-3">{prLabel}</td>
-                        <td className="px-4 py-3">{formatDate(row.performedAt)}</td>
-                        <td className="px-4 py-3">
-                          {isRecent ? (
-                            <span className="inline-flex items-center gap-1 rounded-md bg-primary/15 px-2 py-1 text-xs text-primary">
-                              <Sparkles className="h-3 w-3" />
-                              New PR
-                            </span>
-                          ) : (
-                            "-"
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+            <>
+              {/* Desktop Table */}
+              <div className="hidden sm:block overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="text-muted-foreground border-b">
+                      <th className="text-left px-4 py-3 font-medium">Exercise</th>
+                      <th className="text-left px-4 py-3 font-medium">PR</th>
+                      <th className="text-left px-4 py-3 font-medium">Achieved On</th>
+                      <th className="text-left px-4 py-3 font-medium">Badge</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {prs.map((row, idx) => {
+                      const isRecent = row.performedAt >= recentCutoff;
+                      const prLabel =
+                        row.type === "weight"
+                          ? `${row.value} ${row.unit}${row.reps ? ` × ${row.reps}` : ""}`
+                          : `${row.value} ${row.unit}`;
+                      return (
+                        <tr key={`${row.name}-${idx}`} className="border-t hover:bg-muted/20">
+                          <td className="px-4 py-3 font-medium">{row.name}</td>
+                          <td className="px-4 py-3">{prLabel}</td>
+                          <td className="px-4 py-3">{formatDate(row.performedAt)}</td>
+                          <td className="px-4 py-3">
+                            {isRecent ? (
+                              <span className="inline-flex items-center gap-1 rounded-md bg-primary/15 px-2 py-1 text-xs text-primary">
+                                <Sparkles className="h-3 w-3" />
+                                New
+                              </span>
+                            ) : (
+                              "-"
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile Cards */}
+              <div className="block sm:hidden space-y-3 p-4">
+                {prs.map((row, idx) => {
+                  const isRecent = row.performedAt >= recentCutoff;
+                  const prLabel =
+                    row.type === "weight"
+                      ? `${row.value} ${row.unit}${row.reps ? ` × ${row.reps}` : ""}`
+                      : `${row.value} ${row.unit}`;
+                  return (
+                    <motion.div
+                      key={`${row.name}-${idx}`}
+                      className="bg-muted/20 rounded-lg p-4 border border-border/50"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: idx * 0.05 }}
+                    >
+                      <div className="flex items-start justify-between mb-2">
+                        <h4 className="font-semibold text-base">{row.name}</h4>
+                        {isRecent && (
+                          <span className="inline-flex items-center gap-1 rounded-md bg-primary/15 px-2 py-1 text-xs text-primary">
+                            <Sparkles className="h-3 w-3" />
+                            New PR
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-2xl font-bold text-primary mb-1">{prLabel}</div>
+                      <div className="text-sm text-muted-foreground">
+                        {formatDate(row.performedAt)}
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </>
           )}
         </CardContent>
       </Card>

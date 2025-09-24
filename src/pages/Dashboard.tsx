@@ -371,7 +371,7 @@ export default function Dashboard() {
       </AnimatePresence>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 bg-card rounded-xl shadow-md mt-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10 bg-card rounded-xl shadow-md mt-4 sm:mt-6 lg:mt-8 mx-4 sm:mx-6 lg:mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

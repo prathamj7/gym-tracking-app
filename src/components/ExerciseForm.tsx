@@ -161,7 +161,7 @@ export function ExerciseForm({ onClose, initialName, initialCategory, existing }
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+      className="fixed inset-0 bg-black/50 flex items-center justify-center p-2 sm:p-4 z-50 overflow-y-auto"
       onClick={onClose}
     >
       <motion.div
@@ -169,7 +169,7 @@ export function ExerciseForm({ onClose, initialName, initialCategory, existing }
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.95, opacity: 0 }}
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-md"
+        className="w-full max-w-sm sm:max-w-md my-4 mx-2 sm:mx-0"
       >
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
@@ -232,7 +232,7 @@ export function ExerciseForm({ onClose, initialName, initialCategory, existing }
                 </Select>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="sets">Sets</Label>
                   <Input
@@ -257,7 +257,7 @@ export function ExerciseForm({ onClose, initialName, initialCategory, existing }
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="weight">Weight (kg)</Label>
                   <Input
