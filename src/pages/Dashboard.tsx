@@ -3,6 +3,8 @@ import { ExerciseForm } from "@/components/ExerciseForm";
 import { ExerciseList } from "@/components/ExerciseList";
 import { StatsCards } from "@/components/StatsCards";
 import { useAuth } from "@/hooks/use-auth";
+import { useSubscription, usePremiumAccess, useSubscriptionTier } from "@/hooks/use-subscription";
+import { PremiumBadge, TrialBanner } from "@/components/premium/PremiumComponents";
 import { motion, AnimatePresence } from "framer-motion";
 import { Dumbbell, LogOut, Plus, User, Download, BookOpen, TrendingUp, Activity, Target, Zap, Menu, X } from "lucide-react";
 import { BarChart3 } from "lucide-react";
@@ -17,6 +19,8 @@ import { UserProfileModal } from "@/components/dashboard/UserProfileModal";
 
 export default function Dashboard() {
   const { isLoading, isAuthenticated, user, signOut } = useAuth();
+  const { subscription } = useSubscription();
+  const { hasPremium } = usePremiumAccess();
   const navigate = useNavigate();
   
   // Centralized modal state
@@ -370,6 +374,11 @@ export default function Dashboard() {
         )}
       </AnimatePresence>
 
+      {/* Trial Banner */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+        <TrialBanner />
+      </div>
+
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10 bg-card rounded-xl shadow-md mt-4 sm:mt-6 lg:mt-8 mx-4 sm:mx-6 lg:mx-auto">
         <motion.div
@@ -380,14 +389,17 @@ export default function Dashboard() {
           {/* Welcome Section */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
             <div>
-              <motion.h1 
-                className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary via-rose-500 to-rose-600 bg-clip-text text-transparent"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.2 }}
-              >
-                Welcome back, {firstName}!
-              </motion.h1>
+              <div className="flex items-center gap-3 flex-wrap">
+                <motion.h1 
+                  className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary via-rose-500 to-rose-600 bg-clip-text text-transparent"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  Welcome back, {firstName}!
+                </motion.h1>
+                <PremiumBadge tier={subscription?.tier || "free"} />
+              </div>
               <motion.p 
                 className="mt-2 text-foreground/80 font-medium text-lg"
                 initial={{ opacity: 0, x: -20 }}

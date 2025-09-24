@@ -3,12 +3,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { api } from "@/convex/_generated/api";
 import { useAuth } from "@/hooks/use-auth";
+import { useSubscription, usePremiumAccess } from "@/hooks/use-subscription";
+import { PremiumBadge, UpgradePrompt } from "@/components/premium/PremiumComponents";
 import { motion } from "framer-motion";
 import { useMutation } from "convex/react";
 import { toast } from "sonner";
 
 export function UserProfileModal({ onClose }: { onClose: () => void }) {
   const { user } = useAuth();
+  const { subscription } = useSubscription();
+  const { hasPremium } = usePremiumAccess();
   const setProfile = useMutation(api.users.setProfile);
 
   // Calculate days since signup - fallback to 1 if _creationTime not available
@@ -31,7 +35,10 @@ export function UserProfileModal({ onClose }: { onClose: () => void }) {
       >
         <div className="bg-card border rounded-lg overflow-hidden">
           <div className="flex items-center justify-between px-5 py-4 border-b">
-            <h3 className="text-lg font-semibold">Your Profile</h3>
+            <div className="flex items-center gap-2">
+              <h3 className="text-lg font-semibold">Your Profile</h3>
+              <PremiumBadge tier={subscription?.tier || "free"} />
+            </div>
             <Button variant="ghost" size="sm" onClick={onClose}>
               Close
             </Button>
@@ -119,9 +126,25 @@ export function UserProfileModal({ onClose }: { onClose: () => void }) {
                 <Input value={user?.email ?? ""} disabled />
               </div>
 
-              <div className="text-sm text-muted-foreground">
-                Working out since: <span className="font-medium">{daysSinceSignup}</span> days
+              <div className="space-y-2 text-sm text-muted-foreground">
+                <div>
+                  Working out since: <span className="font-medium">{daysSinceSignup}</span> days
+                </div>
+                <div>
+                  Subscription: <span className="font-medium capitalize">{subscription?.tier || "free"}</span>
+                  {subscription?.status === "trial" && subscription?.trialEnd && (
+                    <span className="ml-2 text-amber-600">
+                      (Trial ends {new Date(subscription.trialEnd).toLocaleDateString()})
+                    </span>
+                  )}
+                </div>
               </div>
+
+              {!hasPremium && (
+                <div className="pt-2">
+                  <UpgradePrompt feature="enhanced profile features" />
+                </div>
+              )}
 
               <div className="pt-2">
                 <Button type="submit" className="w-full">

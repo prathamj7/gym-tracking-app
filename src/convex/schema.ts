@@ -16,6 +16,38 @@ export const roleValidator = v.union(
 );
 export type Role = Infer<typeof roleValidator>;
 
+// Premium subscription tiers
+export const SUBSCRIPTION_TIERS = {
+  FREE: "free",
+  PREMIUM: "premium", 
+  PRO: "pro",
+} as const;
+
+export const subscriptionTierValidator = v.union(
+  v.literal(SUBSCRIPTION_TIERS.FREE),
+  v.literal(SUBSCRIPTION_TIERS.PREMIUM),
+  v.literal(SUBSCRIPTION_TIERS.PRO),
+);
+export type SubscriptionTier = Infer<typeof subscriptionTierValidator>;
+
+// Subscription status
+export const SUBSCRIPTION_STATUS = {
+  ACTIVE: "active",
+  EXPIRED: "expired", 
+  CANCELLED: "cancelled",
+  TRIAL: "trial",
+  PAST_DUE: "past_due",
+} as const;
+
+export const subscriptionStatusValidator = v.union(
+  v.literal(SUBSCRIPTION_STATUS.ACTIVE),
+  v.literal(SUBSCRIPTION_STATUS.EXPIRED),
+  v.literal(SUBSCRIPTION_STATUS.CANCELLED), 
+  v.literal(SUBSCRIPTION_STATUS.TRIAL),
+  v.literal(SUBSCRIPTION_STATUS.PAST_DUE),
+);
+export type SubscriptionStatus = Infer<typeof subscriptionStatusValidator>;
+
 const schema = defineSchema(
   {
     // default auth tables using convex auth.
@@ -31,10 +63,21 @@ const schema = defineSchema(
 
       role: v.optional(roleValidator), // role of the user. do not remove
 
-      // Added: profile fields
+      // Profile fields
       age: v.optional(v.number()),
       weight: v.optional(v.number()),
-    }).index("email", ["email"]), // index for the email. do not remove or modify
+
+      // Premium subscription fields
+      subscriptionTier: v.optional(subscriptionTierValidator), // defaults to "free"
+      subscriptionStatus: v.optional(subscriptionStatusValidator), // current status
+      subscriptionStart: v.optional(v.number()), // when subscription started (timestamp)
+      subscriptionEnd: v.optional(v.number()), // when subscription expires (timestamp)
+      trialEnd: v.optional(v.number()), // when trial expires (timestamp)
+      customerId: v.optional(v.string()), // Stripe/payment provider customer ID
+      subscriptionId: v.optional(v.string()), // Stripe/payment provider subscription ID
+    }).index("email", ["email"]) // index for the email. do not remove or modify
+    .index("customerId", ["customerId"]) // index for payment provider lookups
+    .index("subscriptionTier", ["subscriptionTier"]), // index for tier-based queries
 
     exercises: defineTable({
       userId: v.id("users"),
