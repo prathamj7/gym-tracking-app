@@ -58,7 +58,7 @@ function ClerkAuth({ redirectAfterAuth }: ClerkAuthProps = {}) {
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Clerk SignIn component with custom styling */}
+            {/* Clerk SignIn component with custom styling - Email OTP + Google only */}
             <div className="clerk-auth-container">
               <SignIn
                 routing="path"
@@ -71,10 +71,14 @@ function ClerkAuth({ redirectAfterAuth }: ClerkAuthProps = {}) {
                     card: 'bg-transparent shadow-none border-none',
                     headerTitle: 'text-white',
                     headerSubtitle: 'text-gray-400',
-                    socialButtonsBlockButton: 'bg-gray-800 border-gray-700 text-white hover:bg-gray-700',
-                    formFieldInput: 'bg-gray-800 border-gray-700 text-white',
-                    formButtonPrimary: 'bg-primary hover:bg-primary/90',
+                    socialButtonsBlockButton: 'bg-gray-800 border-gray-700 text-white hover:bg-gray-700 transition-colors',
+                    socialButtonsBlockButtonText: 'text-white font-medium',
+                    formFieldInput: 'bg-gray-800 border-gray-700 text-white placeholder-gray-400',
+                    formButtonPrimary: 'bg-primary hover:bg-primary/90 transition-colors',
                     footerActionLink: 'text-primary hover:text-primary/90',
+                    identityPreviewText: 'text-gray-300',
+                    formFieldLabel: 'text-gray-300',
+                    otpCodeFieldInput: 'bg-gray-800 border-gray-700 text-white',
                   },
                   variables: {
                     colorPrimary: 'hsl(var(--primary))',
