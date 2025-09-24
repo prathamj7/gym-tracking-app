@@ -1,4 +1,4 @@
-import { Crown, Sparkles, Zap } from "lucide-react";
+import { Crown, Sparkles, Zap, User } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,9 +12,13 @@ export function PremiumBadge({
   tier?: "free" | "premium" | "pro"; 
   className?: string;
 }) {
-  if (!tier || tier === "free") return null;
-
   const config = {
+    free: {
+      icon: User,
+      label: "Free",
+      variant: "outline" as const,
+      className: "border-muted-foreground/30 text-muted-foreground"
+    },
     premium: {
       icon: Sparkles,
       label: "Premium",
@@ -29,7 +33,8 @@ export function PremiumBadge({
     }
   };
 
-  const { icon: Icon, label, className: badgeClassName } = config[tier];
+  const currentTier = tier || "free";
+  const { icon: Icon, label, className: badgeClassName } = config[currentTier];
 
   return (
     <Badge className={`${badgeClassName} ${className}`}>

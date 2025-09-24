@@ -69,48 +69,6 @@ export type FeatureGateProps = {
   showUpgrade?: boolean;
 };
 
-// Feature limits for different tiers
-export const FEATURE_LIMITS = {
-  free: {
-    exercisesPerDay: 5,
-    templatesCount: 0,
-    aiChatsPerDay: 0,
-    exportData: false,
-    advancedStats: false,
-  },
-  premium: {
-    exercisesPerDay: 50,
-    templatesCount: 10,
-    aiChatsPerDay: 20,
-    exportData: true,
-    advancedStats: true,
-  },
-  pro: {
-    exercisesPerDay: -1, // unlimited
-    templatesCount: -1, // unlimited  
-    aiChatsPerDay: -1, // unlimited
-    exportData: true,
-    advancedStats: true,
-  },
-} as const;
-
-// Hook to get feature limits for current user
-export function useFeatureLimits() {
-  const { tier, isLoading } = useSubscriptionTier();
-  
-  return {
-    limits: FEATURE_LIMITS[tier as keyof typeof FEATURE_LIMITS] || FEATURE_LIMITS.free,
-    isLoading,
-  };
-}
-
-// Utility to check if a feature is available
-export function useFeatureAccess(feature: keyof typeof FEATURE_LIMITS.free) {
-  const { limits, isLoading } = useFeatureLimits();
-  
-  return {
-    hasAccess: limits[feature] === true || limits[feature] === -1 || (typeof limits[feature] === 'number' && limits[feature] > 0),
-    limit: limits[feature],
-    isLoading,
-  };
-}
+// Note: Feature limits system removed per user request
+// Premium differentiation will be handled through UI/UX and feature availability
+// rather than hard usage limits
