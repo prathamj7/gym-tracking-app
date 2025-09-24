@@ -79,12 +79,18 @@ function ClerkAuth({ redirectAfterAuth }: ClerkAuthProps = {}) {
                     identityPreviewText: 'text-gray-300',
                     formFieldLabel: 'text-gray-300',
                     otpCodeFieldInput: 'bg-gray-800 border-gray-700 text-white',
+                    alternativeMethodsBlockButton: 'hidden', // Hide "Use phone" button
+                    phoneInputBox: 'hidden', // Hide phone input
                   },
                   variables: {
                     colorPrimary: 'hsl(var(--primary))',
                     colorBackground: 'transparent',
                     colorInputBackground: 'hsl(var(--muted))',
                     colorInputText: 'hsl(var(--foreground))',
+                  },
+                  layout: {
+                    socialButtonsPlacement: 'top', // Google button at top
+                    socialButtonsVariant: 'blockButton', // Full width Google button
                   }
                 }}
               />
