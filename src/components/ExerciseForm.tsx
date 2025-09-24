@@ -200,11 +200,19 @@ export function ExerciseForm({ onClose, initialName, initialCategory, existing }
           duration,
           notes: notes.trim() || undefined,
           performedAt,
-        } as any);
+        });
         
         toast.success("Exercise updated successfully!");
       } else {
         // Creating new exercise
+        console.log("Creating exercise with data:", {
+          name: exerciseName.trim(),
+          category,
+          setsData,
+          duration,
+          notes: notes.trim() || undefined,
+          performedAt,
+        });
         const result = await createExercise({
           name: exerciseName.trim(),
           category,
@@ -212,7 +220,7 @@ export function ExerciseForm({ onClose, initialName, initialCategory, existing }
           duration,
           notes: notes.trim() || undefined,
           performedAt,
-        } as any);
+        });
 
         if (result?.isNewPR) {
           const prType = result.dimension === "weight" ? "weight" : "time";
