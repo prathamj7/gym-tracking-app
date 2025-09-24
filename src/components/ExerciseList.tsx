@@ -30,24 +30,42 @@ export function ExerciseList() {
   const [sortBy, setSortBy] = useState<"date" | "weight" | "sets" | "reps">("date");
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [editing, setEditing] = useState<any | null>(null);
+  const [showFilters, setShowFilters] = useState<boolean>(false);
+  const [limit, setLimit] = useState<number>(10);
 
-  const queryArgs = useMemo(() => {
+  // Use recent query for main display (shows most recent exercises by date)
+  const recentData = useQuery(api.exercises.listRecent, { limit, offset: 0 });
+  
+  // Use filtered query only when filters are applied
+  const filteredQueryArgs = useMemo(() => {
+    if (!showFilters && category === "ALL" && !searchTerm) {
+      return "skip"; // Don't run the filtered query when not needed
+    }
     return {
       category: category === "ALL" ? null : category,
       startDate: null,
       endDate: null,
       sortBy,
     };
-  }, [category, sortBy]);
+  }, [category, sortBy, showFilters, searchTerm]);
 
-  const exercises = useQuery(api.exercises.listFiltered, queryArgs);
+  const filteredExercises = useQuery(
+    api.exercises.listFiltered, 
+    filteredQueryArgs === "skip" ? "skip" : filteredQueryArgs
+  );
   const removeExercise = useMutation(api.exercises.remove);
 
-  // Enhanced filtering with search
+  // Determine which data source to use and apply filtering
   const filteredAndSortedExercises = useMemo(() => {
-    if (!exercises) return [];
+    // If filters are active, use filtered exercises; otherwise use recent exercises
+    const sourceExercises = showFilters || category !== "ALL" || searchTerm 
+      ? filteredExercises 
+      : recentData?.exercises;
+
+    if (!sourceExercises) return [];
     
-    let filtered = exercises.filter((exercise) => {
+    let filtered = sourceExercises.filter((exercise: any) => {
+      if (!searchTerm) return true;
       const searchLower = searchTerm.toLowerCase().trim();
       return (
         exercise.name.toLowerCase().includes(searchLower) ||
@@ -56,14 +74,23 @@ export function ExerciseList() {
       );
     });
 
-    // Sort by date (most recent first) as secondary sort
-    return filtered.sort((a, b) => {
-      if (!a.performedAt && !b.performedAt) return 0;
-      if (!a.performedAt) return 1;
-      if (!b.performedAt) return -1;
-      return new Date(b.performedAt).getTime() - new Date(a.performedAt).getTime();
-    });
-  }, [exercises, searchTerm]);
+    // For recent data, it's already sorted by date; for filtered data, apply sorting
+    if (showFilters || category !== "ALL" || searchTerm) {
+      return filtered.sort((a: any, b: any) => {
+        if (!a.performedAt && !b.performedAt) return 0;
+        if (!a.performedAt) return 1;
+        if (!b.performedAt) return -1;
+        return new Date(b.performedAt).getTime() - new Date(a.performedAt).getTime();
+      });
+    }
+
+    return filtered;
+  }, [recentData?.exercises, filteredExercises, searchTerm, showFilters, category]);
+
+  // Load more functionality
+  const handleLoadMore = () => {
+    setLimit(prev => prev + 10);
+  };
 
   const handleDelete = async (id: string) => {
     try {
@@ -89,10 +116,12 @@ export function ExerciseList() {
     setCategory("ALL");
     setSortBy("date");
     setSearchTerm("");
+    setShowFilters(false);
+    setLimit(10); // Reset to initial limit
   };
 
   // Enhanced loading state
-  if (exercises === undefined) {
+  if (recentData === undefined && filteredExercises === undefined) {
     return (
       <div className="space-y-4">
         <Card className="p-4">
@@ -111,7 +140,10 @@ export function ExerciseList() {
   }
 
   // Enhanced empty state
-  if (exercises.length === 0) {
+  const hasAnyExercises = (recentData?.exercises && recentData.exercises.length > 0) || 
+                        (filteredExercises && filteredExercises.length > 0);
+
+  if (!hasAnyExercises) {
     return (
       <div className="space-y-4">
         <Card>
@@ -178,69 +210,95 @@ export function ExerciseList() {
 
   return (
     <div className="space-y-4">
-      <Card>
-        <CardContent className="p-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="space-y-1">
-              <Label>Search</Label>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                <Input
-                  placeholder="Search exercises..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-                {searchTerm && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0"
-                    onClick={() => setSearchTerm("")}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                )}
+      {/* Toggle Filters Button */}
+      <div className="flex justify-between items-center">
+        <Button 
+          variant="outline" 
+          onClick={() => {
+            setShowFilters(!showFilters);
+            if (!showFilters) {
+              // When showing filters, enable filtering mode
+              setSearchTerm("");
+              setCategory("ALL");
+            }
+          }}
+          className="mb-2"
+        >
+          {showFilters ? "Hide Filters" : "Show Filters"}
+        </Button>
+        {(searchTerm || category !== "ALL") && (
+          <span className="text-sm text-muted-foreground">
+            Showing filtered results
+          </span>
+        )}
+      </div>
+
+      {/* Collapsible Filters */}
+      {showFilters && (
+        <Card>
+          <CardContent className="p-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="space-y-1">
+                <Label>Search</Label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  <Input
+                    placeholder="Search exercises..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                  {searchTerm && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0"
+                      onClick={() => setSearchTerm("")}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+              </div>
+              <div className="space-y-1">
+                <Label>Category</Label>
+                <Select value={category} onValueChange={setCategory}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ALL">All</SelectItem>
+                    {EXERCISE_CATEGORIES.map((c) => (
+                      <SelectItem key={c} value={c}>
+                        {c}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1">
+                <Label>Sort by</Label>
+                <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Date" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="date">Date (newest)</SelectItem>
+                    <SelectItem value="weight">Total weight</SelectItem>
+                    <SelectItem value="sets">Sets</SelectItem>
+                    <SelectItem value="reps">Reps</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
-            <div className="space-y-1">
-              <Label>Category</Label>
-              <Select value={category} onValueChange={setCategory}>
-                <SelectTrigger>
-                  <SelectValue placeholder="All" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ALL">All</SelectItem>
-                  {EXERCISE_CATEGORIES.map((c) => (
-                    <SelectItem key={c} value={c}>
-                      {c}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div className="mt-4 flex justify-end">
+              <Button variant="outline" onClick={resetFilters}>
+                Reset
+              </Button>
             </div>
-            <div className="space-y-1">
-              <Label>Sort by</Label>
-              <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Date" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="date">Date (newest)</SelectItem>
-                  <SelectItem value="weight">Total weight</SelectItem>
-                  <SelectItem value="sets">Sets</SelectItem>
-                  <SelectItem value="reps">Reps</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <div className="mt-4 flex justify-end">
-            <Button variant="outline" onClick={resetFilters}>
-              Reset
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
 
       {filteredAndSortedExercises.length === 0 && searchTerm ? (
         <motion.div
@@ -400,6 +458,23 @@ export function ExerciseList() {
               </Card>
             </motion.div>
           ))}
+          
+          {/* Load More Button - only show when using recent data and there are more exercises */}
+          {!showFilters && !searchTerm && category === "ALL" && recentData && recentData.hasMore && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex justify-center pt-4"
+            >
+              <Button 
+                variant="outline" 
+                onClick={handleLoadMore}
+                className="px-8"
+              >
+                Load More
+              </Button>
+            </motion.div>
+          )}
         </div>
       )}
       {/* Edit Modal */}

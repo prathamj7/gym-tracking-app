@@ -229,6 +229,39 @@ export const remove = mutation({
   },
 });
 
+// Paginated query for recent workouts with load more functionality
+export const listRecent = query({
+  args: {
+    limit: v.optional(v.number()),
+    offset: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const user = await getCurrentUser(ctx);
+    if (!user) {
+      return { exercises: [], hasMore: false };
+    }
+
+    const limit = args.limit ?? 10;
+    const offset = args.offset ?? 0;
+
+    // Get exercises sorted by date (most recent first)
+    const exercises = await ctx.db
+      .query("exercises")
+      .withIndex("by_user_and_performedAt", (q) => q.eq("userId", user._id))
+      .order("desc")
+      .take(limit + offset + 1); // Take one extra to check if there are more
+
+    // Slice to get the requested page
+    const pageExercises = exercises.slice(offset, offset + limit);
+    const hasMore = exercises.length > offset + limit;
+
+    return {
+      exercises: pageExercises,
+      hasMore,
+    };
+  },
+});
+
 export const listFiltered = query({
   args: {
     category: v.union(v.string(), v.null()),
