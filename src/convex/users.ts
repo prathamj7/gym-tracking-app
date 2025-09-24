@@ -1,7 +1,44 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { query, QueryCtx } from "./_generated/server";
 import { mutation } from "./_generated/server";
 import { v } from "convex/values";
+import { Id } from "./_generated/dataModel";
+import { getCurrentUserIdentity, getClerkUserId } from "./auth";
+
+// Clerk webhook to sync user data
+export const syncUserFromClerk = mutation({
+  args: {
+    clerkUserId: v.string(),
+    email: v.string(),
+    name: v.optional(v.string()),
+    imageUrl: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    // Check if user already exists
+    const existingUser = await ctx.db
+      .query("users")
+      .withIndex("email", (q) => q.eq("email", args.email))
+      .first();
+
+    if (existingUser) {
+      // Update existing user
+      await ctx.db.patch(existingUser._id, {
+        name: args.name || existingUser.name,
+        image: args.imageUrl || existingUser.image,
+      });
+      return existingUser._id;
+    } else {
+      // Create new user
+      const userId = await ctx.db.insert("users", {
+        email: args.email,
+        name: args.name || "",
+        image: args.imageUrl,
+        // Set default role
+        role: "user" as any,
+      });
+      return userId;
+    }
+  },
+});
 
 /**
  * Get the current signed in user. Returns null if the user is not signed in.
@@ -27,11 +64,18 @@ export const currentUser = query({
  * @returns
  */
 export const getCurrentUser = async (ctx: QueryCtx) => {
-  const userId = await getAuthUserId(ctx);
-  if (userId === null) {
+  const identity = await getCurrentUserIdentity(ctx);
+  if (!identity) {
     return null;
   }
-  return await ctx.db.get(userId);
+  
+  // Look up user by Clerk ID in the subject field
+  const user = await ctx.db
+    .query("users")
+    .withIndex("email", (q) => q.eq("email", identity.email || ""))
+    .first();
+    
+  return user;
 };
 
 /**
@@ -43,12 +87,12 @@ export const setName = mutation({
   lastName: v.string(),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx as any);
-    if (userId === null) {
+    const user = await getCurrentUser(ctx);
+    if (!user) {
       throw new Error("Not authenticated");
     }
     const fullName = `${args.firstName} ${args.lastName}`.trim();
-    await ctx.db.patch(userId, { name: fullName });
+    await ctx.db.patch(user._id, { name: fullName });
   },
 });
 
@@ -60,12 +104,12 @@ export const setProfile = mutation({
     weight: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx as any);
-    if (userId === null) {
+    const user = await getCurrentUser(ctx);
+    if (!user) {
       throw new Error("Not authenticated");
     }
     const fullName = `${args.firstName} ${args.lastName}`.trim();
-    await ctx.db.patch(userId, {
+    await ctx.db.patch(user._id, {
       name: fullName,
       ...(typeof args.age === "number" ? { age: args.age } : {}),
       ...(typeof args.weight === "number" ? { weight: args.weight } : {}),

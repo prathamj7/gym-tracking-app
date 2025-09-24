@@ -1,29 +1,45 @@
-import { api } from "@/convex/_generated/api";
-import { useAuthActions } from "@convex-dev/auth/react";
-import { useConvexAuth, useQuery } from "convex/react";
-
-import { useEffect, useState } from "react";
+import { useUser, useAuth as useClerkAuth } from '@clerk/clerk-react';
+import { useConvexAuth } from 'convex/react';
+import { useQuery } from 'convex/react';
+import { api } from '@/convex/_generated/api';
 
 export function useAuth() {
-  const { isLoading: isAuthLoading, isAuthenticated } = useConvexAuth();
-  const user = useQuery(api.users.currentUser);
-  const { signIn, signOut } = useAuthActions();
+  const { isLoaded: isClerkLoaded, isSignedIn, user: clerkUser } = useUser();
+  const { signOut: clerkSignOut } = useClerkAuth();
+  const { isLoading: isConvexLoading, isAuthenticated: isConvexAuthenticated } = useConvexAuth();
+  
+  // Get user data from Convex (synced from Clerk)
+  const convexUser = useQuery(api.users.currentUser);
 
-  const [isLoading, setIsLoading] = useState(true);
+  // Calculate loading state
+  const isLoading = !isClerkLoaded || isConvexLoading || (isSignedIn && !convexUser);
 
-  // This effect updates the loading state once auth is loaded and user data is available
-  // It ensures we only show content when both authentication state and user data are ready
-  useEffect(() => {
-    if (!isAuthLoading && user !== undefined) {
-      setIsLoading(false);
-    }
-  }, [isAuthLoading, user]);
+  // User is authenticated if both Clerk and Convex agree
+  const isAuthenticated = isSignedIn && isConvexAuthenticated;
+
+  // Sign out function that handles both Clerk and Convex
+  const signOut = async () => {
+    await clerkSignOut();
+  };
+
+  // Format user data consistently
+  const user = convexUser ? {
+    _id: convexUser._id,
+    name: convexUser.name || clerkUser?.fullName,
+    email: convexUser.email || clerkUser?.primaryEmailAddress?.emailAddress,
+    image: convexUser.image || clerkUser?.imageUrl,
+    // Additional fields from Convex user
+    role: convexUser.role,
+    age: convexUser.age,
+    weight: convexUser.weight,
+  } : null;
 
   return {
     isLoading,
     isAuthenticated,
     user,
-    signIn,
     signOut,
+    // Clerk-specific data for components that need it
+    clerkUser,
   };
 }
