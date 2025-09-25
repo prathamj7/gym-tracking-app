@@ -125,6 +125,33 @@ const schema = defineSchema(
       .index("by_category", ["category"])
       .index("by_difficulty", ["difficulty"])
       .index("by_equipment", ["equipment"]),
+
+    // Workout Templates table
+    workoutTemplates: defineTable({
+      name: v.string(),
+      description: v.optional(v.string()),
+      category: v.string(), // "Push/Pull/Legs", "Upper/Lower", "Full Body", etc.
+      difficulty: v.string(), // "Beginner", "Intermediate", "Advanced"
+      estimatedDuration: v.number(), // minutes
+      exercises: v.array(v.object({
+        name: v.string(),
+        category: v.string(),
+        targetSets: v.number(),
+        targetReps: v.string(), // "8-10" or "8" - flexible format
+        targetWeight: v.optional(v.number()), // optional suggested weight
+        restTime: v.number(), // seconds
+        notes: v.optional(v.string()),
+        order: v.number(), // exercise order in template
+      })),
+      isPreBuilt: v.boolean(), // true for curated templates, false for user-created
+      createdBy: v.optional(v.id("users")), // null for pre-built templates
+      lastUsed: v.optional(v.number()), // timestamp when user last used this template
+      usageCount: v.optional(v.number()), // how many times user has used this template
+    })
+      .index("by_user", ["createdBy"])
+      .index("by_category", ["category"])
+      .index("by_prebuilt", ["isPreBuilt"])
+      .index("by_user_and_category", ["createdBy", "category"]),
   },
   {
     schemaValidation: false,

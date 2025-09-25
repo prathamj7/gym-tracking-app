@@ -6,7 +6,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useSubscription, usePremiumAccess, useSubscriptionTier } from "@/hooks/use-subscription";
 import { PremiumBadge, TrialBanner } from "@/components/premium/PremiumComponents";
 import { motion, AnimatePresence } from "framer-motion";
-import { Dumbbell, LogOut, Plus, User, Download, BookOpen, TrendingUp, Activity, Target, Zap, Menu, X } from "lucide-react";
+import { Dumbbell, LogOut, Plus, User, Download, BookOpen, TrendingUp, Activity, Target, Zap, Menu, X, LayoutTemplate } from "lucide-react";
 import { BarChart3 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
@@ -16,6 +16,7 @@ import { DownloadModal } from "@/components/dashboard/DownloadModal";
 import { LibraryModal } from "@/components/dashboard/LibraryModal";
 import { ProgressModal } from "@/components/dashboard/ProgressModal";
 import { UserProfileModal } from "@/components/dashboard/UserProfileModal";
+import { TemplateLibrary } from "@/components/TemplateLibrary";
 
 export default function Dashboard() {
   const { isLoading, isAuthenticated, user, signOut } = useAuth();
@@ -29,6 +30,7 @@ export default function Dashboard() {
     compare: false,
     download: false,
     library: false,
+    templates: false,
     user: false,
     progress: false,
   });
@@ -61,6 +63,7 @@ export default function Dashboard() {
       compare: false,
       download: false,
       library: false,
+      templates: false,
       user: false,
       progress: false,
     });
@@ -110,6 +113,22 @@ export default function Dashboard() {
     closeModal('library');
     setPrefill({ name, category });
     openModal('exerciseForm');
+  };
+
+  const handleStartWorkoutFromTemplate = (template: any) => {
+    closeModal('templates');
+    // For now, we'll just prefill the first exercise from the template
+    if (template.exercises && template.exercises.length > 0) {
+      const firstExercise = template.exercises[0];
+      setPrefill({ name: firstExercise.name, category: firstExercise.category });
+      openModal('exerciseForm');
+    }
+  };
+
+  const handleCreateTemplate = () => {
+    closeModal('templates');
+    // TODO: Implement template creation form
+    alert('Template creation form coming soon!');
   };
 
   if (isLoading) {
@@ -222,6 +241,20 @@ export default function Dashboard() {
                   >
                     <BookOpen className="h-4 w-4 mr-2 text-primary group-hover:text-rose-500 transition-colors" />
                     <span className="font-medium">Library</span>
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                  </Button>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => openModal('templates')}
+                    className="group relative overflow-hidden bg-gradient-to-r from-card via-card/90 to-card/80 hover:from-primary/10 hover:via-primary/5 hover:to-transparent border border-border/50 hover:border-primary/30 transition-all duration-300 backdrop-blur-sm"
+                    title="Workout Templates (Ctrl+T)"
+                  >
+                    <LayoutTemplate className="h-4 w-4 mr-2 text-primary group-hover:text-rose-500 transition-colors" />
+                    <span className="font-medium">Templates</span>
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
                   </Button>
                 </motion.div>
@@ -353,7 +386,25 @@ export default function Dashboard() {
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
-                  className="col-span-2"
+                >
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      openModal('templates');
+                      setMobileMenuOpen(false);
+                    }}
+                    className="w-full justify-start group relative overflow-hidden bg-gradient-to-r from-card via-card/90 to-card/80 hover:from-primary/10 hover:via-primary/5 hover:to-transparent border border-border/50 hover:border-primary/30 transition-all duration-300 backdrop-blur-sm"
+                  >
+                    <LayoutTemplate className="h-4 w-4 mr-2 text-primary group-hover:text-rose-500 transition-colors" />
+                    <span className="font-medium">Templates</span>
+                  </Button>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
                 >
                   <Button
                     variant="ghost"
@@ -588,6 +639,24 @@ export default function Dashboard() {
           />
         )}
         {modals.progress && <ProgressModal onClose={() => closeModal('progress')} />}
+        {modals.templates && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+            <div className="bg-white rounded-lg shadow-xl w-full max-w-6xl max-h-[90vh] overflow-hidden">
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-bold">Workout Templates</h2>
+                  <Button variant="ghost" size="sm" onClick={() => closeModal('templates')}>
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+                <TemplateLibrary
+                  onStartWorkout={handleStartWorkoutFromTemplate}
+                  onCreateTemplate={handleCreateTemplate}
+                />
+              </div>
+            </div>
+          </div>
+        )}
         {modals.user && <UserProfileModal onClose={() => closeModal('user')} />}
       </AnimatePresence>
     </div>
