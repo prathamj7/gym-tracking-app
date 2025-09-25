@@ -640,12 +640,17 @@ export default function Dashboard() {
         )}
         {modals.progress && <ProgressModal onClose={() => closeModal('progress')} />}
         {modals.templates && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-            <div className="bg-white rounded-lg shadow-xl w-full max-w-6xl max-h-[90vh] overflow-hidden">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+            <div className="bg-card border border-border/50 rounded-lg shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden backdrop-blur-xl">
               <div className="p-6">
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-bold">Workout Templates</h2>
-                  <Button variant="ghost" size="sm" onClick={() => closeModal('templates')}>
+                  <h2 className="text-2xl font-bold text-foreground">Workout Templates</h2>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => closeModal('templates')}
+                    className="hover:bg-primary/10 hover:text-primary"
+                  >
                     <X className="h-4 w-4" />
                   </Button>
                 </div>

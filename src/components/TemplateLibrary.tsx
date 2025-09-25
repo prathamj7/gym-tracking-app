@@ -62,10 +62,10 @@ export function TemplateLibrary({
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case "Beginner": return "bg-green-100 text-green-800";
-      case "Intermediate": return "bg-yellow-100 text-yellow-800";
-      case "Advanced": return "bg-red-100 text-red-800";
-      default: return "bg-gray-100 text-gray-800";
+      case "Beginner": return "bg-green-500/20 text-green-400 border border-green-500/30";
+      case "Intermediate": return "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30";
+      case "Advanced": return "bg-red-500/20 text-red-400 border border-red-500/30";
+      default: return "bg-muted/50 text-muted-foreground border border-border/50";
     }
   };
 
@@ -80,8 +80,8 @@ export function TemplateLibrary({
     return (
       <div className="flex items-center justify-center py-12">
         <div className="text-center">
-          <Dumbbell className="h-12 w-12 mx-auto text-gray-400 animate-pulse" />
-          <p className="mt-2 text-gray-500">Loading templates...</p>
+          <Dumbbell className="h-12 w-12 mx-auto text-muted-foreground animate-pulse" />
+          <p className="mt-2 text-muted-foreground">Loading templates...</p>
         </div>
       </div>
     );
@@ -92,18 +92,18 @@ export function TemplateLibrary({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">Workout Templates</h2>
-          <p className="text-gray-600">Choose from pre-built workouts or create your own</p>
+          <h2 className="text-2xl font-bold text-foreground">Workout Templates</h2>
+          <p className="text-muted-foreground">Choose from pre-built workouts or create your own</p>
         </div>
         <Button 
           onClick={onCreateTemplate}
           disabled={!canCreateTemplate}
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground"
         >
           <Plus className="h-4 w-4" />
           Create Template
           {!isPremium && (
-            <Badge variant="secondary" className="ml-1">
+            <Badge variant="secondary" className="ml-1 bg-muted text-muted-foreground">
               {userTemplates.length}/{templateLimit}
             </Badge>
           )}
@@ -111,17 +111,17 @@ export function TemplateLibrary({
       </div>
 
       <Tabs defaultValue="browse" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="browse">Browse</TabsTrigger>
-          <TabsTrigger value="popular" className="flex items-center gap-1">
+        <TabsList className="grid w-full grid-cols-4 bg-muted/50 border border-border/50">
+          <TabsTrigger value="browse" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Browse</TabsTrigger>
+          <TabsTrigger value="popular" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
             <TrendingUp className="h-4 w-4" />
             Popular
           </TabsTrigger>
-          <TabsTrigger value="recent" className="flex items-center gap-1">
+          <TabsTrigger value="recent" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
             <Clock className="h-4 w-4" />
             Recent
           </TabsTrigger>
-          <TabsTrigger value="mine" className="flex items-center gap-1">
+          <TabsTrigger value="mine" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
             <User className="h-4 w-4" />
             My Templates
           </TabsTrigger>
@@ -135,6 +135,10 @@ export function TemplateLibrary({
               variant={selectedCategory === "all" ? "default" : "outline"}
               size="sm"
               onClick={() => setSelectedCategory("all")}
+              className={selectedCategory === "all" 
+                ? "bg-primary hover:bg-primary/90 text-primary-foreground" 
+                : "border-border hover:bg-primary/10 hover:text-primary hover:border-primary/30"
+              }
             >
               All Templates
             </Button>
@@ -144,6 +148,10 @@ export function TemplateLibrary({
                 variant={selectedCategory === category ? "default" : "outline"}
                 size="sm"
                 onClick={() => setSelectedCategory(category)}
+                className={selectedCategory === category 
+                  ? "bg-primary hover:bg-primary/90 text-primary-foreground" 
+                  : "border-border hover:bg-primary/10 hover:text-primary hover:border-primary/30"
+                }
               >
                 {category}
               </Button>
@@ -194,9 +202,9 @@ export function TemplateLibrary({
             </div>
           ) : (
             <div className="text-center py-12">
-              <Clock className="h-12 w-12 mx-auto text-gray-400" />
-              <p className="mt-2 text-gray-500">No recent templates</p>
-              <p className="text-sm text-gray-400">Start using templates to see them here</p>
+              <Clock className="h-12 w-12 mx-auto text-muted-foreground" />
+              <p className="mt-2 text-muted-foreground">No recent templates</p>
+              <p className="text-sm text-muted-foreground/70">Start using templates to see them here</p>
             </div>
           )}
         </TabsContent>
@@ -217,17 +225,17 @@ export function TemplateLibrary({
             </div>
           ) : (
             <div className="text-center py-12">
-              <User className="h-12 w-12 mx-auto text-gray-400" />
-              <p className="mt-2 text-gray-500">No custom templates yet</p>
+              <User className="h-12 w-12 mx-auto text-muted-foreground" />
+              <p className="mt-2 text-muted-foreground">No custom templates yet</p>
               <Button 
                 onClick={onCreateTemplate}
                 disabled={!canCreateTemplate}
-                className="mt-4"
+                className="mt-4 bg-primary hover:bg-primary/90 text-primary-foreground"
               >
                 Create Your First Template
               </Button>
               {!canCreateTemplate && (
-                <p className="text-xs text-gray-400 mt-2">
+                <p className="text-xs text-muted-foreground/70 mt-2">
                   Template limit reached. Upgrade to Premium for unlimited templates.
                 </p>
               )}
@@ -269,10 +277,10 @@ function TemplateCard({
 }: TemplateCardProps) {
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case "Beginner": return "bg-green-100 text-green-800";
-      case "Intermediate": return "bg-yellow-100 text-yellow-800";
-      case "Advanced": return "bg-red-100 text-red-800";
-      default: return "bg-gray-100 text-gray-800";
+      case "Beginner": return "bg-green-500/20 text-green-400 border border-green-500/30";
+      case "Intermediate": return "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30";
+      case "Advanced": return "bg-red-500/20 text-red-400 border border-red-500/30";
+      default: return "bg-muted/50 text-muted-foreground border border-border/50";
     }
   };
 
@@ -284,17 +292,17 @@ function TemplateCard({
   };
 
   return (
-    <Card className="group hover:shadow-md transition-shadow cursor-pointer">
+    <Card className="group hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 cursor-pointer bg-card border-border/50 hover:border-primary/30 backdrop-blur-sm">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <CardTitle className="text-lg mb-1">{template.name}</CardTitle>
-            <CardDescription className="text-sm">
+            <CardTitle className="text-lg mb-1 text-foreground group-hover:text-primary transition-colors">{template.name}</CardTitle>
+            <CardDescription className="text-sm text-muted-foreground">
               {template.description}
             </CardDescription>
           </div>
           {isUserTemplate && (
-            <Badge variant="outline" className="text-xs">
+            <Badge variant="outline" className="text-xs border-primary/30 text-primary">
               Custom
             </Badge>
           )}
@@ -304,7 +312,7 @@ function TemplateCard({
           <Badge className={cn("text-xs", getDifficultyColor(template.difficulty))}>
             {template.difficulty}
           </Badge>
-          <Badge variant="secondary" className="text-xs">
+          <Badge variant="secondary" className="text-xs bg-muted/50 text-muted-foreground border-border/50">
             {template.category}
           </Badge>
         </div>
@@ -313,27 +321,27 @@ function TemplateCard({
       <CardContent className="pt-0">
         <div className="space-y-3">
           {/* Stats */}
-          <div className="flex items-center justify-between text-sm text-gray-600">
+          <div className="flex items-center justify-between text-sm text-muted-foreground">
             <div className="flex items-center gap-1">
-              <Clock className="h-4 w-4" />
+              <Clock className="h-4 w-4 text-primary" />
               {formatDuration(template.estimatedDuration)}
             </div>
             <div className="flex items-center gap-1">
-              <Dumbbell className="h-4 w-4" />
+              <Dumbbell className="h-4 w-4 text-primary" />
               {template.exercises.length} exercises
             </div>
           </div>
 
           {/* Usage Stats */}
           {showUsageCount && template.usageCount && (
-            <div className="flex items-center gap-1 text-xs text-gray-500">
-              <Star className="h-3 w-3" />
+            <div className="flex items-center gap-1 text-xs text-muted-foreground/70">
+              <Star className="h-3 w-3 text-yellow-500" />
               Used {template.usageCount} times
             </div>
           )}
 
           {showLastUsed && template.lastUsed && (
-            <div className="text-xs text-gray-500">
+            <div className="text-xs text-muted-foreground/70">
               Last used {new Date(template.lastUsed).toLocaleDateString()}
             </div>
           )}
@@ -343,7 +351,7 @@ function TemplateCard({
             <Button
               size="sm"
               onClick={() => onStart(template)}
-              className="flex-1"
+              className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
             >
               Start Workout
             </Button>
@@ -351,6 +359,7 @@ function TemplateCard({
               size="sm"
               variant="outline"
               onClick={() => onViewDetails(template)}
+              className="border-border hover:bg-primary/10 hover:text-primary hover:border-primary/30"
             >
               Details
             </Button>
@@ -377,10 +386,10 @@ function TemplateDetailsModal({
 }: TemplateDetailsModalProps) {
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case "Beginner": return "bg-green-100 text-green-800";
-      case "Intermediate": return "bg-yellow-100 text-yellow-800";
-      case "Advanced": return "bg-red-100 text-red-800";
-      default: return "bg-gray-100 text-gray-800";
+      case "Beginner": return "bg-green-500/20 text-green-400 border border-green-500/30";
+      case "Intermediate": return "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30";
+      case "Advanced": return "bg-red-500/20 text-red-400 border border-red-500/30";
+      default: return "bg-muted/50 text-muted-foreground border border-border/50";
     }
   };
 
@@ -393,66 +402,66 @@ function TemplateDetailsModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto bg-card border-border/50 backdrop-blur-xl">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+          <DialogTitle className="flex items-center gap-2 text-foreground">
             {template.name}
             <Badge className={cn("text-xs", getDifficultyColor(template.difficulty))}>
               {template.difficulty}
             </Badge>
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-muted-foreground">
             {template.description}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
           {/* Template Info */}
-          <div className="grid grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg">
+          <div className="grid grid-cols-3 gap-4 p-4 bg-muted/30 border border-border/50 rounded-lg">
             <div className="text-center">
-              <Clock className="h-5 w-5 mx-auto text-gray-600" />
-              <p className="text-sm font-medium mt-1">{formatDuration(template.estimatedDuration)}</p>
-              <p className="text-xs text-gray-500">Duration</p>
+              <Clock className="h-5 w-5 mx-auto text-primary" />
+              <p className="text-sm font-medium mt-1 text-foreground">{formatDuration(template.estimatedDuration)}</p>
+              <p className="text-xs text-muted-foreground">Duration</p>
             </div>
             <div className="text-center">
-              <Dumbbell className="h-5 w-5 mx-auto text-gray-600" />
-              <p className="text-sm font-medium mt-1">{template.exercises.length}</p>
-              <p className="text-xs text-gray-500">Exercises</p>
+              <Dumbbell className="h-5 w-5 mx-auto text-primary" />
+              <p className="text-sm font-medium mt-1 text-foreground">{template.exercises.length}</p>
+              <p className="text-xs text-muted-foreground">Exercises</p>
             </div>
             <div className="text-center">
-              <Badge variant="secondary" className="text-xs">
+              <Badge variant="secondary" className="text-xs bg-muted/50 text-muted-foreground border-border/50">
                 {template.category}
               </Badge>
-              <p className="text-xs text-gray-500 mt-1">Category</p>
+              <p className="text-xs text-muted-foreground mt-1">Category</p>
             </div>
           </div>
 
           {/* Exercise List */}
           <div>
-            <h4 className="font-medium mb-3">Exercises</h4>
+            <h4 className="font-medium mb-3 text-foreground">Exercises</h4>
             <div className="space-y-2">
               {template.exercises
                 .sort((a, b) => a.order - b.order)
                 .map((exercise, index) => (
                   <div
                     key={index}
-                    className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                    className="flex items-center justify-between p-3 bg-muted/30 border border-border/50 rounded-lg hover:bg-muted/50 transition-colors"
                   >
                     <div className="flex-1">
-                      <h5 className="font-medium">{exercise.name}</h5>
-                      <p className="text-sm text-gray-600">{exercise.category}</p>
+                      <h5 className="font-medium text-foreground">{exercise.name}</h5>
+                      <p className="text-sm text-muted-foreground">{exercise.category}</p>
                       {exercise.notes && (
-                        <p className="text-xs text-gray-500 mt-1">{exercise.notes}</p>
+                        <p className="text-xs text-muted-foreground/70 mt-1">{exercise.notes}</p>
                       )}
                     </div>
                     <div className="text-right text-sm">
-                      <p className="font-medium">
+                      <p className="font-medium text-foreground">
                         {exercise.targetSets} × {exercise.targetReps}
                       </p>
                       {exercise.targetWeight && (
-                        <p className="text-gray-600">{exercise.targetWeight}kg</p>
+                        <p className="text-muted-foreground">{exercise.targetWeight}kg</p>
                       )}
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-muted-foreground/70">
                         {Math.floor(exercise.restTime / 60)}:{(exercise.restTime % 60).toString().padStart(2, '0')} rest
                       </p>
                     </div>
@@ -465,11 +474,15 @@ function TemplateDetailsModal({
           <div className="flex gap-2 pt-4">
             <Button
               onClick={() => onStart(template)}
-              className="flex-1"
+              className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
             >
               Start This Workout
             </Button>
-            <Button variant="outline" onClick={onClose}>
+            <Button 
+              variant="outline" 
+              onClick={onClose}
+              className="border-border hover:bg-primary/10 hover:text-primary hover:border-primary/30"
+            >
               Close
             </Button>
           </div>
