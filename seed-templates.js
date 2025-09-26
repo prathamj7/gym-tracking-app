@@ -9,92 +9,59 @@
 console.log("Workout Templates Seed Data:");
 console.log("===========================");
 
+// Now includes 16 comprehensive pre-built templates organized by muscle groups:
+
+const templateCategories = {
+  "Body Part Split": [
+    "Chest Domination - Complete chest development",
+    "Back Builder - Comprehensive back workout", 
+    "Leg Crusher - Intense lower body workout",
+    "Shoulder Sculptor - Complete shoulder development",
+    "Arm Annihilator - Biceps and triceps focused",
+    "Core Crusher - Comprehensive core strengthening"
+  ],
+  "Push/Pull/Legs": [
+    "PPL: Push Day - Chest, shoulders, triceps",
+    "PPL: Pull Day - Back and biceps", 
+    "PPL: Leg Day - Complete lower body"
+  ],
+  "Upper/Lower": [
+    "Upper Body Strength - Compound movements",
+    "Lower Body Power - Strength and power workout"
+  ],
+  "Full Body": [
+    "Full Body Beginner - Perfect starter routine"
+  ],
+  "Quick Workout": [
+    "Quick 30-Min Power - High-intensity for busy days",
+    "Express Muscle Builder - Quick but effective"
+  ]
+};
+
 const templates = [
-  {
-    name: "PPL: Push Day",
-    description: "Chest, shoulders, and triceps focused workout",
-    category: "Push/Pull/Legs",
-    difficulty: "Intermediate",
-    estimatedDuration: 75,
-    exercises: [
-      { name: "Barbell Bench Press", category: "Chest", targetSets: 4, targetReps: "6-8", restTime: 180, order: 1 },
-      { name: "Incline Dumbbell Press", category: "Chest", targetSets: 3, targetReps: "8-10", restTime: 120, order: 2 },
-      { name: "Overhead Press", category: "Shoulders", targetSets: 3, targetReps: "6-8", restTime: 150, order: 3 },
-      { name: "Lateral Raises", category: "Shoulders", targetSets: 3, targetReps: "12-15", restTime: 90, order: 4 },
-      { name: "Dips", category: "Triceps", targetSets: 3, targetReps: "8-12", restTime: 120, order: 5 },
-      { name: "Tricep Pushdowns", category: "Triceps", targetSets: 3, targetReps: "10-12", restTime: 90, order: 6 },
-    ]
-  },
-  {
-    name: "PPL: Pull Day", 
-    description: "Back and biceps focused workout",
-    category: "Push/Pull/Legs",
-    difficulty: "Intermediate",
-    estimatedDuration: 70,
-    exercises: [
-      { name: "Deadlifts", category: "Back", targetSets: 3, targetReps: "5-6", restTime: 240, order: 1 },
-      { name: "Pull-ups", category: "Back", targetSets: 3, targetReps: "6-10", restTime: 150, order: 2 },
-      { name: "Barbell Rows", category: "Back", targetSets: 3, targetReps: "8-10", restTime: 120, order: 3 },
-      { name: "Cable Rows", category: "Back", targetSets: 3, targetReps: "10-12", restTime: 90, order: 4 },
-      { name: "Barbell Curls", category: "Biceps", targetSets: 3, targetReps: "8-10", restTime: 90, order: 5 },
-      { name: "Hammer Curls", category: "Biceps", targetSets: 3, targetReps: "10-12", restTime: 90, order: 6 },
-    ]
-  },
-  {
-    name: "PPL: Leg Day",
-    description: "Complete lower body workout",
-    category: "Push/Pull/Legs", 
-    difficulty: "Intermediate",
-    estimatedDuration: 80,
-    exercises: [
-      { name: "Squats", category: "Legs", targetSets: 4, targetReps: "6-8", restTime: 240, order: 1 },
-      { name: "Romanian Deadlifts", category: "Legs", targetSets: 3, targetReps: "8-10", restTime: 180, order: 2 },
-      { name: "Bulgarian Split Squats", category: "Legs", targetSets: 3, targetReps: "10-12", restTime: 120, order: 3 },
-      { name: "Leg Curls", category: "Legs", targetSets: 3, targetReps: "12-15", restTime: 90, order: 4 },
-      { name: "Calf Raises", category: "Legs", targetSets: 4, targetReps: "15-20", restTime: 60, order: 5 },
-    ]
-  },
-  {
-    name: "Full Body Beginner",
-    description: "Perfect starter routine hitting all major muscle groups",
-    category: "Full Body",
-    difficulty: "Beginner", 
-    estimatedDuration: 45,
-    exercises: [
-      { name: "Squats", category: "Legs", targetSets: 3, targetReps: "8-10", restTime: 120, order: 1 },
-      { name: "Push-ups", category: "Chest", targetSets: 3, targetReps: "8-12", restTime: 90, order: 2 },
-      { name: "Bent-over Rows", category: "Back", targetSets: 3, targetReps: "8-10", restTime: 120, order: 3 },
-      { name: "Overhead Press", category: "Shoulders", targetSets: 3, targetReps: "6-8", restTime: 120, order: 4 },
-      { name: "Plank", category: "Core", targetSets: 3, targetReps: "30-60 sec", restTime: 60, order: 5 },
-    ]
-  },
-  {
-    name: "Upper Body Strength",
-    description: "Focus on upper body compound movements",
-    category: "Upper/Lower",
-    difficulty: "Intermediate",
-    estimatedDuration: 60,
-    exercises: [
-      { name: "Barbell Bench Press", category: "Chest", targetSets: 4, targetReps: "5-6", restTime: 180, order: 1 },
-      { name: "Pull-ups", category: "Back", targetSets: 4, targetReps: "6-8", restTime: 150, order: 2 },
-      { name: "Overhead Press", category: "Shoulders", targetSets: 3, targetReps: "6-8", restTime: 150, order: 3 },
-      { name: "Barbell Rows", category: "Back", targetSets: 3, targetReps: "8-10", restTime: 120, order: 4 },
-      { name: "Dips", category: "Triceps", targetSets: 3, targetReps: "8-12", restTime: 120, order: 5 },
-    ]
-  },
-  {
-    name: "Quick 30-Min Power",
-    description: "High-intensity workout for busy days",
-    category: "Quick Workout",
-    difficulty: "Intermediate",
-    estimatedDuration: 30,
-    exercises: [
-      { name: "Squats", category: "Legs", targetSets: 3, targetReps: "10-12", restTime: 60, order: 1 },
-      { name: "Push-ups", category: "Chest", targetSets: 3, targetReps: "10-15", restTime: 45, order: 2 },
-      { name: "Pull-ups", category: "Back", targetSets: 3, targetReps: "6-10", restTime: 60, order: 3 },
-      { name: "Burpees", category: "Full Body", targetSets: 3, targetReps: "8-10", restTime: 60, order: 4 },
-    ]
-  }
+  // 6 MUSCLE GROUP SPECIFIC TEMPLATES
+  { name: "Chest Domination", exercises: 6, duration: "60min", difficulty: "Intermediate" },
+  { name: "Back Builder", exercises: 6, duration: "65min", difficulty: "Intermediate" },
+  { name: "Leg Crusher", exercises: 7, duration: "80min", difficulty: "Advanced" },
+  { name: "Shoulder Sculptor", exercises: 6, duration: "55min", difficulty: "Intermediate" },
+  { name: "Arm Annihilator", exercises: 7, duration: "50min", difficulty: "Intermediate" },
+  { name: "Core Crusher", exercises: 6, duration: "35min", difficulty: "Beginner" },
+  
+  // 3 PPL TEMPLATES  
+  { name: "PPL: Push Day", exercises: 6, duration: "75min", difficulty: "Intermediate" },
+  { name: "PPL: Pull Day", exercises: 6, duration: "70min", difficulty: "Intermediate" },
+  { name: "PPL: Leg Day", exercises: 5, duration: "80min", difficulty: "Intermediate" },
+  
+  // 2 UPPER/LOWER TEMPLATES
+  { name: "Upper Body Strength", exercises: 5, duration: "60min", difficulty: "Intermediate" },
+  { name: "Lower Body Power", exercises: 6, duration: "70min", difficulty: "Advanced" },
+  
+  // 1 FULL BODY TEMPLATE
+  { name: "Full Body Beginner", exercises: 5, duration: "45min", difficulty: "Beginner" },
+  
+  // 2 QUICK WORKOUT TEMPLATES
+  { name: "Quick 30-Min Power", exercises: 4, duration: "30min", difficulty: "Intermediate" },
+  { name: "Express Muscle Builder", exercises: 5, duration: "25min", difficulty: "Intermediate" }
 ];
 
 console.log(`Ready to create ${templates.length} templates:`);

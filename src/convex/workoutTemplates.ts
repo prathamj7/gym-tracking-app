@@ -279,8 +279,113 @@ export const seedPreBuiltTemplates = mutation({
       return { message: "Pre-built templates already exist" };
     }
 
-    // Pre-built templates data
+    // Pre-built templates data - Comprehensive muscle group coverage
     const templates = [
+      // CHEST FOCUSED TEMPLATES
+      {
+        name: "Chest Domination",
+        description: "Complete chest development with mass-building exercises",
+        category: "Body Part Split",
+        difficulty: "Intermediate",
+        estimatedDuration: 60,
+        exercises: [
+          { name: "Barbell Bench Press", category: "Chest", targetSets: 4, targetReps: "6-8", restTime: 180, order: 1 },
+          { name: "Incline Dumbbell Press", category: "Chest", targetSets: 3, targetReps: "8-10", restTime: 150, order: 2 },
+          { name: "Decline Barbell Press", category: "Chest", targetSets: 3, targetReps: "8-10", restTime: 150, order: 3 },
+          { name: "Dumbbell Flyes", category: "Chest", targetSets: 3, targetReps: "10-12", restTime: 90, order: 4 },
+          { name: "Cable Crossovers", category: "Chest", targetSets: 3, targetReps: "12-15", restTime: 90, order: 5 },
+          { name: "Push-ups", category: "Chest", targetSets: 2, targetReps: "AMRAP", restTime: 60, order: 6 },
+        ]
+      },
+
+      // BACK FOCUSED TEMPLATES
+      {
+        name: "Back Builder",
+        description: "Comprehensive back workout for width and thickness",
+        category: "Body Part Split",
+        difficulty: "Intermediate",
+        estimatedDuration: 65,
+        exercises: [
+          { name: "Deadlifts", category: "Back", targetSets: 4, targetReps: "5-6", restTime: 240, order: 1 },
+          { name: "Pull-ups", category: "Back", targetSets: 4, targetReps: "6-10", restTime: 180, order: 2 },
+          { name: "Barbell Rows", category: "Back", targetSets: 3, targetReps: "8-10", restTime: 150, order: 3 },
+          { name: "T-Bar Rows", category: "Back", targetSets: 3, targetReps: "8-10", restTime: 150, order: 4 },
+          { name: "Lat Pulldowns", category: "Back", targetSets: 3, targetReps: "10-12", restTime: 120, order: 5 },
+          { name: "Cable Rows", category: "Back", targetSets: 3, targetReps: "12-15", restTime: 90, order: 6 },
+        ]
+      },
+
+      // LEG FOCUSED TEMPLATES
+      {
+        name: "Leg Crusher",
+        description: "Intense lower body workout for strength and size",
+        category: "Body Part Split",
+        difficulty: "Advanced",
+        estimatedDuration: 80,
+        exercises: [
+          { name: "Squats", category: "Legs", targetSets: 5, targetReps: "5-6", restTime: 240, order: 1 },
+          { name: "Romanian Deadlifts", category: "Legs", targetSets: 4, targetReps: "6-8", restTime: 180, order: 2 },
+          { name: "Bulgarian Split Squats", category: "Legs", targetSets: 3, targetReps: "10-12", restTime: 120, order: 3 },
+          { name: "Leg Press", category: "Legs", targetSets: 3, targetReps: "12-15", restTime: 120, order: 4 },
+          { name: "Leg Curls", category: "Legs", targetSets: 3, targetReps: "12-15", restTime: 90, order: 5 },
+          { name: "Walking Lunges", category: "Legs", targetSets: 3, targetReps: "20 steps", restTime: 90, order: 6 },
+          { name: "Calf Raises", category: "Legs", targetSets: 4, targetReps: "15-20", restTime: 60, order: 7 },
+        ]
+      },
+
+      // SHOULDER FOCUSED TEMPLATES
+      {
+        name: "Shoulder Sculptor",
+        description: "Complete shoulder development for all three heads",
+        category: "Body Part Split",
+        difficulty: "Intermediate",
+        estimatedDuration: 55,
+        exercises: [
+          { name: "Overhead Press", category: "Shoulders", targetSets: 4, targetReps: "6-8", restTime: 180, order: 1 },
+          { name: "Lateral Raises", category: "Shoulders", targetSets: 4, targetReps: "12-15", restTime: 90, order: 2 },
+          { name: "Rear Delt Flyes", category: "Shoulders", targetSets: 4, targetReps: "12-15", restTime: 90, order: 3 },
+          { name: "Arnold Press", category: "Shoulders", targetSets: 3, targetReps: "8-10", restTime: 120, order: 4 },
+          { name: "Upright Rows", category: "Shoulders", targetSets: 3, targetReps: "10-12", restTime: 90, order: 5 },
+          { name: "Face Pulls", category: "Shoulders", targetSets: 3, targetReps: "15-20", restTime: 75, order: 6 },
+        ]
+      },
+
+      // ARM FOCUSED TEMPLATES
+      {
+        name: "Arm Annihilator",
+        description: "Biceps and triceps focused arm workout",
+        category: "Body Part Split",
+        difficulty: "Intermediate",
+        estimatedDuration: 50,
+        exercises: [
+          { name: "Close-Grip Bench Press", category: "Triceps", targetSets: 4, targetReps: "6-8", restTime: 150, order: 1 },
+          { name: "Barbell Curls", category: "Biceps", targetSets: 4, targetReps: "8-10", restTime: 120, order: 2 },
+          { name: "Tricep Dips", category: "Triceps", targetSets: 3, targetReps: "8-12", restTime: 120, order: 3 },
+          { name: "Hammer Curls", category: "Biceps", targetSets: 3, targetReps: "10-12", restTime: 90, order: 4 },
+          { name: "Tricep Pushdowns", category: "Triceps", targetSets: 3, targetReps: "10-12", restTime: 90, order: 5 },
+          { name: "Cable Curls", category: "Biceps", targetSets: 3, targetReps: "12-15", restTime: 75, order: 6 },
+          { name: "Overhead Tricep Extension", category: "Triceps", targetSets: 3, targetReps: "10-12", restTime: 90, order: 7 },
+        ]
+      },
+
+      // CORE FOCUSED TEMPLATES
+      {
+        name: "Core Crusher",
+        description: "Comprehensive core strengthening workout",
+        category: "Body Part Split",
+        difficulty: "Beginner",
+        estimatedDuration: 35,
+        exercises: [
+          { name: "Plank", category: "Core", targetSets: 3, targetReps: "60 sec", restTime: 60, order: 1 },
+          { name: "Dead Bug", category: "Core", targetSets: 3, targetReps: "10 each", restTime: 45, order: 2 },
+          { name: "Russian Twists", category: "Core", targetSets: 3, targetReps: "20 each", restTime: 45, order: 3 },
+          { name: "Mountain Climbers", category: "Core", targetSets: 3, targetReps: "30 sec", restTime: 60, order: 4 },
+          { name: "Bicycle Crunches", category: "Core", targetSets: 3, targetReps: "20 each", restTime: 45, order: 5 },
+          { name: "Leg Raises", category: "Core", targetSets: 3, targetReps: "12-15", restTime: 60, order: 6 },
+        ]
+      },
+
+      // PPL TEMPLATES (Enhanced)
       {
         name: "PPL: Push Day",
         description: "Chest, shoulders, and triceps focused workout",
@@ -296,6 +401,7 @@ export const seedPreBuiltTemplates = mutation({
           { name: "Tricep Pushdowns", category: "Triceps", targetSets: 3, targetReps: "10-12", restTime: 90, order: 6 },
         ]
       },
+
       {
         name: "PPL: Pull Day", 
         description: "Back and biceps focused workout",
@@ -311,6 +417,7 @@ export const seedPreBuiltTemplates = mutation({
           { name: "Hammer Curls", category: "Biceps", targetSets: 3, targetReps: "10-12", restTime: 90, order: 6 },
         ]
       },
+
       {
         name: "PPL: Leg Day",
         description: "Complete lower body workout",
@@ -325,6 +432,8 @@ export const seedPreBuiltTemplates = mutation({
           { name: "Calf Raises", category: "Legs", targetSets: 4, targetReps: "15-20", restTime: 60, order: 5 },
         ]
       },
+
+      // FULL BODY TEMPLATES
       {
         name: "Full Body Beginner",
         description: "Perfect starter routine hitting all major muscle groups",
@@ -339,6 +448,8 @@ export const seedPreBuiltTemplates = mutation({
           { name: "Plank", category: "Core", targetSets: 3, targetReps: "30-60 sec", restTime: 60, order: 5 },
         ]
       },
+
+      // UPPER/LOWER TEMPLATES
       {
         name: "Upper Body Strength",
         description: "Focus on upper body compound movements",
@@ -353,6 +464,24 @@ export const seedPreBuiltTemplates = mutation({
           { name: "Dips", category: "Triceps", targetSets: 3, targetReps: "8-12", restTime: 120, order: 5 },
         ]
       },
+
+      {
+        name: "Lower Body Power",
+        description: "Complete lower body strength and power workout",
+        category: "Upper/Lower",
+        difficulty: "Advanced",
+        estimatedDuration: 70,
+        exercises: [
+          { name: "Squats", category: "Legs", targetSets: 5, targetReps: "5-6", restTime: 240, order: 1 },
+          { name: "Romanian Deadlifts", category: "Legs", targetSets: 4, targetReps: "6-8", restTime: 180, order: 2 },
+          { name: "Bulgarian Split Squats", category: "Legs", targetSets: 3, targetReps: "8-10", restTime: 120, order: 3 },
+          { name: "Hip Thrusts", category: "Legs", targetSets: 3, targetReps: "12-15", restTime: 90, order: 4 },
+          { name: "Walking Lunges", category: "Legs", targetSets: 3, targetReps: "20 steps", restTime: 90, order: 5 },
+          { name: "Calf Raises", category: "Legs", targetSets: 4, targetReps: "15-20", restTime: 60, order: 6 },
+        ]
+      },
+
+      // QUICK WORKOUT TEMPLATES
       {
         name: "Quick 30-Min Power",
         description: "High-intensity workout for busy days",
@@ -364,6 +493,21 @@ export const seedPreBuiltTemplates = mutation({
           { name: "Push-ups", category: "Chest", targetSets: 3, targetReps: "10-15", restTime: 45, order: 2 },
           { name: "Pull-ups", category: "Back", targetSets: 3, targetReps: "6-10", restTime: 60, order: 3 },
           { name: "Burpees", category: "Full Body", targetSets: 3, targetReps: "8-10", restTime: 60, order: 4 },
+        ]
+      },
+
+      {
+        name: "Express Muscle Builder",
+        description: "Quick but effective muscle building session",
+        category: "Quick Workout",
+        difficulty: "Intermediate",
+        estimatedDuration: 25,
+        exercises: [
+          { name: "Goblet Squats", category: "Legs", targetSets: 3, targetReps: "12-15", restTime: 60, order: 1 },
+          { name: "Push-ups", category: "Chest", targetSets: 3, targetReps: "AMRAP", restTime: 45, order: 2 },
+          { name: "Bent-over Rows", category: "Back", targetSets: 3, targetReps: "10-12", restTime: 60, order: 3 },
+          { name: "Pike Push-ups", category: "Shoulders", targetSets: 2, targetReps: "8-10", restTime: 60, order: 4 },
+          { name: "Plank", category: "Core", targetSets: 2, targetReps: "45 sec", restTime: 45, order: 5 },
         ]
       }
     ];

@@ -17,6 +17,7 @@ import { LibraryModal } from "@/components/dashboard/LibraryModal";
 import { ProgressModal } from "@/components/dashboard/ProgressModal";
 import { UserProfileModal } from "@/components/dashboard/UserProfileModal";
 import { TemplateLibrary } from "@/components/TemplateLibrary";
+import TemplateSeedButton from "@/components/TemplateSeedButton";
 
 export default function Dashboard() {
   const { isLoading, isAuthenticated, user, signOut } = useAuth();
@@ -534,6 +535,12 @@ export default function Dashboard() {
                 <Dumbbell className="h-16 w-16 text-primary" />
               </motion.div>
             </div>
+            
+            {/* Temporary Template Seeding Button */}
+            <div className="mb-6">
+              <TemplateSeedButton />
+            </div>
+            
             <StatsCards />
           </motion.div>
 
