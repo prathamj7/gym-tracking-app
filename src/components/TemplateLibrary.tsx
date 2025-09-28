@@ -19,45 +19,37 @@ import { useWorkoutTemplates, WorkoutTemplate } from "@/hooks/use-workout-templa
 import { cn } from "@/lib/utils";
 
 interface TemplateLibraryProps {
-  onStartWorkout?: (template: WorkoutTemplate) => void;
+  onLogTemplate?: (template: WorkoutTemplate) => void;
   onCreateTemplate?: () => void;
 }
 
 export function TemplateLibrary({
-  onStartWorkout,
+  onLogTemplate,
   onCreateTemplate,
 }: TemplateLibraryProps) {
   const {
     allTemplates,
     userTemplates,
-    getTemplatesByCategory,
-    getPreBuiltTemplates,
-    getUserOwnTemplates, 
-    getPopularTemplates,
-    getRecentlyUsedTemplates,
-    categories,
-    difficulties,
+    getUserOwnTemplates,
     templateLimit,
     canCreateTemplate,
     isPremium,
     isLoading,
-    trackTemplateUsage,
+    logTemplate,
   } = useWorkoutTemplates();
 
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedTemplate, setSelectedTemplate] = useState<WorkoutTemplate | null>(null);
 
-  const handleStartWorkout = async (template: WorkoutTemplate) => {
-    await trackTemplateUsage(template._id);
-    onStartWorkout?.(template);
+  const handleLogTemplate = async (template: WorkoutTemplate) => {
+    try {
+      await logTemplate(template._id);
+      onLogTemplate?.(template);
+    } catch (error) {
+      console.error("Failed to log template:", error);
+      alert("Failed to log template. Please try again.");
+    }
   };
 
-  const filteredTemplates = selectedCategory === "all" 
-    ? getPreBuiltTemplates()
-    : getTemplatesByCategory(selectedCategory);
-
-  const popularTemplates = getPopularTemplates();
-  const recentTemplates = getRecentlyUsedTemplates();
   const userOwnTemplates = getUserOwnTemplates();
 
   const getDifficultyColor = (difficulty: string) => {
@@ -110,58 +102,15 @@ export function TemplateLibrary({
         </Button>
       </div>
 
-      <Tabs defaultValue="browse" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 bg-muted/50 border border-border/50">
-          <TabsTrigger value="browse" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Browse Templates</TabsTrigger>
+      <Tabs defaultValue="mine" className="w-full">
+        <TabsList className="grid w-full grid-cols-1 bg-muted/50 border border-border/50">
           <TabsTrigger value="mine" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
             <User className="h-4 w-4" />
             My Templates
           </TabsTrigger>
         </TabsList>
 
-        {/* Browse Templates */}
-        <TabsContent value="browse" className="space-y-4">
-          {/* Category Filter */}
-          <div className="flex flex-wrap gap-2">
-            <Button
-              variant={selectedCategory === "all" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setSelectedCategory("all")}
-              className={selectedCategory === "all" 
-                ? "bg-primary hover:bg-primary/90 text-primary-foreground" 
-                : "border-border hover:bg-primary/10 hover:text-primary hover:border-primary/30"
-              }
-            >
-              All Templates
-            </Button>
-            {["Push/Pull/Legs", "Upper/Lower", "Full Body", "Body Part Split", "Strength Program", "Quick Workout", "Custom"].map((category) => (
-              <Button
-                key={category}
-                variant={selectedCategory === category ? "default" : "outline"}
-                size="sm"
-                onClick={() => setSelectedCategory(category)}
-                className={selectedCategory === category 
-                  ? "bg-primary hover:bg-primary/90 text-primary-foreground" 
-                  : "border-border hover:bg-primary/10 hover:text-primary hover:border-primary/30"
-                }
-              >
-                {category}
-              </Button>
-            ))}
-          </div>
 
-          {/* Templates Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredTemplates.map((template) => (
-              <TemplateCard
-                key={template._id}
-                template={template}
-                onStart={handleStartWorkout}
-                onViewDetails={setSelectedTemplate}
-              />
-            ))}
-          </div>
-        </TabsContent>
 
 
 
@@ -173,7 +122,7 @@ export function TemplateLibrary({
                 <TemplateCard
                   key={template._id}
                   template={template}
-                  onStart={handleStartWorkout}
+                  onLog={handleLogTemplate}
                   onViewDetails={setSelectedTemplate}
                   isUserTemplate
                 />
@@ -206,7 +155,7 @@ export function TemplateLibrary({
           template={selectedTemplate}
           isOpen={!!selectedTemplate}
           onClose={() => setSelectedTemplate(null)}
-          onStart={handleStartWorkout}
+          onLog={handleLogTemplate}
         />
       )}
     </div>
@@ -216,7 +165,7 @@ export function TemplateLibrary({
 // Template Card Component
 interface TemplateCardProps {
   template: WorkoutTemplate;
-  onStart: (template: WorkoutTemplate) => void;
+  onLog: (template: WorkoutTemplate) => void;
   onViewDetails: (template: WorkoutTemplate) => void;
   showUsageCount?: boolean;
   showLastUsed?: boolean;
@@ -225,7 +174,7 @@ interface TemplateCardProps {
 
 function TemplateCard({
   template,
-  onStart,
+  onLog,
   onViewDetails,
   showUsageCount = false,
   showLastUsed = false,
@@ -306,10 +255,10 @@ function TemplateCard({
           <div className="flex gap-2">
             <Button
               size="sm"
-              onClick={() => onStart(template)}
+              onClick={() => onLog(template)}
               className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
             >
-              Start Workout
+              Log Template
             </Button>
             <Button
               size="sm"
@@ -331,14 +280,14 @@ interface TemplateDetailsModalProps {
   template: WorkoutTemplate;
   isOpen: boolean;
   onClose: () => void;
-  onStart: (template: WorkoutTemplate) => void;
+  onLog: (template: WorkoutTemplate) => void;
 }
 
 function TemplateDetailsModal({
   template,
   isOpen,
   onClose,
-  onStart,
+  onLog,
 }: TemplateDetailsModalProps) {
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
@@ -429,10 +378,10 @@ function TemplateDetailsModal({
           {/* Action */}
           <div className="flex gap-2 pt-4">
             <Button
-              onClick={() => onStart(template)}
+              onClick={() => onLog(template)}
               className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
             >
-              Start This Workout
+              Log This Template
             </Button>
             <Button 
               variant="outline" 

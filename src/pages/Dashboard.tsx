@@ -17,7 +17,6 @@ import { LibraryModal } from "@/components/dashboard/LibraryModal";
 import { ProgressModal } from "@/components/dashboard/ProgressModal";
 import { UserProfileModal } from "@/components/dashboard/UserProfileModal";
 import { TemplateForm } from "@/components/TemplateForm";
-import { TemplateSeedButton } from "@/components/TemplateSeedButton";
 import { TemplateLibrary } from "@/components/TemplateLibrary";
 
 
@@ -120,14 +119,11 @@ export default function Dashboard() {
     openModal('exerciseForm');
   };
 
-  const handleStartWorkoutFromTemplate = (template: any) => {
+  const handleLogTemplate = (template: any) => {
     closeModal('templates');
-    // For now, we'll just prefill the first exercise from the template
-    if (template.exercises && template.exercises.length > 0) {
-      const firstExercise = template.exercises[0];
-      setPrefill({ name: firstExercise.name, category: firstExercise.category });
-      openModal('exerciseForm');
-    }
+    // Show success message - the template logging happens in TemplateLibrary
+    // The exercises are already logged to the recent workouts by the backend
+    alert(`Successfully logged ${template.exercises?.length || 0} exercises from "${template.name}" template!`);
   };
 
   const handleCreateTemplate = () => {
@@ -540,11 +536,6 @@ export default function Dashboard() {
             </div>
             
             
-            {/* Temporary Template Seeding Button - Remove after seeding database */}
-            <div className="mb-6">
-              <TemplateSeedButton />
-            </div>
-            
             <StatsCards />
           </motion.div>
 
@@ -666,7 +657,7 @@ export default function Dashboard() {
                   </Button>
                 </div>
                 <TemplateLibrary
-                  onStartWorkout={handleStartWorkoutFromTemplate}
+                  onLogTemplate={handleLogTemplate}
                   onCreateTemplate={handleCreateTemplate}
                 />
               </div>

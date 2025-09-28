@@ -83,33 +83,20 @@ export const useWorkoutTemplates = () => {
   const updateTemplateMutation = useMutation(api.workoutTemplates.updateTemplate);
   const deleteTemplateMutation = useMutation(api.workoutTemplates.deleteTemplate);
   const trackUsageMutation = useMutation(api.workoutTemplates.trackTemplateUsage);
-  const seedTemplatesMutation = useMutation(api.workoutTemplates.seedPreBuiltTemplates);
+  const logTemplateMutation = useMutation(api.workoutTemplates.logTemplate);
 
   // Template limit logic
   const templateLimit = isPremium ? Infinity : 3;
   const canCreateTemplate = (userTemplateCount || 0) < templateLimit;
 
-  // Helper functions
+  // Helper functions - now only for user templates
   const getTemplatesByCategory = (category: string) => {
     if (!allTemplates) return [];
     return allTemplates.filter(template => template.category === category);
   };
 
-  const getPreBuiltTemplates = () => {
-    if (!allTemplates) return [];
-    return allTemplates.filter(template => template.isPreBuilt);
-  };
-
   const getUserOwnTemplates = () => {
     return userTemplates || [];
-  };
-
-  const getPopularTemplates = () => {
-    if (!allTemplates) return [];
-    return [...allTemplates]
-      .filter(template => template.isPreBuilt)
-      .sort((a, b) => (b.usageCount || 0) - (a.usageCount || 0))
-      .slice(0, 6);
   };
 
   const getRecentlyUsedTemplates = () => {
@@ -129,20 +116,20 @@ export const useWorkoutTemplates = () => {
     return await createTemplateMutation(data);
   };
 
-  const updateTemplate = async (id: Id<"workoutTemplates">, updates: UpdateTemplateData) => {
-    return await updateTemplateMutation({ id, ...updates });
+  const updateTemplate = async (templateId: Id<"workoutTemplates">, updates: UpdateTemplateData) => {
+    return await updateTemplateMutation({ templateId, ...updates });
   };
 
-  const deleteTemplate = async (id: Id<"workoutTemplates">) => {
-    return await deleteTemplateMutation({ id });
+  const deleteTemplate = async (templateId: Id<"workoutTemplates">) => {
+    return await deleteTemplateMutation({ templateId });
   };
 
   const trackTemplateUsage = async (templateId: Id<"workoutTemplates">) => {
     return await trackUsageMutation({ templateId });
   };
 
-  const seedPreBuiltTemplates = async () => {
-    return await seedTemplatesMutation({});
+  const logTemplate = async (templateId: Id<"workoutTemplates">) => {
+    return await logTemplateMutation({ templateId });
   };
 
   // Template categories and difficulty levels
@@ -169,9 +156,7 @@ export const useWorkoutTemplates = () => {
     
     // Helper functions
     getTemplatesByCategory,
-    getPreBuiltTemplates,
     getUserOwnTemplates,
-    getPopularTemplates,
     getRecentlyUsedTemplates,
     
     // Actions
@@ -179,7 +164,7 @@ export const useWorkoutTemplates = () => {
     updateTemplate,
     deleteTemplate,
     trackTemplateUsage,
-    seedPreBuiltTemplates,
+    logTemplate,
     
     // Template metadata
     categories,
@@ -200,8 +185,8 @@ export const useWorkoutTemplate = (templateId: Id<"workoutTemplates"> | null) =>
   const { isAuthenticated } = useAuth();
   
   const template = useQuery(
-    api.workoutTemplates.getTemplate,
-    templateId && isAuthenticated ? { id: templateId } : "skip"
+    api.workoutTemplates.getTemplateById,
+    templateId && isAuthenticated ? { templateId } : "skip"
   );
 
   return {
