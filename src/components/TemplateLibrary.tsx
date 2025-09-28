@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Clock, Dumbbell, TrendingUp, Star, User } from "lucide-react";
+import { Plus, Clock, Dumbbell, Star, User } from "lucide-react";
 import { useWorkoutTemplates, WorkoutTemplate } from "@/hooks/use-workout-templates";
 import { cn } from "@/lib/utils";
 
@@ -111,16 +111,8 @@ export function TemplateLibrary({
       </div>
 
       <Tabs defaultValue="browse" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 bg-muted/50 border border-border/50">
-          <TabsTrigger value="browse" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Browse</TabsTrigger>
-          <TabsTrigger value="popular" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-            <TrendingUp className="h-4 w-4" />
-            Popular
-          </TabsTrigger>
-          <TabsTrigger value="recent" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-            <Clock className="h-4 w-4" />
-            Recent
-          </TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2 bg-muted/50 border border-border/50">
+          <TabsTrigger value="browse" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Browse Templates</TabsTrigger>
           <TabsTrigger value="mine" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
             <User className="h-4 w-4" />
             My Templates
@@ -142,7 +134,7 @@ export function TemplateLibrary({
             >
               All Templates
             </Button>
-            {categories.map((category) => (
+            {["Push/Pull/Legs", "Upper/Lower", "Full Body", "Body Part Split", "Strength Program", "Quick Workout", "Custom"].map((category) => (
               <Button
                 key={category}
                 variant={selectedCategory === category ? "default" : "outline"}
@@ -171,43 +163,7 @@ export function TemplateLibrary({
           </div>
         </TabsContent>
 
-        {/* Popular Templates */}
-        <TabsContent value="popular" className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {popularTemplates.map((template) => (
-              <TemplateCard
-                key={template._id}
-                template={template}
-                onStart={handleStartWorkout}
-                onViewDetails={setSelectedTemplate}
-                showUsageCount
-              />
-            ))}
-          </div>
-        </TabsContent>
 
-        {/* Recent Templates */}
-        <TabsContent value="recent" className="space-y-4">
-          {recentTemplates.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {recentTemplates.map((template) => (
-                <TemplateCard
-                  key={template._id}
-                  template={template}
-                  onStart={handleStartWorkout}
-                  onViewDetails={setSelectedTemplate}
-                  showLastUsed
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <Clock className="h-12 w-12 mx-auto text-muted-foreground" />
-              <p className="mt-2 text-muted-foreground">No recent templates</p>
-              <p className="text-sm text-muted-foreground/70">Start using templates to see them here</p>
-            </div>
-          )}
-        </TabsContent>
 
         {/* User Templates */}
         <TabsContent value="mine" className="space-y-4">

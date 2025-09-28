@@ -16,8 +16,10 @@ import { DownloadModal } from "@/components/dashboard/DownloadModal";
 import { LibraryModal } from "@/components/dashboard/LibraryModal";
 import { ProgressModal } from "@/components/dashboard/ProgressModal";
 import { UserProfileModal } from "@/components/dashboard/UserProfileModal";
+import { TemplateForm } from "@/components/TemplateForm";
+import { TemplateSeedButton } from "@/components/TemplateSeedButton";
 import { TemplateLibrary } from "@/components/TemplateLibrary";
-import TemplateSeedButton from "@/components/TemplateSeedButton";
+
 
 export default function Dashboard() {
   const { isLoading, isAuthenticated, user, signOut } = useAuth();
@@ -32,6 +34,7 @@ export default function Dashboard() {
     download: false,
     library: false,
     templates: false,
+    templateForm: false,
     user: false,
     progress: false,
   });
@@ -65,6 +68,7 @@ export default function Dashboard() {
       download: false,
       library: false,
       templates: false,
+      templateForm: false,
       user: false,
       progress: false,
     });
@@ -128,8 +132,7 @@ export default function Dashboard() {
 
   const handleCreateTemplate = () => {
     closeModal('templates');
-    // TODO: Implement template creation form
-    alert('Template creation form coming soon!');
+    openModal('templateForm');
   };
 
   if (isLoading) {
@@ -536,7 +539,8 @@ export default function Dashboard() {
               </motion.div>
             </div>
             
-            {/* Temporary Template Seeding Button */}
+            
+            {/* Temporary Template Seeding Button - Remove after seeding database */}
             <div className="mb-6">
               <TemplateSeedButton />
             </div>
@@ -670,6 +674,12 @@ export default function Dashboard() {
           </div>
         )}
         {modals.user && <UserProfileModal onClose={() => closeModal('user')} />}
+        {modals.templateForm && (
+          <TemplateForm
+            open={modals.templateForm}
+            onClose={() => closeModal('templateForm')}
+          />
+        )}
       </AnimatePresence>
     </div>
   );
