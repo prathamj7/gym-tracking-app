@@ -37,7 +37,7 @@ export function TemplateForm({ open, onClose }: TemplateFormProps) {
   const [category, setCategory] = useState("");
   const [difficulty, setDifficulty] = useState("");
   const [exercises, setExercises] = useState<Exercise[]>([
-    { name: "", category: "Other", targetSets: 3, targetReps: "8-12", targetWeight: undefined, restTime: 60, notes: "" }
+    { name: "", category: "Other", targetSets: 3, targetReps: "8-12", restTime: 60, notes: "" }
   ]);
 
   const categories = [
@@ -53,7 +53,7 @@ export function TemplateForm({ open, onClose }: TemplateFormProps) {
   const difficulties = ["Beginner", "Intermediate", "Advanced"];
 
   const addExercise = () => {
-    setExercises([...exercises, { name: "", category: "Other", targetSets: 3, targetReps: "8-12", targetWeight: undefined, restTime: 60, notes: "" }]);
+    setExercises([...exercises, { name: "", category: "Other", targetSets: 3, targetReps: "8-12", restTime: 60, notes: "" }]);
   };
 
   const removeExercise = (index: number) => {
@@ -95,7 +95,7 @@ export function TemplateForm({ open, onClose }: TemplateFormProps) {
           category: ex.category,
           targetSets: ex.targetSets,
           targetReps: ex.targetReps,
-          targetWeight: ex.targetWeight,
+          ...(ex.targetWeight !== undefined && { targetWeight: ex.targetWeight }),
           restTime: ex.restTime,
           notes: ex.notes?.trim() || undefined,
           order: index + 1
@@ -107,7 +107,7 @@ export function TemplateForm({ open, onClose }: TemplateFormProps) {
       setDescription("");
       setCategory("");
       setDifficulty("");
-      setExercises([{ name: "", category: "Other", targetSets: 3, targetReps: "8-12", targetWeight: undefined, restTime: 60, notes: "" }]);
+      setExercises([{ name: "", category: "Other", targetSets: 3, targetReps: "8-12", restTime: 60, notes: "" }]);
       onClose();
     } catch (error) {
       console.error("Failed to create template:", error);
@@ -269,7 +269,7 @@ export function TemplateForm({ open, onClose }: TemplateFormProps) {
                       
                       <Input
                         type="number"
-                        value={exercise.targetWeight ?? ""}
+                        value={exercise.targetWeight !== undefined ? exercise.targetWeight : ""}
                         onChange={(e) => updateExercise(index, "targetWeight", e.target.value ? parseFloat(e.target.value) : undefined)}
                         placeholder="Weight (kg) - optional"
                         step="0.5"
