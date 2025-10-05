@@ -269,10 +269,9 @@ export function TemplateForm({ open, onClose }: TemplateFormProps) {
                       
                       <Input
                         type="number"
-                        value={exercise.targetWeight || ""}
+                        value={exercise.targetWeight ?? ""}
                         onChange={(e) => updateExercise(index, "targetWeight", e.target.value ? parseFloat(e.target.value) : undefined)}
-                        placeholder="Weight (kg)"
-                        min="0"
+                        placeholder="Weight (kg) - optional"
                         step="0.5"
                         className="bg-background border-border text-foreground placeholder:text-muted-foreground"
                       />

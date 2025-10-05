@@ -280,8 +280,6 @@ export const logTemplate = mutation({
     const exercisesAdded = [];
 
     for (const templateExercise of template.exercises) {
-      console.log(`Template exercise: ${templateExercise.name}, targetWeight: ${templateExercise.targetWeight}`);
-      
       const exerciseData = {
         userId: user._id,
         name: templateExercise.name,
@@ -294,8 +292,6 @@ export const logTemplate = mutation({
         notes: templateExercise.notes,
         performedAt: currentTime,
       };
-      
-      console.log(`Created exercise data:`, exerciseData);
 
       const exerciseId = await ctx.db.insert("exercises", exerciseData);
       exercisesAdded.push({
