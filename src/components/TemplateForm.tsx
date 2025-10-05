@@ -25,6 +25,7 @@ interface Exercise {
   category: string;
   targetSets: number;
   targetReps: string;
+  targetWeight?: number;
   restTime: number;
   notes?: string;
 }
@@ -36,7 +37,7 @@ export function TemplateForm({ open, onClose }: TemplateFormProps) {
   const [category, setCategory] = useState("");
   const [difficulty, setDifficulty] = useState("");
   const [exercises, setExercises] = useState<Exercise[]>([
-    { name: "", category: "Other", targetSets: 3, targetReps: "8-12", restTime: 60, notes: "" }
+    { name: "", category: "Other", targetSets: 3, targetReps: "8-12", targetWeight: undefined, restTime: 60, notes: "" }
   ]);
 
   const categories = [
@@ -52,7 +53,7 @@ export function TemplateForm({ open, onClose }: TemplateFormProps) {
   const difficulties = ["Beginner", "Intermediate", "Advanced"];
 
   const addExercise = () => {
-    setExercises([...exercises, { name: "", category: "Other", targetSets: 3, targetReps: "8-12", restTime: 60, notes: "" }]);
+    setExercises([...exercises, { name: "", category: "Other", targetSets: 3, targetReps: "8-12", targetWeight: undefined, restTime: 60, notes: "" }]);
   };
 
   const removeExercise = (index: number) => {
@@ -61,7 +62,7 @@ export function TemplateForm({ open, onClose }: TemplateFormProps) {
     }
   };
 
-  const updateExercise = (index: number, field: keyof Exercise, value: string | number) => {
+  const updateExercise = (index: number, field: keyof Exercise, value: string | number | undefined) => {
     const updated = exercises.map((exercise, i) => 
       i === index ? { ...exercise, [field]: value } : exercise
     );
@@ -94,6 +95,7 @@ export function TemplateForm({ open, onClose }: TemplateFormProps) {
           category: ex.category,
           targetSets: ex.targetSets,
           targetReps: ex.targetReps,
+          targetWeight: ex.targetWeight,
           restTime: ex.restTime,
           notes: ex.notes?.trim() || undefined,
           order: index + 1
@@ -105,7 +107,7 @@ export function TemplateForm({ open, onClose }: TemplateFormProps) {
       setDescription("");
       setCategory("");
       setDifficulty("");
-      setExercises([{ name: "", category: "Other", targetSets: 3, targetReps: "8-12", restTime: 60, notes: "" }]);
+      setExercises([{ name: "", category: "Other", targetSets: 3, targetReps: "8-12", targetWeight: undefined, restTime: 60, notes: "" }]);
       onClose();
     } catch (error) {
       console.error("Failed to create template:", error);
@@ -229,7 +231,7 @@ export function TemplateForm({ open, onClose }: TemplateFormProps) {
                       className="bg-background border-border text-foreground placeholder:text-muted-foreground"
                     />
                     
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                       <Select 
                         value={exercise.category} 
                         onValueChange={(value) => updateExercise(index, "category", value)}
@@ -262,6 +264,16 @@ export function TemplateForm({ open, onClose }: TemplateFormProps) {
                         value={exercise.targetReps}
                         onChange={(e) => updateExercise(index, "targetReps", e.target.value)}
                         placeholder="Reps"
+                        className="bg-background border-border text-foreground placeholder:text-muted-foreground"
+                      />
+                      
+                      <Input
+                        type="number"
+                        value={exercise.targetWeight || ""}
+                        onChange={(e) => updateExercise(index, "targetWeight", e.target.value ? parseFloat(e.target.value) : undefined)}
+                        placeholder="Weight (kg)"
+                        min="0"
+                        step="0.5"
                         className="bg-background border-border text-foreground placeholder:text-muted-foreground"
                       />
                       
