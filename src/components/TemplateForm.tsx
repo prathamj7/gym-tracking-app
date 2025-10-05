@@ -4,7 +4,7 @@
  * Simple form for creating new workout templates
  */
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -51,6 +51,17 @@ export function TemplateForm({ open, onClose }: TemplateFormProps) {
   ];
 
   const difficulties = ["Beginner", "Intermediate", "Advanced"];
+
+  // Reset form when dialog opens
+  useEffect(() => {
+    if (open) {
+      setTemplateName("");
+      setDescription("");
+      setCategory("");
+      setDifficulty("");
+      setExercises([{ name: "", category: "Other", targetSets: 3, targetReps: "8-12", restTime: 60, notes: "" }]);
+    }
+  }, [open]);
 
   const addExercise = () => {
     setExercises([...exercises, { name: "", category: "Other", targetSets: 3, targetReps: "8-12", restTime: 60, notes: "" }]);
