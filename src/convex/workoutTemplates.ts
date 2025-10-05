@@ -280,18 +280,22 @@ export const logTemplate = mutation({
     const exercisesAdded = [];
 
     for (const templateExercise of template.exercises) {
+      console.log(`Template exercise: ${templateExercise.name}, targetWeight: ${templateExercise.targetWeight}`);
+      
       const exerciseData = {
         userId: user._id,
         name: templateExercise.name,
         category: templateExercise.category,
         setsData: Array(templateExercise.targetSets).fill(null).map(() => ({
           reps: parseInt(templateExercise.targetReps.split('-')[0]) || 1, // Use lower bound of rep range
-          weight: templateExercise.targetWeight || undefined,
+          weight: templateExercise.targetWeight !== undefined ? templateExercise.targetWeight : undefined,
           notes: templateExercise.notes || undefined,
         })),
         notes: templateExercise.notes,
         performedAt: currentTime,
       };
+      
+      console.log(`Created exercise data:`, exerciseData);
 
       const exerciseId = await ctx.db.insert("exercises", exerciseData);
       exercisesAdded.push({
