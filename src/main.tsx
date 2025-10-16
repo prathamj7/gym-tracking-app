@@ -1,5 +1,4 @@
 import { Toaster } from "@/components/ui/sonner";
-import { VlyToolbar } from "../vly-toolbar-readonly.tsx";
 import { InstrumentationProvider } from "@/instrumentation.tsx";
 import ClerkAuth from "@/pages/ClerkAuth.tsx";
 import Dashboard from "@/pages/Dashboard.tsx";
@@ -64,7 +63,6 @@ function ClerkConvexProvider({ children }: { children: React.ReactNode }) {
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <VlyToolbar />
     <InstrumentationProvider>
       <ClerkProvider 
         publishableKey={clerkPubKey}
