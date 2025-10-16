@@ -1,5 +1,7 @@
 {
-
-  "installCommand": "pnpm install --no-frozen-lockfile"
-
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "installCommand": "pnpm install --no-frozen-lockfile",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }
